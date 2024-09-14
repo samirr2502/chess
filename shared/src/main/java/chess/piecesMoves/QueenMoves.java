@@ -36,11 +36,8 @@ public class QueenMoves {
    * Also checks if it can be promoted
    *
    */
-
   private void setMoves(){
-
     int incrementer=1;
-
     ArrayList<ChessPosition> forwardPositions = new ArrayList<>();
     ArrayList<ChessPosition> backwardPositions = new ArrayList<>();
     ArrayList<ChessPosition> rightPositions = new ArrayList<>();
@@ -88,26 +85,19 @@ public class QueenMoves {
       backwardLeftPositions.add(new ChessPosition(myPosition.getRow()-i, myPosition.getColumn()-i));
     }
 
-    moveQueenDirection(forwardPositions);
-    moveQueenDirection(backwardPositions);
-    moveQueenDirection(leftPositions);
-    moveQueenDirection(rightPositions);
-    moveQueenDirection(forwardRightPositions);
-    moveQueenDirection(forwardLeftPositions);
-    moveQueenDirection(backwardRightPositions);
-    moveQueenDirection(backwardLeftPositions);
+    movesQueen(forwardPositions);
+    movesQueen(backwardPositions);
+    movesQueen(leftPositions);
+    movesQueen(rightPositions);
+    movesQueen(forwardRightPositions);
+    movesQueen(forwardLeftPositions);
+    movesQueen(backwardRightPositions);
+    movesQueen(backwardLeftPositions);
   }
   /*Helper Function for set moves
    *Gets key information to move either the white or black piece to the corners in order ot eat
    * */
-  private void queenMoves(ArrayList<ChessPosition> forwardPositions,ArrayList<ChessPosition> backwardPositions,
-                         ArrayList<ChessPosition> rightPositions, ArrayList<ChessPosition> leftPositions  ) {
-
-    //Moves forward if it's not at the edge and there are no team piece is in front of it
-
-    //moves backwards if it's not at the edge and there are no team pieces in behind of it
-  }
-  public void moveQueenDirection(ArrayList<ChessPosition> directionPositions){
+  public void movesQueen(ArrayList<ChessPosition> directionPositions){
     for(ChessPosition direction : directionPositions) {
       if (board.getPiece(direction)== null) {
         addMove(new ChessMove(myPosition, direction, null));

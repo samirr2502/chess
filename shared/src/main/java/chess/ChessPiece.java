@@ -70,24 +70,14 @@ public class ChessPiece {
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         Collection<ChessMove> possibleChessMoves = new HashSet<>();
-        if (this.type == PieceType.PAWN) {
-            possibleChessMoves = new PawnMoves(board, myPosition, pieceColor).getMoves();
-        }
-        else if (this.type == PieceType.KING){
-            possibleChessMoves = new KingMoves(board,myPosition,pieceColor).getMoves();
-        }else if (this.type == PieceType.QUEEN){
-            possibleChessMoves = new QueenMoves(board,myPosition,pieceColor).getMoves();
-        }else if (this.type == PieceType.BISHOP){
-            possibleChessMoves = new BishopMoves(board,myPosition,pieceColor).getMoves();
-        }
-        else if (this.type== PieceType.KNIGHT) {
-            possibleChessMoves = new KnightMoves(board, myPosition, pieceColor).getMoves();
-        }
-
-        else if (this.type == PieceType.ROOK){
-            possibleChessMoves = new RookMoves(board,myPosition,pieceColor).getMoves();
+        switch (type) {
+            case KING -> possibleChessMoves = new KingMoves(board, myPosition, pieceColor).getMoves();
+            case QUEEN -> possibleChessMoves = new QueenMoves(board, myPosition, pieceColor).getMoves();
+            case ROOK -> possibleChessMoves = new RookMoves(board, myPosition, pieceColor).getMoves();
+            case KNIGHT -> possibleChessMoves = new KnightMoves(board, myPosition, pieceColor).getMoves();
+            case BISHOP -> possibleChessMoves = new BishopMoves(board, myPosition, pieceColor).getMoves();
+            case PAWN -> possibleChessMoves = new PawnMoves(board, myPosition, pieceColor).getMoves();
         }
         return possibleChessMoves;
     }
-
 }
