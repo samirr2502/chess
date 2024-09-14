@@ -43,7 +43,7 @@ public class KnightMoves {
     int goLeft = myPosition.getColumn()-1;
     int goRight = myPosition.getColumn()+1;
 
-
+    //Set up Chess positions
     ChessPosition forwardTopRightMove= new ChessPosition(goForward+1, goRight);
     ChessPosition forwardBottomRightMove =new ChessPosition(goForward,goRight+1);
     ChessPosition forwardTopLeftMove = new ChessPosition(goForward+1, goLeft);
@@ -53,49 +53,34 @@ public class KnightMoves {
     ChessPosition backwardTopLeftMove = new ChessPosition(goBackward-1, goLeft);
     ChessPosition backwardBottomLeftMove = new ChessPosition(goBackward, goLeft-1);
 
-    //Check if valid moves
 
-    if(forwardTopRightMove.getRow() <=8 &&
-            forwardTopRightMove.getColumn() <=8){
-        knightMoves(forwardTopRightMove);
-    }
-    if(forwardBottomRightMove.getRow() <=8 &&
-            forwardBottomRightMove.getColumn() <=8){
-      knightMoves(forwardBottomRightMove);
-    }
-    if(forwardTopLeftMove.getRow() <=8 &&
-            forwardTopLeftMove.getColumn() >=1){
-      knightMoves(forwardTopLeftMove);
-    }
-    if(forwardBottomLeftMove.getRow() <=8 &&
-            forwardBottomLeftMove.getColumn() >=1){
-      knightMoves(forwardBottomLeftMove);
-    }
+    //Check if falls outside edge
+    boolean forwardTopRightInside = forwardTopRightMove.getRow() <=8 && forwardTopRightMove.getColumn() <=8;
+    boolean forwardBottomRightInside =forwardBottomRightMove.getRow() <=8 && forwardBottomRightMove.getColumn() <=8;
+    boolean forwardTopLeftInside = forwardTopLeftMove.getRow() <=8 && forwardTopLeftMove.getColumn() >=1;
+    boolean forwardBottomLeftInside = forwardBottomLeftMove.getRow() <=8 && forwardBottomLeftMove.getColumn() >=1;
+    boolean backwardTopRightInside = backwardTopRightMove.getRow() >=1 && backwardTopRightMove.getColumn() <=8;
+    boolean backwardBottomRightInside = backwardBottomRightMove.getRow() >=1&& backwardBottomRightMove.getColumn() <=8;
+    boolean backwardTopLeftInside = backwardTopLeftMove.getRow() >=1 && backwardTopLeftMove.getColumn() >=1;
+    boolean backwardBottomLeftInside = backwardBottomLeftMove.getRow() >=1 && backwardBottomLeftMove.getColumn() >=1;
 
-    if(backwardTopRightMove.getRow() >=1 &&
-            backwardTopRightMove.getColumn() <=8){
-      knightMoves(backwardTopRightMove);
-    }
-    if(backwardBottomRightMove.getRow() >=1&&
-            backwardBottomRightMove.getColumn() <=8){
-      knightMoves(backwardBottomRightMove);
-    }
-    if(backwardTopLeftMove.getRow() >=1 &&
-            backwardTopLeftMove.getColumn() >=1){
-      knightMoves(backwardTopLeftMove);
-    }
-
-    if (backwardBottomLeftMove.getRow() >=1 &&
-            backwardBottomLeftMove.getColumn() >=1){
-      knightMoves(backwardBottomLeftMove);
-    }
+    //Add the moves if they meet the criteria
+    knightMoves(forwardTopRightMove, forwardTopRightInside);
+    knightMoves(forwardBottomRightMove,forwardBottomRightInside);
+    knightMoves(forwardTopLeftMove,forwardTopLeftInside);
+    knightMoves(forwardBottomLeftMove,forwardBottomLeftInside);
+    knightMoves(backwardTopRightMove,backwardTopRightInside);
+    knightMoves(backwardBottomRightMove, backwardBottomRightInside);
+    knightMoves(backwardTopLeftMove,backwardTopLeftInside);
+    knightMoves(backwardBottomLeftMove,backwardBottomLeftInside);
   }
   /*Helper Function for set moves
    *Gets key information to move either the white or black piece to the corners in order ot eat
    * */
-  private void knightMoves(ChessPosition newPosition){
-    if (board.getPiece(newPosition) == null ||
-            (board.getPiece(newPosition) != null && board.getPiece(newPosition).getTeamColor() !=color)){
+  private void knightMoves(ChessPosition newPosition, boolean insideBoard){
+    if (insideBoard &&
+            (board.getPiece(newPosition) == null ||
+            (board.getPiece(newPosition) != null && board.getPiece(newPosition).getTeamColor() !=color))){
       addMove(new ChessMove(myPosition,newPosition,null));
     }
   }
