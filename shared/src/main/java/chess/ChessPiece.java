@@ -71,8 +71,13 @@ public class ChessPiece {
         if (this.type == PieceType.PAWN) {
             possibleChessMoves = new PawnMoves(board, myPosition, pieceColor).getMoves();
         }
-        if (this.type == PieceType.KING){
+        else if (this.type == PieceType.KING){
             possibleChessMoves = new KingMoves(board,myPosition,pieceColor).getMoves();
+        }else if (this.type == PieceType.QUEEN){
+            possibleChessMoves = new QueenMoves(board,myPosition,pieceColor).getMoves();
+        }
+        else if (this.type == PieceType.ROOK){
+            possibleChessMoves = new RookMoves(board,myPosition,pieceColor).getMoves();
         }
         return possibleChessMoves;
     }
