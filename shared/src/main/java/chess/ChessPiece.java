@@ -69,47 +69,7 @@ public class ChessPiece {
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         Collection<ChessMove> possibleChessMoves = new HashSet<>();
         if (this.type == PieceType.PAWN) {
-            possibleChessMoves = pawnMoves(board, myPosition);
-        }
-        return possibleChessMoves;
-        }
-
-    public void pawnMoves(Collection<ChessMove> possibleChessMoves,
-            ChessBoard board, ChessPosition myPosition,
-                         ChessPosition left, ChessPosition right, ChessPiece.PieceType promotionPiece){
-        if (myPosition.getColumn() != 1 && board.getPiece(right) != null){
-            possibleChessMoves.add(new ChessMove(myPosition,right,promotionPiece));
-        }
-        if (myPosition.getColumn() != 8 && board.getPiece(left) != null){
-            possibleChessMoves.add(new ChessMove(myPosition,left,promotionPiece));
-        }
-    }
-    public Collection<ChessMove> pawnMoves(ChessBoard board, ChessPosition myPosition) {
-        Collection<ChessMove> possibleChessMoves = new HashSet<>();
-        boolean canPromote = false;
-
-        //WHITE MOVES
-        if (pieceColor == ChessGame.TeamColor.WHITE) {
-            //move to front
-            ChessPosition moveForwardWhite = new ChessPosition(myPosition.getRow() + 1, myPosition.getColumn());
-            ChessPosition rightWhite = new ChessPosition(myPosition.getRow() + 1, myPosition.getColumn() + 1);
-            ChessPosition leftWhite = new ChessPosition(myPosition.getRow() + 1, myPosition.getColumn() - 1);
-
-            if (myPosition.getRow() == 7) {
-                canPromote = true;
-            }
-            pawnMoves(possibleChessMoves, board, myPosition, leftWhite, rightWhite, null);
-
-        } else {
-            //Black Moves
-            //move to front
-            ChessPosition moveForwardBlack = new ChessPosition(myPosition.getRow() - 1, myPosition.getColumn());
-            ChessPosition rightBlack = new ChessPosition(myPosition.getRow() - 1, myPosition.getColumn() + 1);
-            ChessPosition leftBlack = new ChessPosition(myPosition.getRow() - 1, myPosition.getColumn() - 1);
-            if (myPosition.getRow() == 2) {
-                canPromote = true;
-            }
-            pawnMoves(possibleChessMoves, board, myPosition, leftBlack, rightBlack, null);
+            possibleChessMoves = new PawnMoves(board, myPosition, pieceColor).getMoves();
         }
         return possibleChessMoves;
     }

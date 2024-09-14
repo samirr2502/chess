@@ -11,7 +11,7 @@ import java.util.Objects;
 public class ChessMove {
     private final ChessPosition startPosition;
     private final ChessPosition endPosition;
-    private ChessPiece.PieceType promotionPiece;
+    private final ChessPiece.PieceType promotionPiece;
 
     public ChessMove(ChessPosition startPosition, ChessPosition endPosition,
                      ChessPiece.PieceType promotionPiece) {
@@ -42,7 +42,7 @@ public class ChessMove {
 
     /**
      * @return ChessPosition of starting location
-     */
+     l
     public ChessPosition getStartPosition() {
         return this.startPosition;
     }
@@ -50,7 +50,7 @@ public class ChessMove {
     /**
      * @return ChessPosition of ending location
      */
-    public ChessPosition getEndPosition() { return this.endPosition;    }
+    public ChessPosition getEndPosition() { return this.endPosition;}
 
     /**
      * Gets the type of piece to promote a pawn to if pawn promotion is part of this
@@ -60,3 +60,5 @@ public class ChessMove {
      */
     public ChessPiece.PieceType getPromotionPiece() {return this.promotionPiece; }
 }
+
+
