@@ -1,4 +1,9 @@
-package chess;
+package chess.piecesMoves;
+
+import chess.ChessBoard;
+import chess.ChessGame;
+import chess.ChessMove;
+import chess.ChessPosition;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -90,7 +95,7 @@ public class KnightMoves {
    * */
   private void knightMoves(ChessPosition newPosition){
     if (board.getPiece(newPosition) == null ||
-            (board.getPiece(newPosition) != null && board.getPiece(newPosition).pieceColor !=color)){
+            (board.getPiece(newPosition) != null && board.getPiece(newPosition).getTeamColor() !=color)){
       addMove(new ChessMove(myPosition,newPosition,null));
     }
   }

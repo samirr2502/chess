@@ -1,5 +1,7 @@
 package chess;
 
+import chess.piecesMoves.*;
+
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Objects;

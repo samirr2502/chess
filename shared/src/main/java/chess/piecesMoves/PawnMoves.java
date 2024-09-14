@@ -1,4 +1,6 @@
-package chess;
+package chess.piecesMoves;
+
+import chess.*;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -78,11 +80,11 @@ public class PawnMoves {
     }
 
     //Checks if not at the edge and if there's a piece to eat
-    if (myPosition.getColumn() != 1 && (board.getPiece(right) != null && board.getPiece(right).pieceColor != color)){
+    if (myPosition.getColumn() != 1 && (board.getPiece(right) != null && board.getPiece(right).getTeamColor() != color)){
       addPromotions(myPosition,right,forward);
     }
     //Checks if not at the edge and if there's a piece to eat
-    if (myPosition.getColumn() != 8 && (board.getPiece(left) != null && board.getPiece(left).pieceColor != color)){
+    if (myPosition.getColumn() != 8 && (board.getPiece(left) != null && board.getPiece(left).getTeamColor() != color)){
       addPromotions(myPosition,left,forward);
 
     }
