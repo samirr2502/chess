@@ -1,8 +1,8 @@
 package chess;
 
-import java.util.Dictionary;
-import java.util.Hashtable;
-import java.util.Objects;
+import javax.xml.crypto.dsig.keyinfo.KeyName;
+import java.lang.reflect.Type;
+import java.util.*;
 
 /**
  * A chessboard that can hold and rearrange chess pieces.
@@ -11,8 +11,27 @@ import java.util.Objects;
  * signature of the existing methods.
  */
 public class ChessBoard {
-    private final Dictionary<ChessPosition, ChessPiece> piecePosition = new Hashtable<>();
+    private final ChessPiece[][] board = new ChessPiece[10][10];
+    private final Map<Character, ChessPiece.PieceType> pieceTypeMap= new HashMap<Character, ChessPiece.PieceType> (){{
+        put('p', ChessPiece.PieceType.PAWN);
+        put('k', ChessPiece.PieceType.KING);
+        put('q', ChessPiece.PieceType.QUEEN);
+        put('n', ChessPiece.PieceType.KNIGHT);
+        put('b', ChessPiece.PieceType.BISHOP);
+        put('r', ChessPiece.PieceType.ROOK);
+        }
+    };
     public ChessBoard() {
+        
+    }
+    /**
+     * Prints the board with the pieces
+     */
+    @Override
+    public String toString() {
+        return "ChessBoard{" +
+                "board=" + Arrays.toString(board) +
+                '}';
     }
 
     @Override
@@ -22,12 +41,14 @@ public class ChessBoard {
         if (o == null || getClass() != o.getClass())
             return false;
         ChessBoard that = (ChessBoard) o;
-        return Objects.equals(piecePosition, that.piecePosition);
+        return Arrays.deepEquals(board, that.board) && Objects.equals(pieceTypeMap, that.pieceTypeMap);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(piecePosition);
+        int result = Objects.hash(pieceTypeMap);
+        result = 31 * result + Arrays.deepHashCode(board);
+        return result;
     }
 
     /**
@@ -37,8 +58,9 @@ public class ChessBoard {
      * @param piece    the piece to add
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
-        piecePosition.put(position,piece);
+        board[position.getRow()][position.getColumn()] = piece;
     }
+
     /**
      * Gets a chess piece on the chessboard
      *
@@ -47,7 +69,7 @@ public class ChessBoard {
      * position
      */
     public ChessPiece getPiece(ChessPosition position) {
-        return piecePosition.get(position);
+        return board[position.getRow()][position.getColumn()];
     }
 
     /**
@@ -55,50 +77,42 @@ public class ChessBoard {
      * (How the game of chess normally starts)
      */
     public void resetBoard() {
-        int rowWhiteA = 1;
-        int rowWhiteB = 2;
-        int rowBlackA = 8;
-        int rowBlackB = 7;
-        //White Pieces
-        //KINK
-        addPiece(new ChessPosition(rowWhiteA,5),new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KING));
-        //Queen
-        addPiece(new ChessPosition(rowWhiteA,4),new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.QUEEN));
-
-        //Bishops
-        addPiece(new ChessPosition(rowWhiteA,3),new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.BISHOP));
-        addPiece(new ChessPosition(rowWhiteA,6),new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.BISHOP));
-        //KNIGHTS
-        addPiece(new ChessPosition(rowWhiteA,2),new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KNIGHT));
-        addPiece(new ChessPosition(rowWhiteA,7),new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KNIGHT));
-
-        //Rooks
-        addPiece(new ChessPosition(rowWhiteA,1),new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK));
-        addPiece(new ChessPosition(rowWhiteA,8),new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK));
-        //PAWNS
-        for (int i=1;i <=8; i++){
-            addPiece(new ChessPosition(rowWhiteB,i),new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN));
-        }
-
-        //Black Pieces
-        //KINK
-        addPiece(new ChessPosition(rowBlackA,5),new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KING));
-        //Queen
-        addPiece(new ChessPosition(rowBlackA,4),new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.QUEEN));
-
-        //Bishops
-        addPiece(new ChessPosition(rowBlackA,3),new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.BISHOP));
-        addPiece(new ChessPosition(rowBlackA,6),new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.BISHOP));
-        //KNIGHTS
-        addPiece(new ChessPosition(rowBlackA,2),new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KNIGHT));
-        addPiece(new ChessPosition(rowBlackA,7),new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KNIGHT));
-
-        //Rooks
-        addPiece(new ChessPosition(rowBlackA,1),new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK));
-        addPiece(new ChessPosition(rowBlackA,8),new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK));
-
-        for (int i=1;i <=8; i++){
-            addPiece(new ChessPosition(rowBlackB,i),new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN));
+        int row = 8;
+        int column = 1;
+        String newBoard = """
+               |r|n|b|q|k|b|n|r|
+               |p|p|p|p|p|p|p|p|
+               | | | | | | | | |
+               | | | | | | | | |
+               | | | | | | | | |
+               | | | | | | | | |
+               |P|P|P|P|P|P|P|P|
+               |R|N|B|Q|K|B|N|R|
+                """;
+        for (char c: newBoard.toCharArray()){
+            switch (c){
+                case '|':
+                    continue;
+                case '\n':
+                    column =1;
+                    row--;
+                    break;
+                case ' ':
+                    column++;
+                    break;
+                default:
+                    ChessGame.TeamColor teamColor;
+                    if (Character.isLowerCase(c)) {
+                        teamColor = ChessGame.TeamColor.BLACK;
+                    } else{
+                        teamColor = ChessGame.TeamColor.WHITE;
+                    }
+                ChessPosition position = new ChessPosition(row,column);
+                ChessPiece piece = new ChessPiece(teamColor, pieceTypeMap.get(Character.toLowerCase(c)));
+                addPiece(position,piece);
+                column ++;
+            }
         }
     }
+
 }

@@ -1,9 +1,10 @@
 package chess;
 
-import chess.piecesMoves.*;
+import chess.PieceMoves.*;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
+
 import java.util.Objects;
 
 /**
@@ -13,11 +14,27 @@ import java.util.Objects;
  * signature of the existing methods.
  */
 public class ChessPiece {
-    ChessGame.TeamColor pieceColor;
-    ChessPiece.PieceType type;
-    public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
-        this.pieceColor = pieceColor;
+    private final ChessGame.TeamColor color;
+    private final PieceType type;
+
+    public ChessPiece(ChessGame.TeamColor pieceColor, PieceType type) {
+        this.color = pieceColor;
         this.type = type;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+        ChessPiece that = (ChessPiece) o;
+        return color == that.color && type == that.type;
+    }
+
+    @Override
+    public int hashCode() {
+        return 31*Objects.hash(color, type);
     }
 
     /**
@@ -32,33 +49,18 @@ public class ChessPiece {
         PAWN
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o)
-            return true;
-        if (o == null || getClass() != o.getClass())
-            return false;
-        ChessPiece that = (ChessPiece) o;
-        return pieceColor == that.pieceColor && type == that.type;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(pieceColor, type);
-    }
-
     /**
      * @return Which team this chess piece belongs to
      */
     public ChessGame.TeamColor getTeamColor() {
-        return this.pieceColor;
+         return color;
     }
 
     /**
      * @return which type of chess piece this piece is
      */
     public PieceType getPieceType() {
-        return this.type;
+        return type;
     }
 
     /**
@@ -69,15 +71,15 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        Collection<ChessMove> possibleChessMoves = new HashSet<>();
-        switch (type) {
-            case KING -> possibleChessMoves = new KingMoves(board, myPosition, pieceColor).getMoves();
-            case QUEEN -> possibleChessMoves = new QueenMoves(board, myPosition, pieceColor).getMoves();
-            case ROOK -> possibleChessMoves = new RookMoves(board, myPosition, pieceColor).getMoves();
-            case KNIGHT -> possibleChessMoves = new KnightMoves(board, myPosition, pieceColor).getMoves();
-            case BISHOP -> possibleChessMoves = new BishopMoves(board, myPosition, pieceColor).getMoves();
-            case PAWN -> possibleChessMoves = new PawnMoves(board, myPosition, pieceColor).getMoves();
+        Collection<ChessMove> chessMoves = new ArrayList<ChessMove>();
+        switch (getPieceType()){
+            case KING -> chessMoves = new KingMoves(board,this, myPosition).getPossibleMoves();
+            case QUEEN -> chessMoves= new QueenMoves(board, this,myPosition).getPossibleMoves();
+            case BISHOP -> chessMoves= new BishopMoves(board, this,myPosition).getPossibleMoves();
+            case ROOK -> chessMoves= new RookMoves(board, this,myPosition).getPossibleMoves();
+            case KNIGHT -> chessMoves= new KnightMoves(board, this,myPosition).getPossibleMoves();
+            case PAWN -> chessMoves= new PawnMoves(board, this,myPosition).getPossibleMoves();
         }
-        return possibleChessMoves;
+        return chessMoves;
     }
 }
