@@ -1,5 +1,6 @@
 package chess;
 
+import javax.swing.*;
 import java.util.Objects;
 
 /**
@@ -13,7 +14,7 @@ public class ChessPosition {
     private final int col;
     public ChessPosition(int row, int col) {
         this.row = row;
-        this.col = col;
+        this.col =col;
     }
 
     @Override
@@ -22,13 +23,13 @@ public class ChessPosition {
             return true;
         if (o == null || getClass() != o.getClass())
             return false;
-        ChessPosition that = (ChessPosition) o;
-        return row == that.row && col == that.col;
+        ChessPosition position = (ChessPosition) o;
+        return row == position.row && col == position.col;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(row, col);
+        return 31*Objects.hash(row, col);
     }
 
     /**
@@ -36,7 +37,7 @@ public class ChessPosition {
      * 1 codes for the bottom row
      */
     public int getRow() {
-        return this.row;
+        return row;
     }
 
     /**
@@ -44,6 +45,6 @@ public class ChessPosition {
      * 1 codes for the left row
      */
     public int getColumn() {
-        return this.col;
+        return col;
     }
 }
