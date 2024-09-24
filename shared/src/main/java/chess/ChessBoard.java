@@ -9,8 +9,8 @@ import java.util.*;
  * signature of the existing methods.
  */
 public class ChessBoard {
-    private final ChessPiece[][] board = new ChessPiece[10][10];
-    private final Map<Character, ChessPiece.PieceType> pieceTypeMap= new HashMap<> (){{
+    private final ChessPiece[][] board = new ChessPiece[8][8];
+    private final Map<Character, ChessPiece.PieceType> pieceTypeMap= new HashMap<> () { {
         put('p', ChessPiece.PieceType.PAWN);
         put('k', ChessPiece.PieceType.KING);
         put('q', ChessPiece.PieceType.QUEEN);
@@ -20,12 +20,7 @@ public class ChessBoard {
         }
     };
     public ChessBoard() {
-        
     }
-    /**
-     * Prints the board with the pieces
-     */
-
     @Override
     public boolean equals(Object o) {
         if (this == o)
@@ -50,7 +45,7 @@ public class ChessBoard {
      * @param piece    the piece to add
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
-        board[position.getRow()][position.getColumn()] = piece;
+        board[position.getRow()-1][position.getColumn()-1] = piece;
     }
 
     /**
@@ -61,7 +56,8 @@ public class ChessBoard {
      * position
      */
     public ChessPiece getPiece(ChessPosition position) {
-        return board[position.getRow()][position.getColumn()];
+
+        return board[position.getRow()-1][position.getColumn()-1];
     }
 
     /**
@@ -84,12 +80,12 @@ public class ChessBoard {
         for (char c: newBoard.toCharArray()){
             switch (c){
                 case '|':
-                    continue;
-                case '\n':
+                    break;
+                case '\n': //New line, reset column, decrement row
                     column =1;
                     row--;
                     break;
-                case ' ':
+                case ' '://
                     column++;
                     break;
                 default:
