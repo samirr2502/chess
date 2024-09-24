@@ -71,7 +71,7 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        Collection<ChessMove> chessMoves = new ArrayList<ChessMove>();
+        Collection<ChessMove> chessMoves = new ArrayList<>();
         switch (getPieceType()){
             case KING -> chessMoves = new KingMoves(board,this, myPosition).getPossibleMoves();
             case QUEEN -> chessMoves= new QueenMoves(board, this,myPosition).getPossibleMoves();

@@ -7,7 +7,7 @@ import chess.ChessPosition;
 
 import java.util.ArrayList;
 
-public class RookMoves extends PieceMovesAbs {
+public class RookMoves extends PieceMoves {
 
   public RookMoves(ChessBoard board, ChessPiece piece, ChessPosition myPosition){
     super();
@@ -18,16 +18,16 @@ public class RookMoves extends PieceMovesAbs {
 
   @Override
   public ArrayList<ChessMove> getPossibleMoves() {
-    setDirection(2,null);
+    setDirection(2);
     return super.getPossibleMoves();
   }
 
   //1 if only one step,  if multiple
   @Override
-  void setDirection(int cont, ChessPiece.PieceType promoPiece)  {
-    setMoves(cont, 0, 1,promoPiece);//Move right
-    setMoves(cont, 1, 0,promoPiece);//Move top
-    setMoves(cont, 0, -1,promoPiece);//Move left
-    setMoves(cont, -1, 0,promoPiece);//Move bottom
+  void setDirection(int rule)  {
+    setMoves(rule, 0, 1);//Move right
+    setMoves(rule, 1, 0);//Move top
+    setMoves(rule, 0, -1);//Move left
+    setMoves(rule, -1, 0);//Move bottom
   }
 }

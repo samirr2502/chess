@@ -1,7 +1,5 @@
 package chess;
 
-import javax.xml.crypto.dsig.keyinfo.KeyName;
-import java.lang.reflect.Type;
 import java.util.*;
 
 /**
@@ -12,7 +10,7 @@ import java.util.*;
  */
 public class ChessBoard {
     private final ChessPiece[][] board = new ChessPiece[10][10];
-    private final Map<Character, ChessPiece.PieceType> pieceTypeMap= new HashMap<Character, ChessPiece.PieceType> (){{
+    private final Map<Character, ChessPiece.PieceType> pieceTypeMap= new HashMap<> (){{
         put('p', ChessPiece.PieceType.PAWN);
         put('k', ChessPiece.PieceType.KING);
         put('q', ChessPiece.PieceType.QUEEN);
@@ -27,12 +25,6 @@ public class ChessBoard {
     /**
      * Prints the board with the pieces
      */
-    @Override
-    public String toString() {
-        return "ChessBoard{" +
-                "board=" + Arrays.toString(board) +
-                '}';
-    }
 
     @Override
     public boolean equals(Object o) {

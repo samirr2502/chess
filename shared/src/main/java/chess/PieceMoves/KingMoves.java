@@ -4,11 +4,10 @@ import chess.ChessBoard;
 import chess.ChessMove;
 import chess.ChessPiece;
 import chess.ChessPosition;
-import chess.PieceMoves.PieceMovesAbs;
 
 import java.util.ArrayList;
 
-public class KingMoves extends PieceMovesAbs {
+public class KingMoves extends PieceMoves {
 
   public KingMoves(ChessBoard board, ChessPiece piece, ChessPosition myPosition){
     super();
@@ -19,13 +18,13 @@ public class KingMoves extends PieceMovesAbs {
 
   @Override
   public ArrayList<ChessMove> getPossibleMoves() {
-    setDirection(1,null);
+    setDirection(1);
     return super.getPossibleMoves();
   }
 
   //1 if only one step,  if multiple
   @Override
-  void setDirection(int start, ChessPiece.PieceType promoPiece)  {
-    super.setDirection(1, null);
+  void setDirection(int start)  {
+    super.setDirection(1);
   }
 }
