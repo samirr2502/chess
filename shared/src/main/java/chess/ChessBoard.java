@@ -108,7 +108,7 @@ public class ChessBoard  implements Cloneable{
   public ChessBoard clone() {
     try {
       ChessBoard clone = (ChessBoard) super.clone();
-      clone.board = this.board.clone();
+      //clone.board = this.board.clone();
       return clone;
     } catch (CloneNotSupportedException e) {
       throw new AssertionError();
