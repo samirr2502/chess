@@ -104,7 +104,9 @@ public class ChessGame {
                         if (move.getEndPosition().getColumn() == kingPosition.getColumn()
                                 && move.getEndPosition().getRow() == kingPosition.getRow()) {
                             opponentPiece.myPosition = opponentPosition;
-                            checkPieces.add(opponentPiece);
+                            if(!checkPieces.contains(opponentPiece)){
+                                checkPieces.add(opponentPiece);
+                            }
                         }
                     }
                 }
@@ -145,6 +147,9 @@ public class ChessGame {
         testBoard = null;
         testBoard = board.clone();
         ArrayList<ChessPiece> inCheckPieces= inCheckPieces(teamColor);
+        if (inCheckPieces.size() >1){
+            return true;
+        }
         for (var opponentsPiece:inCheckPieces){
             for (int i=0;i<8; i++){
                 for (int j=0;j<8;j++){
