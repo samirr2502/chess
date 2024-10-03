@@ -51,24 +51,27 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        ChessBoard testBoard = board.clone();
-        ChessPiece myPiece = testBoard.getPiece(startPosition);
-        Collection<ChessMove> moves = myPiece.pieceMoves(testBoard, startPosition);
-        Collection<ChessMove> validMoves = new ArrayList<>();
-        assert chessMoves != null;
-        for (var move : moves) {
-            ChessPiece savedPiece = testBoard.board[move.getEndPosition().getRow()-1][move.getEndPosition().getColumn()-1];
-            testBoard.board[move.getStartPosition().getRow()-1][move.getStartPosition().getColumn()-1] = null;
-            testBoard.board[move.getEndPosition().getRow()-1][move.getEndPosition().getColumn()-1] = myPiece;
-            Collection<ChessPiece> inCheckPieces= inCheckPieces(myPiece.getTeamColor(),testBoard);
-            if(inCheckPieces.isEmpty()){
-                validMoves.add(move);
-            }
-            testBoard.board[move.getEndPosition().getRow()-1][move.getEndPosition().getColumn()-1] = savedPiece;
-            testBoard.board[move.getStartPosition().getRow()-1][move.getStartPosition().getColumn()-1] = myPiece;
+        if(board !=null) {
+            ChessBoard testBoard = board.clone();
+            ChessPiece myPiece = testBoard.getPiece(startPosition);
+            Collection<ChessMove> moves = myPiece.pieceMoves(testBoard, startPosition);
+            Collection<ChessMove> validMoves = new ArrayList<>();
+            assert chessMoves != null;
+            for (var move : moves) {
+                ChessPiece savedPiece = testBoard.board[move.getEndPosition().getRow() - 1][move.getEndPosition().getColumn() - 1];
+                testBoard.board[move.getStartPosition().getRow() - 1][move.getStartPosition().getColumn() - 1] = null;
+                testBoard.board[move.getEndPosition().getRow() - 1][move.getEndPosition().getColumn() - 1] = myPiece;
+                Collection<ChessPiece> inCheckPieces = inCheckPieces(myPiece.getTeamColor(), testBoard);
+                if (inCheckPieces.isEmpty()) {
+                    validMoves.add(move);
+                }
+                testBoard.board[move.getEndPosition().getRow() - 1][move.getEndPosition().getColumn() - 1] = savedPiece;
+                testBoard.board[move.getStartPosition().getRow() - 1][move.getStartPosition().getColumn() - 1] = myPiece;
 
+            }
+            return validMoves;
         }
-        return validMoves;
+        return null;
     }
 
     /**
@@ -80,9 +83,11 @@ public class ChessGame {
     public void makeMove(ChessMove move) throws InvalidMoveException {
         Collection<ChessMove> validMoves= validMoves(move.getStartPosition());
 
-        if (validMoves.contains(move)){
-            ChessPiece myPiece =board.getPiece(move.getStartPosition());
-
+        if (validMoves !=null && validMoves.contains(move)){
+            ChessPiece myPiece = board.getPiece(move.getStartPosition());
+            if (move.getPromotionPiece()!=null) {
+                myPiece= new ChessPiece(myPiece.getTeamColor(),move.getPromotionPiece());
+            }
             board.board[move.getStartPosition().getRow()-1][move.getStartPosition().getColumn()-1] = null;
             board.board[move.getEndPosition().getRow()-1][move.getEndPosition().getColumn()-1] = myPiece;
         } else{
@@ -103,6 +108,9 @@ public class ChessGame {
     public ArrayList<ChessPiece> inCheckPieces(TeamColor teamColor, ChessBoard testBoard) {
         ArrayList<ChessPiece> checkPieces = new ArrayList<>();
         ChessPosition kingPosition = getTeamsKingPosition(teamColor, testBoard);
+        if (kingPosition ==null){
+            return checkPieces;
+        }
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
                 ChessPiece opponentPiece = testBoard.board[i][j] == null ? null : testBoard.board[i][j];
