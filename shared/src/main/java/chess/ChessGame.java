@@ -232,10 +232,7 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        if (board!=null) {
-            return true;
-        }
-        return false;
+        return kingCantMove(teamColor,board);
     }
 
     /**
