@@ -16,7 +16,8 @@ public class ChessGame {
     Collection<ChessMove> chessMoves = new ArrayList<>();
 
     public ChessGame() {
-
+        this.board = new ChessBoard();
+        board.resetBoard();
     }
 
     /**
@@ -81,15 +82,21 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        Collection<ChessMove> validMoves= validMoves(move.getStartPosition());
+        ChessPiece myPiece = board.getPiece(move.getStartPosition());
 
+        Collection<ChessMove> validMoves= validMoves(move.getStartPosition());
+        if (myPiece.getTeamColor()!=getTeamTurn()){
+            throw new InvalidMoveException("Can't make that move");
+        }
         if (validMoves !=null && validMoves.contains(move)){
-            ChessPiece myPiece = board.getPiece(move.getStartPosition());
+            myPiece = board.getPiece(move.getStartPosition());
             if (move.getPromotionPiece()!=null) {
                 myPiece= new ChessPiece(myPiece.getTeamColor(),move.getPromotionPiece());
             }
             board.board[move.getStartPosition().getRow()-1][move.getStartPosition().getColumn()-1] = null;
             board.board[move.getEndPosition().getRow()-1][move.getEndPosition().getColumn()-1] = myPiece;
+            teamColor = teamColor==TeamColor.WHITE? TeamColor.BLACK:TeamColor.WHITE;
+            setTeamTurn(teamColor);
         } else{
             throw new InvalidMoveException("Can't make that move");
         }
