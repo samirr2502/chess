@@ -9,7 +9,7 @@ import java.util.*;
  * signature of the existing methods.
  */
 public class ChessBoard {
-    private final ChessPiece[][] board = new ChessPiece[8][8];
+    public final ChessPiece[][] board = new ChessPiece[8][8];
     private final Map<Character, ChessPiece.PieceType> pieceTypeMap= new HashMap<> () { {
         put('p', ChessPiece.PieceType.PAWN);
         put('k', ChessPiece.PieceType.KING);
@@ -97,6 +97,7 @@ public class ChessBoard {
                     }
                 ChessPosition position = new ChessPosition(row,column);
                 ChessPiece piece = new ChessPiece(teamColor, pieceTypeMap.get(Character.toLowerCase(c)));
+                piece.myPosition = position;
                 addPiece(position,piece);
                 column ++;
             }

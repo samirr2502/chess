@@ -2,6 +2,7 @@ package chess.PieceMoves;
 import chess.ChessMove;
 import chess.ChessPiece;
 import chess.ChessPosition;
+import chess.InvalidMoveException;
 
 import static chess.PieceMoves.ValidateMoves.*;
 public abstract class PieceMovesRules {

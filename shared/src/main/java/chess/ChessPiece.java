@@ -16,10 +16,11 @@ import java.util.Objects;
 public class ChessPiece {
     private final ChessGame.TeamColor color;
     private final PieceType type;
-
+    public ChessPosition myPosition;
     public ChessPiece(ChessGame.TeamColor pieceColor, PieceType type) {
         this.color = pieceColor;
         this.type = type;
+
     }
 
     @Override
