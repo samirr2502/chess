@@ -8,7 +8,7 @@ import java.util.*;
  * Note: You can add to this class, but you may not alter
  * signature of the existing methods.
  */
-public class ChessBoard {
+public class ChessBoard  implements Cloneable{
     public final ChessPiece[][] board = new ChessPiece[8][8];
     private final Map<Character, ChessPiece.PieceType> pieceTypeMap= new HashMap<> () { {
         put('p', ChessPiece.PieceType.PAWN);
@@ -104,4 +104,13 @@ public class ChessBoard {
         }
     }
 
+  @Override
+  public ChessBoard clone() {
+    try {
+      ChessBoard clone = (ChessBoard) super.clone();
+      return clone;
+    } catch (CloneNotSupportedException e) {
+      throw new AssertionError();
+    }
+  }
 }

@@ -86,27 +86,29 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        if (board!=null){
-        ChessBoard testBoard = board;
+      return board != null && !checkPieces(teamColor).isEmpty();
+    }
+
+    public ArrayList<ChessPiece> checkPieces(TeamColor teamColor){
+        ArrayList<ChessPiece> checkPieces= new ArrayList<>();
         ChessPosition kingPosition = getTeamsKingPosition(teamColor);
         for (int i = 0;i<8;i++) {
             for (int j = 0; j < 8; j++) {
-                ChessPiece opponentPiece = testBoard.board[i][j] == null ? null : testBoard.board[i][j];
+                ChessPiece opponentPiece = board.board[i][j] == null ? null : board.board[i][j];
                 if (opponentPiece != null
-                        && testBoard.board[i][j].getTeamColor() != teamColor) {
+                        && board.board[i][j].getTeamColor() != teamColor) {
                     ChessPosition opponentPosition = new ChessPosition(i+1, j+1);
-                    Collection<ChessMove> opponentMoves = opponentPiece.pieceMoves(testBoard, opponentPosition);
+                    Collection<ChessMove> opponentMoves = opponentPiece.pieceMoves(board, opponentPosition);
                     for (ChessMove move : opponentMoves) {
                         if (move.getEndPosition().getColumn() == kingPosition.getColumn()
-                        && move.getEndPosition().getRow() == kingPosition.getRow()) {
-                            return true;
+                                && move.getEndPosition().getRow() == kingPosition.getRow()) {
+                            checkPieces.add(opponentPiece);
                         }
                     }
                 }
             }
         }
-        }
-        return false;
+        return checkPieces;
     }
     public ChessPosition getTeamsKingPosition(TeamColor teamColor){
         if (this.board != null) {
@@ -131,12 +133,62 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        if (board!=null) {
-            return true;
-        }
-            return false;
-    }
+        if (isInCheck(teamColor) &&board!=null) {
+            ChessPosition kingPosition = getTeamsKingPosition(teamColor);
+            ChessPiece kingPiece = board.getPiece(kingPosition);
+            ArrayList<ChessPiece> checkPieces= checkPieces(teamColor);
+            Collection<ChessMove> kingMoves= kingPiece.pieceMoves(board,kingPosition);
+            int totalKingsMove = kingMoves.size();
+            int counter=0;
+            ChessBoard testBoard= board.clone();;
+            boolean newPositionInCheck = false;
+            for (var move:kingMoves){
 
+                testBoard.board[move.getStartPosition().getRow()-1][move.getStartPosition().getColumn()-1] = null;
+                testBoard.board[move.getEndPosition().getRow()-1][move.getEndPosition().getColumn()-1] = kingPiece;
+                for (int i = 0;i<8;i++) {
+                    for (int j = 0; j < 8; j++) {
+                        //Get piece at position
+                        ChessPiece opponentPiece = testBoard.board[i][j];
+                        //If position is not empty (if there's a piece) and is not the current team's piece
+                        if (opponentPiece != null
+                                && testBoard.board[i][j].getTeamColor() != teamColor) {
+                            //create position
+                            ChessPosition opponentPosition = new ChessPosition(i + 1, j + 1);
+                            //get moves
+                            Collection<ChessMove> opponentMoves = opponentPiece.pieceMoves(testBoard, opponentPosition);
+                            //check if any of those moves matches the new king's position
+                            for (ChessMove opponentMove : opponentMoves) {
+                                if (opponentMove.getEndPosition().getColumn() == move.getEndPosition().getColumn()
+                                        && opponentMove.getEndPosition().getRow() == move.getEndPosition().getRow()) {
+                                    newPositionInCheck =true;
+                                    testBoard.board[move.getEndPosition().getRow()-1][move.getEndPosition().getColumn()-1] = null;
+                                    break;
+                                }
+                            }
+                        } if (newPositionInCheck){
+                            break;
+                        }
+                    } if (newPositionInCheck){
+                        break;
+                    }
+                }
+                if(newPositionInCheck) {
+                    counter += 1;
+                }
+
+                newPositionInCheck = false;
+
+            }
+
+            return totalKingsMove == counter;
+
+        }
+        return false;
+    }
+    boolean kingCantMove(){
+        return true;
+    }
     /**
      * Determines if the given team is in stalemate, which here is defined as having
      * no valid moves
