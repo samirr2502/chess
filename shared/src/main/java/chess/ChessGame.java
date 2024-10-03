@@ -266,11 +266,25 @@ public class ChessGame {
      */
     public boolean isInStalemate(TeamColor teamColor) {
         if(board!=null) {
-            return kingCantMove(teamColor, board) && !teamCantMovePiece(teamColor,board);
+            if (hasPiecesAvailable(teamColor, board)) {
+                return kingCantMove(teamColor, board) && !teamCantMovePiece(teamColor,board);
+            }
+            return kingCantMove(teamColor, board);
         }
         return false;
     }
-
+    public boolean hasPiecesAvailable(TeamColor teamColor, ChessBoard testBoard){
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                if (testBoard.board[i][j] != null
+                    && testBoard.board[i][j].getTeamColor() == teamColor
+                &&testBoard.board[i][j].getPieceType()!= ChessPiece.PieceType.KING){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
     /**
      * Sets this game's chessboard with a given board
      *
