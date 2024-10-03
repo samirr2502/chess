@@ -204,53 +204,57 @@ public class ChessGame {
     }
     public boolean kingCantMove(TeamColor teamColor, ChessBoard testBoard){
             ChessPosition kingPosition = getTeamsKingPosition(teamColor, testBoard);
-            ChessPiece kingPiece = testBoard.getPiece(kingPosition);
-            Collection<ChessMove> kingMoves= kingPiece.pieceMoves(testBoard,kingPosition);
-            int totalKingsMove = kingMoves.size();
-            int counter=0;
-            boolean newPositionInCheck = false;
-            for (var move:kingMoves){
-                ChessPiece savedPiece = testBoard.board[move.getEndPosition().getRow()-1][move.getEndPosition().getColumn()-1];
-                ChessPosition savedPosition = new ChessPosition(move.getEndPosition().getRow()-1,move.getEndPosition().getColumn()-1);
-                testBoard.board[move.getStartPosition().getRow()-1][move.getStartPosition().getColumn()-1] = null;
-                testBoard.board[move.getEndPosition().getRow()-1][move.getEndPosition().getColumn()-1] = kingPiece;
-                for (int i = 0;i<8;i++) {
-                    for (int j = 0; j < 8; j++) {
-                        //Get piece at position
-                        ChessPiece opponentPiece = testBoard.board[i][j];
-                        //If position is not empty (if there's a piece) and is not the current team's piece
-                        if (opponentPiece != null
-                                && opponentPiece.getTeamColor() != teamColor) {
-                            //create position
-                            ChessPosition opponentPosition = new ChessPosition(i + 1, j + 1);
-                            //get moves
-                            Collection<ChessMove> opponentMoves = opponentPiece.pieceMoves(testBoard, opponentPosition);
-                            //check if any of those moves matches the new king's position
-                            for (ChessMove opponentMove : opponentMoves) {
-                                if (opponentMove.getEndPosition().getColumn() == move.getEndPosition().getColumn()
-                                        && opponentMove.getEndPosition().getRow() == move.getEndPosition().getRow()) {
-                                    newPositionInCheck =true;
-                                    testBoard.board[move.getEndPosition().getRow()-1][move.getEndPosition().getColumn()-1] = savedPiece;
-                                    break;
+            if (kingPosition!= null) {
+                ChessPiece kingPiece = testBoard.getPiece(kingPosition);
+                Collection<ChessMove> kingMoves = kingPiece.pieceMoves(testBoard, kingPosition);
+                int totalKingsMove = kingMoves.size();
+                int counter = 0;
+                boolean newPositionInCheck = false;
+                for (var move : kingMoves) {
+                    ChessPiece savedPiece = testBoard.board[move.getEndPosition().getRow() - 1][move.getEndPosition().getColumn() - 1];
+                    ChessPosition savedPosition = new ChessPosition(move.getEndPosition().getRow() - 1, move.getEndPosition().getColumn() - 1);
+                    testBoard.board[move.getStartPosition().getRow() - 1][move.getStartPosition().getColumn() - 1] = null;
+                    testBoard.board[move.getEndPosition().getRow() - 1][move.getEndPosition().getColumn() - 1] = kingPiece;
+                    for (int i = 0; i < 8; i++) {
+                        for (int j = 0; j < 8; j++) {
+                            //Get piece at position
+                            ChessPiece opponentPiece = testBoard.board[i][j];
+                            //If position is not empty (if there's a piece) and is not the current team's piece
+                            if (opponentPiece != null
+                                    && opponentPiece.getTeamColor() != teamColor) {
+                                //create position
+                                ChessPosition opponentPosition = new ChessPosition(i + 1, j + 1);
+                                //get moves
+                                Collection<ChessMove> opponentMoves = opponentPiece.pieceMoves(testBoard, opponentPosition);
+                                //check if any of those moves matches the new king's position
+                                for (ChessMove opponentMove : opponentMoves) {
+                                    if (opponentMove.getEndPosition().getColumn() == move.getEndPosition().getColumn()
+                                            && opponentMove.getEndPosition().getRow() == move.getEndPosition().getRow()) {
+                                        newPositionInCheck = true;
+                                        testBoard.board[move.getEndPosition().getRow() - 1][move.getEndPosition().getColumn() - 1] = savedPiece;
+                                        break;
+                                    }
                                 }
                             }
-                        } if (newPositionInCheck){
+                            if (newPositionInCheck) {
+                                break;
+                            }
+                        }
+                        if (newPositionInCheck) {
                             break;
                         }
-                    } if (newPositionInCheck){
-                        break;
                     }
-                }
-                if(newPositionInCheck) {
-                    counter += 1;
-                }
+                    if (newPositionInCheck) {
+                        counter += 1;
+                    }
 
-                newPositionInCheck = false;
+                    newPositionInCheck = false;
 
+                }
+                testBoard.board[kingPosition.getRow() - 1][kingPosition.getColumn() - 1] = kingPiece;
+                return totalKingsMove == counter;
             }
-            testBoard.board[kingPosition.getRow()-1][kingPosition.getColumn()-1] = kingPiece;
-            return totalKingsMove == counter;
-
+            return false;
     }
 
     /**
