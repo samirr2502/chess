@@ -266,7 +266,7 @@ public class ChessGame {
      */
     public boolean isInStalemate(TeamColor teamColor) {
         if(board!=null) {
-            return kingCantMove(teamColor, board);
+            return kingCantMove(teamColor, board) && !teamCantMovePiece(teamColor,board);
         }
         return false;
     }
