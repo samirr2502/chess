@@ -9,7 +9,7 @@ import java.util.*;
  * signature of the existing methods.
  */
 public class ChessBoard  implements Cloneable{
-    public final ChessPiece[][] board = new ChessPiece[8][8];
+    public  ChessPiece[][] board = new ChessPiece[8][8];
     private final Map<Character, ChessPiece.PieceType> pieceTypeMap= new HashMap<> () { {
         put('p', ChessPiece.PieceType.PAWN);
         put('k', ChessPiece.PieceType.KING);
@@ -108,6 +108,7 @@ public class ChessBoard  implements Cloneable{
   public ChessBoard clone() {
     try {
       ChessBoard clone = (ChessBoard) super.clone();
+      clone.board = this.board.clone();
       return clone;
     } catch (CloneNotSupportedException e) {
       throw new AssertionError();
