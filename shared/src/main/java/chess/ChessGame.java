@@ -86,33 +86,38 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
+        if (board!=null){
         ChessBoard testBoard = board;
-        ChessPosition kingPosition = getTeamsKingPosition();
-        for (int i = 1;i<=8;i++){
-            for (int j = 1; j<=8 ; j++){
-
-                ChessPiece opponentPiece = testBoard.board[i][j] ==null? null : testBoard.board[i][j];
-                if (opponentPiece!= null
-                        && testBoard.board[i][j].getTeamColor() != getTeamTurn() ){
-                    ChessPosition opponentPosition = new ChessPosition(i,j);
-                    Collection<ChessMove> opponentMoves = opponentPiece.pieceMoves(testBoard,opponentPosition);
-                    for (ChessMove move: opponentMoves){
-                        if(move.getEndPosition() == kingPosition){
+        ChessPosition kingPosition = getTeamsKingPosition(teamColor);
+        for (int i = 0;i<8;i++) {
+            for (int j = 0; j < 8; j++) {
+                ChessPiece opponentPiece = testBoard.board[i][j] == null ? null : testBoard.board[i][j];
+                if (opponentPiece != null
+                        && testBoard.board[i][j].getTeamColor() != teamColor) {
+                    ChessPosition opponentPosition = new ChessPosition(i+1, j+1);
+                    Collection<ChessMove> opponentMoves = opponentPiece.pieceMoves(testBoard, opponentPosition);
+                    for (ChessMove move : opponentMoves) {
+                        if (move.getEndPosition().getColumn() == kingPosition.getColumn()
+                        && move.getEndPosition().getRow() == kingPosition.getRow()) {
                             return true;
                         }
                     }
                 }
             }
         }
+        }
         return false;
     }
-    public ChessPosition getTeamsKingPosition(){
-        for (int i = 1;i<=8;i++){
-            for (int j = 1; j<=8 ; j++){
-                if (board.board[i][j].getPieceType() == ChessPiece.PieceType.KING&&
-                board.board[i][j].getTeamColor() == getTeamTurn()
-                    ){
-                    return board.board[i][j].myPosition;
+    public ChessPosition getTeamsKingPosition(TeamColor teamColor){
+        if (this.board != null) {
+            for (int i = 0;i<=7;i++) {
+                for (int j = 0; j <= 7; j++) {
+                    if (this.board.board[i][j] !=null &&
+                            this.board.board[i][j].getPieceType() == ChessPiece.PieceType.KING &&
+                            this.board.board[i][j].getTeamColor() == teamColor
+                    ) {
+                        return new ChessPosition(i+1,j+1);
+                    }
                 }
             }
         }
@@ -126,7 +131,10 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        return teamColor == getTeamTurn();
+        if (board!=null) {
+            return true;
+        }
+            return false;
     }
 
     /**
@@ -137,7 +145,10 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        return teamColor == getTeamTurn();
+        if (board!=null) {
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -146,9 +157,7 @@ public class ChessGame {
      * @param board the new board to use
      */
     public void setBoard(ChessBoard board) {
-        if(this.board ==null) {
             this.board = board;
-        }
     }
 
     /**
