@@ -51,23 +51,24 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        ChessPiece piece = board.getPiece(startPosition);
-        chessMoves = (piece == null) ? null : piece.pieceMoves(board, startPosition);
+        ChessBoard testBoard = board.clone();
+        ChessPiece myPiece = testBoard.getPiece(startPosition);
+        Collection<ChessMove> moves = myPiece.pieceMoves(testBoard, startPosition);
+        Collection<ChessMove> validMoves = new ArrayList<>();
         assert chessMoves != null;
-        ChessBoard testBoard = board;
-        for (var move : chessMoves) {
-            for (int i = 1; i <= 8; i++) {
-                for (int j = 1; j <= 8; j++) {
-                    ChessPiece opponentPiece = testBoard.board[i][j] == null ? null : testBoard.board[i][j];
-                    if (opponentPiece != null
-                            && testBoard.board[i][j].getTeamColor() != getTeamTurn()) {
-                        ChessPosition opponentPosition = new ChessPosition(i, j);
-                        opponentPiece.pieceMoves(testBoard, opponentPosition);
-                    }
-                }
+        for (var move : moves) {
+            ChessPiece savedPiece = testBoard.board[move.getEndPosition().getRow()-1][move.getEndPosition().getColumn()-1];
+            testBoard.board[move.getStartPosition().getRow()-1][move.getStartPosition().getColumn()-1] = null;
+            testBoard.board[move.getEndPosition().getRow()-1][move.getEndPosition().getColumn()-1] = myPiece;
+            Collection<ChessPiece> inCheckPieces= inCheckPieces(myPiece.getTeamColor(),testBoard);
+            if(inCheckPieces.isEmpty()){
+                validMoves.add(move);
             }
+            testBoard.board[move.getEndPosition().getRow()-1][move.getEndPosition().getColumn()-1] = savedPiece;
+            testBoard.board[move.getStartPosition().getRow()-1][move.getStartPosition().getColumn()-1] = myPiece;
+
         }
-        return chessMoves;
+        return validMoves;
     }
 
     /**
