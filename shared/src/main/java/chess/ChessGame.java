@@ -1,6 +1,5 @@
 package chess;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -171,11 +170,10 @@ public class ChessGame {
         return (board!=null
                 && isInCheck(teamColor)
                 && kingCantMove(teamColor,testBoard1)
-                && teamCantMovePiece(teamColor,testBoard1));
+                && teamCantMovePiece(teamColor));
     }
-    public boolean teamCantMovePiece(TeamColor teamColor, ChessBoard testBoard){
-        testBoard = null;
-        testBoard = board.clone();
+    public boolean teamCantMovePiece(TeamColor teamColor){
+        ChessBoard testBoard = board.clone();
         ArrayList<ChessPiece> inCheckPieces= inCheckPieces(teamColor,testBoard);
         if (inCheckPieces.size() >1){
             return true;
@@ -202,6 +200,13 @@ public class ChessGame {
         }
         return true;
     }
+
+    /**
+     * Checks if the king has any location where he will not be in check again
+     * @param teamColor The team to check if king can move
+     * @param testBoard A copy of the board to check different movements without affecting the actual board
+     * @return true if the king can't move anywhere
+     */
     public boolean kingCantMove(TeamColor teamColor, ChessBoard testBoard){
             ChessPosition kingPosition = getTeamsKingPosition(teamColor, testBoard);
             if (kingPosition!= null) {
@@ -212,9 +217,8 @@ public class ChessGame {
                 boolean newPositionInCheck = false;
                 for (var move : kingMoves) {
                     ChessPiece savedPiece = testBoard.board[move.getEndPosition().getRow() - 1][move.getEndPosition().getColumn() - 1];
-                    ChessPosition savedPosition = new ChessPosition(move.getEndPosition().getRow() - 1, move.getEndPosition().getColumn() - 1);
-                    testBoard.board[move.getStartPosition().getRow() - 1][move.getStartPosition().getColumn() - 1] = null;
                     testBoard.board[move.getEndPosition().getRow() - 1][move.getEndPosition().getColumn() - 1] = kingPiece;
+                    testBoard.board[move.getStartPosition().getRow() - 1][move.getStartPosition().getColumn() - 1] = null;
                     for (int i = 0; i < 8; i++) {
                         for (int j = 0; j < 8; j++) {
                             //Get piece at position
@@ -267,12 +271,19 @@ public class ChessGame {
     public boolean isInStalemate(TeamColor teamColor) {
         if(board!=null) {
             if (hasPiecesAvailable(teamColor, board)) {
-                return kingCantMove(teamColor, board) && !teamCantMovePiece(teamColor,board);
+                return kingCantMove(teamColor, board) && !teamCantMovePiece(teamColor);
             }
             return kingCantMove(teamColor, board);
         }
         return false;
     }
+
+    /**
+     * Checks if the team has other pieces in the board besides the King.
+     * @param teamColor The team to check
+     * @param testBoard the copy of the board
+     * @return true if there are other pieces besides the KING
+     */
     public boolean hasPiecesAvailable(TeamColor teamColor, ChessBoard testBoard){
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
