@@ -8,12 +8,12 @@ public class Server {
         Spark.port(desiredPort);
 
         Spark.staticFiles.location("web");
-        Spark.post("user", new Route() {
-            @Override
-            public Object handle(Request request, Response response) throws Exception {
-                return null;
-            }
-        });
+//        Spark.post("user", new Route() {
+//            @Override
+//            public Object handle(Request request, Response response) throws Exception {
+//                return null;
+//            }
+//        });
 //        // Register your endpoints and handle exceptions here.
 //        Spark.get("/hello", (req, res) -> "Hello World");
 //        //This line initializes the server and can be removed once you have a functioning endpoint

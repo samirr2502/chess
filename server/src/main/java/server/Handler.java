@@ -1,14 +1,15 @@
 package server;
-
+import service.UserService;
 import com.google.gson.Gson;
 import spark.Request;
 import spark.Response;
+import spark.Route;
 
-public class Handler {
-  private Object registerUser(Request req, Response res) throws Exception {
-//   var pet = new Gson().fromJson(req.body(), User.class);
-//    pet = Service.(pet);
-    //webSocketHandler.makeNoise(pet.name(), pet.sound());
-    return new Gson().toJson("user");
+public class Handler  {
+  public static Object registerUser(Request req, Response res) throws Exception {
+    UserService service= new UserService();
+    service.registerUser();
+    return "{\"name\":\"samir\"}";
   }
+
 }
