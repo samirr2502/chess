@@ -17,6 +17,10 @@ public class Server {
 //        // Register your endpoints and handle exceptions here.
 //        Spark.get("/hello", (req, res) -> "Hello World");
 //        //This line initializes the server and can be removed once you have a functioning endpoint
+
+        // Register your endpoints and handle exceptions here.
+
+        //This line initializes the server and can be removed once you have a functioning endpoint 
         Spark.init();
 
         Spark.awaitInitialization();
