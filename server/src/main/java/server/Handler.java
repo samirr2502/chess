@@ -6,6 +6,7 @@ import dataaccess.userdao.MemoryUserDAO;
 import model.AuthData;
 import model.UserData;
 import service.ErrorResult;
+import service.Result;
 import service.Service;
 import com.google.gson.Gson;
 import spark.Request;
@@ -54,10 +55,11 @@ public class Handler  {
       String response;
       String authToken = req.headers("authorization");
       LogoutRequest logoutRequest= new LogoutRequest(authToken);
-      if(service.logoutUser(res,logoutRequest,memoryAuthDAO) == null){
-        response="{}";
+      Result logoutResult= service.logoutUser(res,logoutRequest,memoryAuthDAO);
+      if(logoutResult== null){
+        return "{}";
       } else{
-        response =json.toJson(service.logoutUser(res, logoutRequest, memoryAuthDAO));
+        response =json.toJson(logoutResult);
       }
       System.out.println(response);
       return response;

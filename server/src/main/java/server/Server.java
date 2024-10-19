@@ -23,8 +23,8 @@ public class Server {
         Spark.post("/session",Handler::loginUser);
         Spark.delete("/session",Handler::logoutUser);
 
-        Spark.get("/game", (req, res) -> "Hello BYU!");
-        Spark.post("/game",(req,res)->"CreatingGame");
+        Spark.get("/game", (req, res) -> "getGames");
+        Spark.post("/game",(req,res)-> "CreatingGame");
         Spark.put("/game", (req, res) -> "JoiningGame");
 
         Spark.delete("/db",Handler::clear);

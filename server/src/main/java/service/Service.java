@@ -71,7 +71,7 @@ public class Service {
         return null;
       }else {
         res.status(401);
-        return new ErrorResult("unauthorized");
+        return new ErrorResult("Error: unauthorized");
       }
   }
 
