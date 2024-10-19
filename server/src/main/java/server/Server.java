@@ -8,23 +8,26 @@ public class Server {
         Spark.port(desiredPort);
 
         Spark.staticFiles.location("web");
-//        Spark.post("user", new Route() {
-//            @Override
-//            public Object handle(Request request, Response response) throws Exception {
-//                return null;
-//            }
-//        });
-//        // Register your endpoints and handle exceptions here.
-//        Spark.get("/hello", (req, res) -> "Hello World");
-//        //This line initializes the server and can be removed once you have a functioning endpoint
 
         // Register your endpoints and handle exceptions here.
+        createRoutes();
 
-        //This line initializes the server and can be removed once you have a functioning endpoint 
         Spark.init();
 
         Spark.awaitInitialization();
         return Spark.port();
+    }
+    private static void createRoutes() {
+        Spark.post("/user", Handler::registerUser);
+
+        Spark.post("/session",Handler::loginUser);
+        Spark.delete("/session",Handler::logoutUser);
+
+        Spark.get("/game", (req, res) -> "Hello BYU!");
+        Spark.post("/game",(req,res)->"CreatingGame");
+        Spark.put("/game", (req, res) -> "JoiningGame");
+
+        Spark.delete("/db",Handler::clear);
     }
 
     public void stop() {
