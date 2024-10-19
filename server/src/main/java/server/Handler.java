@@ -94,7 +94,6 @@ public class Handler  {
     try {
       String authToken = req.headers("authorization");
       JoinGameRequest joinGameRequest= json.fromJson(req.body(),JoinGameRequest.class);
-      System.out.println(json.toJson(joinGameRequest));
       Result joinGameResult = service.joinGame(res,joinGameRequest,authToken,memoryAuthDAO,memoryGameDAO);
       if(joinGameResult== null){
         return "{}";
