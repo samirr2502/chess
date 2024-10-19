@@ -107,11 +107,11 @@ public Result joinGame(Response res, JoinGameRequest joinGameRequest, String aut
                     MemoryAuthDAO memoryAuthDAO,MemoryGameDAO memoryGameDAO) {
   AuthData authData = memoryAuthDAO.getAuthData(authToken);
   GameData gameData = memoryGameDAO.getGameByID(joinGameRequest.gameID);
-  if(joinGameRequest.playerColor==null){
+  if(joinGameRequest.playerColor==null || gameData==null){
     res.status(400);
     return new ErrorResult("Error: bad request");
   }
-  if (authData != null && gameData !=null) {
+  if (authData != null) {
     if(joinGameRequest.playerColor.equals("WHITE") && gameData.whiteUsername()==null){
       memoryGameDAO.updateGame(new GameData(gameData.gameID(), authData.username(), gameData.blackUsername(),
               gameData.gameName(), gameData.game()));
