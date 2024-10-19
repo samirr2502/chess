@@ -7,6 +7,7 @@ import dataaccess.gamedao.MemoryGameDAO;
 import dataaccess.userdao.MemoryUserDAO;
 import model.AuthData;
 import model.UserData;
+import server.LogoutRequest;
 import spark.Response;
 
 import java.util.UUID;
@@ -63,8 +64,8 @@ public class Service {
     }
   }
 
-  public Result logoutUser(Response res, AuthData authDataRequest, MemoryAuthDAO memoryAuthDAO) {
-      AuthData authData = memoryAuthDAO.getAuthData(authDataRequest.authToken());
+  public Result logoutUser(Response res, LogoutRequest logoutRequest, MemoryAuthDAO memoryAuthDAO) {
+      AuthData authData = memoryAuthDAO.getAuthData(logoutRequest.authToken());
       if (authData != null) {
         memoryAuthDAO.deleteAuthData(authData);
         return null;

@@ -5,9 +5,9 @@ import model.AuthData;
 
 public class MemoryAuthDAO implements AuthDAO {
   @Override
-  public AuthData getAuthData(String username) {
+  public AuthData getAuthData(String authToken) {
     for (AuthData authData: authDataList) {
-      if (authData.username().equals(username)) {
+      if (authData.authToken().equals(authToken)) {
         return authData;
       }
     }

@@ -51,9 +51,14 @@ public class Handler  {
   public static Object logoutUser(Request req, Response res) throws Exception{
     //System.out.println(req.body());
     try {
-      String dummyUsername = "a";
-      AuthData authData = json.fromJson(req.headers("Authentication").concat(STR."\"username\":\{dummyUsername}"), AuthData.class);
-      String response = json.toJson(service.logoutUser(res,authData, memoryAuthDAO));
+      String response;
+      String authToken = req.headers("authorization");
+      LogoutRequest logoutRequest= new LogoutRequest(authToken);
+      if(service.logoutUser(res,logoutRequest,memoryAuthDAO) == null){
+        response="{}";
+      } else{
+        response =json.toJson(service.logoutUser(res, logoutRequest, memoryAuthDAO));
+      }
       System.out.println(response);
       return response;
       //test
