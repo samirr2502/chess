@@ -11,7 +11,6 @@ import com.google.gson.Gson;
 import spark.Request;
 import spark.Response;
 
-import java.security.spec.ECField;
 
 public class Handler  {
   private static final Service service = new Service();

@@ -5,8 +5,8 @@ import chess.ChessGame;
 public class JoinGameRequest {
   String playerColor;
   int gameID;
-  public JoinGameRequest(String color, int gameID){
-    this.playerColor=color;
+  public JoinGameRequest(String playerColor, int gameID){
+    this.playerColor=playerColor;
     this.gameID=gameID;
   }
 }

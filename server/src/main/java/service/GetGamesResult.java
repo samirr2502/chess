@@ -12,7 +12,7 @@ public class GetGamesResult extends Result{
 
   public void setGames(ArrayList<GameData> gameDataList){
     for (GameData gameData:gameDataList){
-      games.add(new GameResult(gameData.gameID(),"white",
+      games.add(new GameResult(gameData.gameID(),gameData.whiteUsername(),
               gameData.blackUsername(), gameData.gameName()));
     }
   }
