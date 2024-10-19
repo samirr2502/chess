@@ -25,7 +25,7 @@ public class Server {
 
         Spark.get("/game", Handler::getGames);
         Spark.post("/game",Handler::createGame);
-        Spark.put("/game", (req, res) -> "JoiningGame");
+        Spark.put("/game", Handler::joinGame);
 
         Spark.delete("/db",Handler::clear);
     }

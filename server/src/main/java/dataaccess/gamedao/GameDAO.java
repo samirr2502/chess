@@ -1,6 +1,6 @@
 package dataaccess.gamedao;
 
-import model.AuthData;
+import chess.ChessGame;
 import model.GameData;
 import model.UserData;
 
@@ -10,9 +10,11 @@ public interface GameDAO {
   ArrayList<GameData> games = new ArrayList<>();
 
   public GameData getGame(String gameName);
+  public GameData getGameByID(int gameID);
   public ArrayList<GameData> getGames();
   public void addGameData(GameData gameData);
+  public void updateGame(GameData gameData);
   public void deleteGameData(GameData gameData);
-  public void addPlayer(UserData user, GameData gameData);
+  public void addPlayer(UserData user, GameData gameData, ChessGame.TeamColor color);
   public void deleteAllGames();
 }

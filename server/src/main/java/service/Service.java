@@ -94,7 +94,7 @@ public class Service {
     if (authData != null && gameData == null) {
       ChessGame newGame = new ChessGame();
       GameData newGameData = new GameData(memoryGameDAO.getGames().size()+1,
-              "","",
+              null,null,
               createGameRequest.gameName(),newGame);
 
       memoryGameDAO.addGameData(newGameData);
@@ -103,6 +103,35 @@ public class Service {
     res.status(401);
     return new ErrorResult("Error: unauthorized");
   }
+public Result joinGame(Response res, JoinGameRequest joinGameRequest, String authToken,
+                    MemoryAuthDAO memoryAuthDAO,MemoryGameDAO memoryGameDAO) {
+  AuthData authData = memoryAuthDAO.getAuthData(authToken);
+  GameData gameData = memoryGameDAO.getGameByID(joinGameRequest.gameID);
+  System.out.println(gameData);
+  System.out.println(authData);
+  if(joinGameRequest.playerColor==null){
+    res.status(400);
+    return new ErrorResult("Error: bad request");
+  }
+  if (authData != null && gameData !=null) {
+    if(joinGameRequest.playerColor.equals("WHITE") && gameData.whiteUsername()==null){
+      memoryGameDAO.updateGame(new GameData(gameData.gameID(), authData.username(), gameData.blackUsername(),
+              gameData.gameName(), gameData.game()));
+      System.out.println(memoryGameDAO.getGames().getFirst());
+      return null;
+    } else if (joinGameRequest.playerColor.equals("BLACK") && gameData.blackUsername()==null) {
+      memoryGameDAO.updateGame(new GameData(gameData.gameID(), gameData.whiteUsername(), authData.username(),
+              gameData.gameName(), gameData.game()));
+      return null;
+    }
+    else {
+      res.status(403);
+      return new ErrorResult("Error: already taken");
+    }
+  }
+    res.status(401);
+    return new ErrorResult("Error: unauthorized");
+}
   public void clear(MemoryAuthDAO memoryAuthDAO, MemoryUserDAO memoryUserDAO, MemoryGameDAO memoryGameDAO){
     memoryAuthDAO.deleteAllAuthData();
     memoryUserDAO.deleteAllUsers();

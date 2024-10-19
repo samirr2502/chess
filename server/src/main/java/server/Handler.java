@@ -4,11 +4,14 @@ import dataaccess.gamedao.MemoryGameDAO;
 import dataaccess.userdao.MemoryUserDAO;
 import model.UserData;
 import service.ErrorResult;
+import service.JoinGameRequest;
 import service.Result;
 import service.Service;
 import com.google.gson.Gson;
 import spark.Request;
 import spark.Response;
+
+import java.security.spec.ECField;
 
 public class Handler  {
   private static final Service service = new Service();
@@ -85,6 +88,24 @@ public class Handler  {
       return json.toJson(createGameResult);
     } catch (Exception ex){
       return json.toJson(new ErrorResult(STR."Error: \{ex.getMessage()}"));
+    }
+  }
+  public static Object joinGame(Request req, Response res) throws Exception{
+    try {
+      String authToken = req.headers("authorization");
+      JoinGameRequest joinGameRequest= json.fromJson(req.body(),JoinGameRequest.class);
+      System.out.println(json.toJson(joinGameRequest));
+      Result joinGameResult = service.joinGame(res,joinGameRequest,authToken,memoryAuthDAO,memoryGameDAO);
+      if(joinGameResult== null){
+        return "{}";
+      } else{
+        //res.status(400);
+        return json.toJson(joinGameResult);
+      }
+    } catch(Exception ex){
+      res.status(500);
+      return json.toJson(new ErrorResult(STR."Error: \{ex.getMessage()}"));
+
     }
   }
 
