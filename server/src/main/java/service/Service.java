@@ -1,15 +1,18 @@
 package service;
 
+import chess.ChessGame;
 import dataaccess.DataAccessException;
-import dataaccess.authdao.AuthDAO;
 import dataaccess.authdao.MemoryAuthDAO;
 import dataaccess.gamedao.MemoryGameDAO;
 import dataaccess.userdao.MemoryUserDAO;
 import model.AuthData;
+import model.GameData;
 import model.UserData;
-import server.LogoutRequest;
+import server.AuthRequest;
+import server.CreateGameRequest;
 import spark.Response;
 
+import java.util.ArrayList;
 import java.util.UUID;
 
 public class Service {
@@ -64,7 +67,7 @@ public class Service {
     }
   }
 
-  public Result logoutUser(Response res, LogoutRequest logoutRequest, MemoryAuthDAO memoryAuthDAO) {
+  public Result logoutUser(Response res, AuthRequest logoutRequest, MemoryAuthDAO memoryAuthDAO) {
       AuthData authData = memoryAuthDAO.getAuthData(logoutRequest.authToken());
       if (authData != null) {
         memoryAuthDAO.deleteAuthData(authData);
@@ -74,7 +77,32 @@ public class Service {
         return new ErrorResult("Error: unauthorized");
       }
   }
+  public Result getGames(Response res, AuthRequest getGamesRequest,
+                         MemoryGameDAO memoryGameDAO, MemoryAuthDAO memoryAuthDAO ){
+    AuthData authData = memoryAuthDAO.getAuthData(getGamesRequest.authToken());
+    if (authData != null){
+      ArrayList<GameData> games=memoryGameDAO.getGames();
+      return new GetGamesResult(games);
+    }
+    res.status(401);
+    return new ErrorResult("Error: unauthorized");
+  }
+  public Result createGame(Response res,CreateGameRequest createGameRequest, String authToken,
+                           MemoryGameDAO memoryGameDAO, MemoryAuthDAO memoryAuthDAO){
+    AuthData authData = memoryAuthDAO.getAuthData(authToken);
+    GameData gameData = memoryGameDAO.getGame(createGameRequest.gameName());
+    if (authData != null && gameData == null) {
+      ChessGame newGame = new ChessGame();
+      GameData newGameData = new GameData(memoryGameDAO.getGames().size()+1,
+              "","",
+              createGameRequest.gameName(),newGame);
 
+      memoryGameDAO.addGameData(newGameData);
+      return new CreateGameResult(newGameData.gameID());
+    }
+    res.status(401);
+    return new ErrorResult("Error: unauthorized");
+  }
   public void clear(MemoryAuthDAO memoryAuthDAO, MemoryUserDAO memoryUserDAO, MemoryGameDAO memoryGameDAO){
     memoryAuthDAO.deleteAllAuthData();
     memoryUserDAO.deleteAllUsers();

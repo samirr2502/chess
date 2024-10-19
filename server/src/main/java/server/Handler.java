@@ -1,9 +1,7 @@
 package server;
-import com.google.gson.JsonObject;
 import dataaccess.authdao.MemoryAuthDAO;
 import dataaccess.gamedao.MemoryGameDAO;
 import dataaccess.userdao.MemoryUserDAO;
-import model.AuthData;
 import model.UserData;
 import service.ErrorResult;
 import service.Result;
@@ -19,7 +17,6 @@ public class Handler  {
   private static final MemoryGameDAO memoryGameDAO = new MemoryGameDAO();
   private static final Gson json= new Gson();
   public static Object registerUser(Request req, Response res) throws Exception {
-    //System.out.println(req.body());
     try {
       UserData user = json.fromJson(req.body(), UserData.class);
       String response = json.toJson(service.registerUser(res, user, memoryUserDAO, memoryAuthDAO));
@@ -33,14 +30,12 @@ public class Handler  {
     }
   }
   public static Object loginUser(Request req, Response res) throws Exception{
-    //System.out.println(req.body());
     try {
       UserData user = json.fromJson(req.body(), UserData.class);
       String response = json.toJson(service.loginUser(res, user, memoryUserDAO, memoryAuthDAO));
       System.out.println(response);
       return response;
-      //test
-      // return "{\"name\":\"samir\"}";
+
     } catch (Exception ex){
       res.status(500);
       String response = json.toJson(new ErrorResult(STR."Error: \{ex.getMessage()}"));
@@ -50,11 +45,10 @@ public class Handler  {
   }
 
   public static Object logoutUser(Request req, Response res) throws Exception{
-    //System.out.println(req.body());
     try {
       String response;
       String authToken = req.headers("authorization");
-      LogoutRequest logoutRequest= new LogoutRequest(authToken);
+      AuthRequest logoutRequest= new AuthRequest(authToken);
       Result logoutResult= service.logoutUser(res,logoutRequest,memoryAuthDAO);
       if(logoutResult== null){
         return "{}";
@@ -63,13 +57,34 @@ public class Handler  {
       }
       System.out.println(response);
       return response;
-      //test
-      // return "{\"name\":\"samir\"}";
     } catch (Exception ex){
       res.status(500);
       String response = json.toJson(new ErrorResult(STR."Error: \{ex.getMessage()}"));
       System.out.println(response);
       return response;
+    }
+  }
+
+  public static Object getGames(Request req, Response res) throws Exception{
+    try {
+      String authToken = req.headers("authorization");
+      AuthRequest logoutRequest= new AuthRequest(authToken);
+      Result getGameResult = service.getGames(res,logoutRequest,memoryGameDAO, memoryAuthDAO);
+      return json.toJson(getGameResult);
+    } catch (Exception ex){
+      res.status(500);
+      return json.toJson(new ErrorResult(STR."Error \{ex.getMessage()}"));
+    }
+  }
+  public static Object createGame(Request req, Response res) throws Exception{
+    try {
+      String authToken = req.headers("authorization");
+
+      CreateGameRequest createGameRequest= json.fromJson(req.body(),CreateGameRequest.class);
+      Result createGameResult= service.createGame(res, createGameRequest, authToken,memoryGameDAO, memoryAuthDAO);
+      return json.toJson(createGameResult);
+    } catch (Exception ex){
+      return json.toJson(new ErrorResult(STR."Error: \{ex.getMessage()}"));
     }
   }
 
