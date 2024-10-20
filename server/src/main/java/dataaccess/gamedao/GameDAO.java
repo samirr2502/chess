@@ -1,20 +1,19 @@
 package dataaccess.gamedao;
 
-import chess.ChessGame;
+import dataaccess.DataAccessException;
 import model.GameData;
-import model.UserData;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 public interface GameDAO {
   ArrayList<GameData> games = new ArrayList<>();
 
-  public GameData getGame(String gameName);
-  public GameData getGameByID(int gameID);
-  public ArrayList<GameData> getGames();
-  public void addGameData(GameData gameData);
-  public void updateGame(GameData gameData);
-  public void deleteGameData(GameData gameData);
-  public void addPlayer(UserData user, GameData gameData, ChessGame.TeamColor color);
-  public void deleteAllGames();
+  GameData getGame(String gameName) throws DataAccessException, SQLException;
+  GameData getGameByID(int gameID) throws DataAccessException, SQLException;
+  ArrayList<GameData> getGames() throws DataAccessException, SQLException;
+  void addGameData(GameData gameData) throws DataAccessException, SQLException;
+  void updateGame(GameData gameData) throws DataAccessException, SQLException;
+  void deleteGameData(GameData gameData) throws DataAccessException, SQLException;
+  void deleteAllGames() throws DataAccessException, SQLException;
 }

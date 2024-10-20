@@ -2,11 +2,11 @@ package dataaccess.authdao;
 
 import model.AuthData;
 
-
 public class MemoryAuthDAO implements AuthDAO {
+
   @Override
-  public AuthData getAuthData(String authToken) {
-    for (AuthData authData: authDataList) {
+  public AuthData getAuthDataByToken(String authToken) {
+    for (AuthData authData : authDataList) {
       if (authData.authToken().equals(authToken)) {
         return authData;
       }
@@ -17,12 +17,6 @@ public class MemoryAuthDAO implements AuthDAO {
   @Override
   public void addAuthData(AuthData authData) {
     authDataList.add(authData);
-  }
-  @Override
-  public void getAllAuthData() {
-//    for (AuthData authdata:authDataList){
-//      System.out.println(authdata);
-//    }
   }
 
   @Override

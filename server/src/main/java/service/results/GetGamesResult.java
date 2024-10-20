@@ -1,10 +1,10 @@
-package service;
+package service.results;
 
 import model.GameData;
 
 import java.util.ArrayList;
 
-public class GetGamesResult extends Result{
+public class GetGamesResult extends Result {
   public final ArrayList<GameResult> games = new ArrayList<>();
   public GetGamesResult(ArrayList<GameData> gameDataList) {
     setGames(gameDataList);

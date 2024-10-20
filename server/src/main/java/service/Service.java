@@ -1,140 +1,112 @@
 package service;
 
 import chess.ChessGame;
-import dataaccess.DataAccessException;
 import dataaccess.authdao.MemoryAuthDAO;
 import dataaccess.gamedao.MemoryGameDAO;
 import dataaccess.userdao.MemoryUserDAO;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
-import server.AuthRequest;
-import server.CreateGameRequest;
-import spark.Response;
+import server.requests.AuthRequest;
+import server.requests.CreateGameRequest;
+import server.requests.JoinGameRequest;
+import service.results.*;
 
 import java.util.ArrayList;
 import java.util.UUID;
 
 public class Service {
-
-//User Level
-  public Result registerUser(Response res, UserData newUser,
-                             MemoryUserDAO memoryUserDAO,
-                             MemoryAuthDAO memoryAuthDAO) throws DataAccessException {
-    try{
-      UserData user = memoryUserDAO.getUser(newUser.username());
-
-      if (newUser.password() == null ||
-              newUser.username() ==null ||
-              newUser.email() ==null){
-        res.status(400);
-        return new ErrorResult("Error: bad request");
-      }
-    else if(user== null){
-      //Add User
-      memoryUserDAO.addUser(newUser);
-
-      //Create and Add auth Data
-      AuthData authData = new AuthData(generateToken(),newUser.username());
-      memoryAuthDAO.addAuthData(authData);
-
-      return new LoginResult(authData.username(),authData.authToken());
+  public AuthData createAuthData(UserData userData, String authToken, MemoryAuthDAO memoryAuthDAO) {
+    AuthData authData = memoryAuthDAO.getAuthDataByToken(authToken);
+    if (authData == null) {
+      return new AuthData(authToken, userData.username());
     }
-    else {
-      res.status(403);
-      return new ErrorResult("Error: already taken");
-    }
-    } catch (DataAccessException dx){
-      res.status(400);
-      return new ErrorResult("Error: bad request");
-    }
+    return authData;
   }
-  public Result loginUser(Response res, UserData newUser,
-                          MemoryUserDAO memoryUserDAO,
-                          MemoryAuthDAO memoryAuthDAO) throws DataAccessException {
-    try{
-      UserData user = memoryUserDAO.getUser(newUser.username());
-      if(user!= null && newUser.password().equals(user.password())){
-        AuthData authData = new AuthData(generateToken(), user.username());
-        memoryAuthDAO.addAuthData(authData);
-        return new LoginResult(authData.username(),authData.authToken());
-      } else {
-        res.status(401);
-        return new ErrorResult("Error: unauthorized");
-      }} catch (DataAccessException dx){
-      res.status(400);
-      return new ErrorResult("Error: bad request");
+
+  public AuthData getAuthData(AuthRequest authRequest, MemoryAuthDAO memoryAuthDAO) {
+    return memoryAuthDAO.getAuthDataByToken(authRequest.authToken());
+  }
+
+  //User Level
+  public LoginResult registerUser(UserData registerUserRequest, String authToken, MemoryUserDAO memoryUserDAO, MemoryAuthDAO memoryAuthDAO) {
+    UserData user = memoryUserDAO.getUser(registerUserRequest.username());
+    if (user == null) {
+      memoryUserDAO.addUser(registerUserRequest);
+      AuthData newAuthData = createAuthData(registerUserRequest,authToken,memoryAuthDAO);
+      memoryAuthDAO.addAuthData(newAuthData);
+      return new LoginResult(newAuthData.username(), newAuthData.authToken());
+    }
+    return null;
+  }
+
+  public LoginResult loginUser(UserData loginRequest, String authToken, MemoryUserDAO memoryUserDAO, MemoryAuthDAO memoryAuthDAO) {
+    UserData user = memoryUserDAO.getUser(loginRequest.username());
+    if (user != null && loginRequest.password().equals(user.password())) {
+      AuthData newAuthData = createAuthData(user, authToken, memoryAuthDAO);
+      memoryAuthDAO.addAuthData(newAuthData);
+      return new LoginResult(newAuthData.username(), newAuthData.authToken());
+    } else {
+      return null;
     }
   }
 
-  public Result logoutUser(Response res, AuthRequest logoutRequest, MemoryAuthDAO memoryAuthDAO) {
-      AuthData authData = memoryAuthDAO.getAuthData(logoutRequest.authToken());
-      if (authData != null) {
-        memoryAuthDAO.deleteAuthData(authData);
-        return null;
-      }else {
-        res.status(401);
-        return new ErrorResult("Error: unauthorized");
-      }
+  public LogoutResult logoutUser(AuthRequest logoutRequest, MemoryAuthDAO memoryAuthDAO) {
+    AuthData authData = getAuthData(logoutRequest, memoryAuthDAO);
+    if (authData != null) {
+      memoryAuthDAO.deleteAuthData(authData);
+      return new LogoutResult();
+    } else {
+      return null;
+    }
   }
-  public Result getGames(Response res, AuthRequest getGamesRequest,
-                         MemoryGameDAO memoryGameDAO, MemoryAuthDAO memoryAuthDAO ){
-    AuthData authData = memoryAuthDAO.getAuthData(getGamesRequest.authToken());
-    if (authData != null){
-      ArrayList<GameData> games=memoryGameDAO.getGames();
+
+  public Result getGames(AuthRequest getGamesRequest, MemoryGameDAO memoryGameDAO, MemoryAuthDAO memoryAuthDAO) {
+    AuthData authData = getAuthData(getGamesRequest, memoryAuthDAO);
+    if (authData != null) {
+      ArrayList<GameData> games = memoryGameDAO.getGames();
       return new GetGamesResult(games);
+    } else {
+      return null;
     }
-    res.status(401);
-    return new ErrorResult("Error: unauthorized");
   }
-  public Result createGame(Response res,CreateGameRequest createGameRequest, String authToken,
-                           MemoryGameDAO memoryGameDAO, MemoryAuthDAO memoryAuthDAO){
-    AuthData authData = memoryAuthDAO.getAuthData(authToken);
+
+  public Result createGame(AuthRequest authRequest, CreateGameRequest createGameRequest, MemoryGameDAO memoryGameDAO, MemoryAuthDAO memoryAuthDAO) {
+    AuthData authData = getAuthData(authRequest, memoryAuthDAO);
     GameData gameData = memoryGameDAO.getGame(createGameRequest.gameName());
     if (authData != null && gameData == null) {
       ChessGame newGame = new ChessGame();
-      GameData newGameData = new GameData(memoryGameDAO.getGames().size()+1,
-              null,null,
-              createGameRequest.gameName(),newGame);
-
+      GameData newGameData = new GameData(memoryGameDAO.getGames().size() + 1, null, null, createGameRequest.gameName(), newGame);
       memoryGameDAO.addGameData(newGameData);
       return new CreateGameResult(newGameData.gameID());
     }
-    res.status(401);
-    return new ErrorResult("Error: unauthorized");
+    return null;
   }
-public Result joinGame(Response res, JoinGameRequest joinGameRequest, String authToken,
-                    MemoryAuthDAO memoryAuthDAO,MemoryGameDAO memoryGameDAO) {
-  AuthData authData = memoryAuthDAO.getAuthData(authToken);
-  GameData gameData = memoryGameDAO.getGameByID(joinGameRequest.gameID);
-  if(joinGameRequest.playerColor==null || gameData==null){
-    res.status(400);
-    return new ErrorResult("Error: bad request");
-  }
-  if (authData != null) {
-    if(joinGameRequest.playerColor.equals("WHITE") && gameData.whiteUsername()==null){
-      memoryGameDAO.updateGame(new GameData(gameData.gameID(), authData.username(), gameData.blackUsername(),
-              gameData.gameName(), gameData.game()));
-      return null;
-    } else if (joinGameRequest.playerColor.equals("BLACK") && gameData.blackUsername()==null) {
-      memoryGameDAO.updateGame(new GameData(gameData.gameID(), gameData.whiteUsername(), authData.username(),
-              gameData.gameName(), gameData.game()));
-      return null;
+
+  public JoinGameResult joinGame(AuthRequest authRequest, JoinGameRequest joinGameRequest, MemoryAuthDAO memoryAuthDAO, MemoryGameDAO memoryGameDAO) {
+    AuthData authData = getAuthData(authRequest, memoryAuthDAO);
+    GameData gameData = memoryGameDAO.getGameByID(joinGameRequest.gameID());
+    if (gameData == null) {
+      return new JoinGameResult(null, true);
+    } else if (authData != null) {
+      if (joinGameRequest.playerColor().equals("WHITE") && gameData.whiteUsername() == null) {
+        memoryGameDAO.updateGame(new GameData(gameData.gameID(), authData.username(), gameData.blackUsername(), gameData.gameName(), gameData.game()));
+        return new JoinGameResult(gameData, true);
+      } else if (joinGameRequest.playerColor().equals("BLACK") && gameData.blackUsername() == null) {
+        memoryGameDAO.updateGame(new GameData(gameData.gameID(), gameData.whiteUsername(), authData.username(), gameData.gameName(), gameData.game()));
+        return new JoinGameResult(gameData, true);
+      } else {
+        return new JoinGameResult(gameData, false);
+      }
     }
-    else {
-      res.status(403);
-      return new ErrorResult("Error: already taken");
-    }
+    return null;
   }
-    res.status(401);
-    return new ErrorResult("Error: unauthorized");
-}
-  public void clear(MemoryAuthDAO memoryAuthDAO, MemoryUserDAO memoryUserDAO, MemoryGameDAO memoryGameDAO){
+
+  public void clear(MemoryAuthDAO memoryAuthDAO, MemoryUserDAO memoryUserDAO, MemoryGameDAO memoryGameDAO) {
     memoryAuthDAO.deleteAllAuthData();
     memoryUserDAO.deleteAllUsers();
     memoryGameDAO.deleteAllGames();
   }
-  //Auth
 
   public static String generateToken() {
     return UUID.randomUUID().toString();

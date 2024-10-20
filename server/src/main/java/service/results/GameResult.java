@@ -1,8 +1,6 @@
-package service;
+package service.results;
 
-import model.GameData;
-
-public class GameResult extends Result{
+public class GameResult extends Result {
   int gameID;
   String whiteUsername;
   String blackUsername;

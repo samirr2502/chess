@@ -19,7 +19,6 @@ public class Server {
     }
     private static void createRoutes() {
         Spark.post("/user", Handler::registerUser);
-
         Spark.post("/session",Handler::loginUser);
         Spark.delete("/session",Handler::logoutUser);
 
