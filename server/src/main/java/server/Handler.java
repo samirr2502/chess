@@ -110,7 +110,7 @@ public class Handler {
       }
     } catch (Exception ex) {
       res.status(500);
-      return json.toJson(new ErrorResult(STR."Error: \{ex.getMessage()}"));
+      return json.toJson(new ErrorResult("Error: "+ ex.getMessage()));
     }
   }
 
