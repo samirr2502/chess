@@ -39,7 +39,7 @@ public class Handler {
       }
     } catch (Exception ex) {
       res.status(500);
-      return json.toJson(new ErrorResult(STR."Error: \{ex.getMessage()}"));
+      return json.toJson(new ErrorResult("Error: "+ ex.getMessage()));
     }
   }
 
@@ -57,7 +57,7 @@ public class Handler {
       }
     } catch (Exception ex) {
       res.status(500);
-      return json.toJson(new ErrorResult(STR."Error: \{ex.getMessage()}"));
+      return json.toJson(new ErrorResult("Error: "+ ex.getMessage()));
     }
   }
 
@@ -74,9 +74,7 @@ public class Handler {
       }
     } catch (Exception ex) {
       res.status(500);
-      String response = json.toJson(new ErrorResult(STR."Error: \{ex.getMessage()}"));
-      System.out.println(response);
-      return response;
+      return json.toJson(new ErrorResult("Error: "+ ex.getMessage()));
     }
   }
 
@@ -93,7 +91,7 @@ public class Handler {
       }
     } catch (Exception ex) {
       res.status(500);
-      return json.toJson(new ErrorResult(STR."Error \{ex.getMessage()}"));
+      return json.toJson(new ErrorResult("Error: "+ ex.getMessage()));
     }
   }
 
@@ -143,7 +141,7 @@ public class Handler {
       }
     } catch (Exception ex) {
       res.status(500);
-      return json.toJson(new ErrorResult(STR."Error: \{ex.getMessage()}"));
+      return json.toJson(new ErrorResult("Error: "+ ex.getMessage()));
     }
   }
 
@@ -153,7 +151,7 @@ public class Handler {
       return "{}";
     } catch (Exception ex) {
       res.status(500);
-      return new ErrorResult(STR."Error: \{ex.getMessage()}");
+      return new ErrorResult("Error: "+ ex.getMessage());
     }
   }
 
