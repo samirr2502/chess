@@ -1,7 +1,6 @@
-package processTests;
+package service;
 
 
-import com.google.gson.Gson;
 import dataaccess.authdao.MemoryAuthDAO;
 import dataaccess.gamedao.MemoryGameDAO;
 import dataaccess.userdao.MemoryUserDAO;
@@ -9,7 +8,6 @@ import model.AuthData;
 import model.UserData;
 import org.junit.jupiter.api.*;
 import server.requests.AuthRequest;
-import service.Service;
 import service.results.LoginResult;
 import service.results.LogoutResult;
 
