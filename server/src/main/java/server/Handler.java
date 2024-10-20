@@ -150,9 +150,11 @@ public class Handler {
       service.clear(memoryAuthDAO, memoryUserDAO, memoryGameDAO);
       return "{}";
     } catch (Exception ex) {
-      res.status(500);
-      return new ErrorResult("Error: "+ ex.getMessage());
+      return throwError(res, ex);
     }
   }
-
+  public static ErrorResult throwError(Response res, Exception ex){
+    res.status(500);
+    return new ErrorResult("Error: "+ ex.getMessage());
+  }
 }
