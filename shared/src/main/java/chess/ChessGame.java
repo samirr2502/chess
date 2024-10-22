@@ -189,8 +189,9 @@ public class ChessGame {
       for (int i = 0; i < 8; i++) {
         for (int j = 0; j < 8; j++) {
           ChessPiece myPiece = testBoard.board[i][j];
-          if (noEmptySpot(teamColor, opponentsPiece, myPiece, i, j, testBoard))
+          if (noEmptySpot(teamColor, opponentsPiece, myPiece, i, j, testBoard)) {
             return (!inCheckPieces(teamColor, testBoard).isEmpty() && !kingCantMove(teamColor, testBoard));
+          }
         }
       }
     }

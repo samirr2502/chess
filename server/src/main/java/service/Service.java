@@ -72,7 +72,8 @@ public class Service {
     }
   }
 
-  public CreateGameResult createGame(AuthRequest authRequest, CreateGameRequest createGameRequest, MemoryGameDAO memoryGameDAO, MemoryAuthDAO memoryAuthDAO) {
+  public CreateGameResult createGame(AuthRequest authRequest, CreateGameRequest createGameRequest,
+                                     MemoryGameDAO memoryGameDAO, MemoryAuthDAO memoryAuthDAO) {
     AuthData authData = getAuthData(authRequest, memoryAuthDAO);
     GameData gameData = memoryGameDAO.getGame(createGameRequest.gameName());
     if (authData != null && gameData == null) {
