@@ -1,10 +1,10 @@
-package chess.PieceMoves;
+package chess.pieceMoves;
 
 import chess.*;
 
 import java.util.ArrayList;
 
-import static chess.PieceMoves.PieceMovesRules.*;
+import static chess.pieceMoves.PieceMovesRules.*;
 
 /**
  * PieceMoves abstract class
@@ -39,13 +39,13 @@ public abstract class PieceMoves {
   void setMoves(int rule, int moveRow, int moveCol){
     switch (rule){
       case 1:
-        movesRule_1(this,moveRow,moveCol);
+        movesRule1(this,moveRow,moveCol);
         break;
       case 2:
-        movesRule_2(this,moveRow,moveCol);
+        movesRule2(this,moveRow,moveCol);
         break;
       case 3:
-        movesRule_3(this,moveRow,moveCol);
+        movesRule3(this,moveRow,moveCol);
         break;
     }
   }

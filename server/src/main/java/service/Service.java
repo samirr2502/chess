@@ -21,7 +21,7 @@ public class Service {
     if (authData == null) {
       return new AuthData(authToken, userData.username());
     }
-    return authData;
+    return null;
   }
 
   public AuthData getAuthData(AuthRequest authRequest, MemoryAuthDAO memoryAuthDAO) {
@@ -29,7 +29,8 @@ public class Service {
   }
 
   //User Level
-  public LoginResult registerUser(UserData registerUserRequest, String authToken, MemoryUserDAO memoryUserDAO, MemoryAuthDAO memoryAuthDAO) {
+  public LoginResult registerUser(UserData registerUserRequest, String authToken,
+                                  MemoryUserDAO memoryUserDAO, MemoryAuthDAO memoryAuthDAO) {
     UserData user = memoryUserDAO.getUser(registerUserRequest.username());
     if (user == null) {
       memoryUserDAO.addUser(registerUserRequest);
@@ -61,7 +62,7 @@ public class Service {
     }
   }
 
-  public Result getGames(AuthRequest getGamesRequest, MemoryGameDAO memoryGameDAO, MemoryAuthDAO memoryAuthDAO) {
+  public GetGamesResult getGames(AuthRequest getGamesRequest, MemoryGameDAO memoryGameDAO, MemoryAuthDAO memoryAuthDAO) {
     AuthData authData = getAuthData(getGamesRequest, memoryAuthDAO);
     if (authData != null) {
       ArrayList<GameData> games = memoryGameDAO.getGames();
@@ -71,7 +72,7 @@ public class Service {
     }
   }
 
-  public Result createGame(AuthRequest authRequest, CreateGameRequest createGameRequest, MemoryGameDAO memoryGameDAO, MemoryAuthDAO memoryAuthDAO) {
+  public CreateGameResult createGame(AuthRequest authRequest, CreateGameRequest createGameRequest, MemoryGameDAO memoryGameDAO, MemoryAuthDAO memoryAuthDAO) {
     AuthData authData = getAuthData(authRequest, memoryAuthDAO);
     GameData gameData = memoryGameDAO.getGame(createGameRequest.gameName());
     if (authData != null && gameData == null) {
@@ -90,10 +91,12 @@ public class Service {
       return new JoinGameResult(null, true);
     } else if (authData != null) {
       if (joinGameRequest.playerColor().equals("WHITE") && gameData.whiteUsername() == null) {
-        memoryGameDAO.updateGame(new GameData(gameData.gameID(), authData.username(), gameData.blackUsername(), gameData.gameName(), gameData.game()));
+        memoryGameDAO.updateGame(new GameData(gameData.gameID(), authData.username(), gameData.blackUsername(),
+                gameData.gameName(), gameData.game()));
         return new JoinGameResult(gameData, true);
       } else if (joinGameRequest.playerColor().equals("BLACK") && gameData.blackUsername() == null) {
-        memoryGameDAO.updateGame(new GameData(gameData.gameID(), gameData.whiteUsername(), authData.username(), gameData.gameName(), gameData.game()));
+        memoryGameDAO.updateGame(new GameData(gameData.gameID(), gameData.whiteUsername(), authData.username(),
+                gameData.gameName(), gameData.game()));
         return new JoinGameResult(gameData, true);
       } else {
         return new JoinGameResult(gameData, false);
@@ -102,10 +105,11 @@ public class Service {
     return null;
   }
 
-  public void clear(MemoryAuthDAO memoryAuthDAO, MemoryUserDAO memoryUserDAO, MemoryGameDAO memoryGameDAO) {
+  public ClearResult clear(MemoryAuthDAO memoryAuthDAO, MemoryUserDAO memoryUserDAO, MemoryGameDAO memoryGameDAO) {
     memoryAuthDAO.deleteAllAuthData();
     memoryUserDAO.deleteAllUsers();
     memoryGameDAO.deleteAllGames();
+    return new ClearResult();
   }
 
   public static String generateToken() {

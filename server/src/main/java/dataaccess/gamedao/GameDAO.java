@@ -7,7 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 public interface GameDAO {
-  ArrayList<GameData> games = new ArrayList<>();
+  ArrayList<GameData> GAMES = new ArrayList<>();
 
   GameData getGame(String gameName) throws DataAccessException, SQLException;
   GameData getGameByID(int gameID) throws DataAccessException, SQLException;

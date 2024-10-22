@@ -15,49 +15,47 @@ import spark.Response;
 
 
 public class Handler {
-  private static final Service service = new Service();
-  private static final MemoryUserDAO memoryUserDAO = new MemoryUserDAO();
-  private static final MemoryAuthDAO memoryAuthDAO = new MemoryAuthDAO();
-  private static final MemoryGameDAO memoryGameDAO = new MemoryGameDAO();
-  private static final Gson json = new Gson();
+  private static final Service SERVICE = new Service();
+  private static final MemoryUserDAO MEMORY_USER_DAO = new MemoryUserDAO();
+  private static final MemoryAuthDAO MEMORY_AUTH_DAO = new MemoryAuthDAO();
+  private static final MemoryGameDAO MEMORY_GAME_DAO = new MemoryGameDAO();
+  private static final Gson JSON = new Gson();
 
   public static Object registerUser(Request req, Response res) {
     try {
-      UserData registerUserRequest = json.fromJson(req.body(), UserData.class);
+      UserData registerUserRequest = JSON.fromJson(req.body(), UserData.class);
       String authToken = Service.generateToken();
-      LoginResult registerUserResult = service.registerUser(registerUserRequest, authToken, memoryUserDAO, memoryAuthDAO);
+      LoginResult registerUserResult = SERVICE.registerUser(registerUserRequest, authToken, MEMORY_USER_DAO, MEMORY_AUTH_DAO);
 
       //Check if a field is not null
       if (registerUserRequest.password() == null || registerUserRequest.username() == null || registerUserRequest.email() == null) {
         res.status(400);
-        return json.toJson(new ErrorResult("Error: bad request"));
+        return JSON.toJson(new ErrorResult("Error: bad request"));
       } else if (registerUserResult == null) {
         res.status(403);
-        return json.toJson(new ErrorResult("Error: already taken"));
+        return JSON.toJson(new ErrorResult("Error: already taken"));
       } else {
-        return json.toJson(registerUserResult); //200 Ok return
+        return JSON.toJson(registerUserResult); //200 Ok return
       }
     } catch (Exception ex) {
-      res.status(500);
-      return json.toJson(new ErrorResult("Error: "+ ex.getMessage()));
+      return throwErrorException(res, ex);
     }
   }
 
   public static Object loginUser(Request req, Response res) {
     try {
-      UserData loginUserRequest = json.fromJson(req.body(), UserData.class);
+      UserData loginUserRequest = JSON.fromJson(req.body(), UserData.class);
       String authToken = Service.generateToken();
-      LoginResult loginResult = service.loginUser(loginUserRequest, authToken, memoryUserDAO, memoryAuthDAO);
+      LoginResult loginResult = SERVICE.loginUser(loginUserRequest, authToken, MEMORY_USER_DAO, MEMORY_AUTH_DAO);
 
       if (loginResult != null) { //200 ok case
-        return json.toJson(loginResult);
+        return JSON.toJson(loginResult);
       } else {
         res.status(401);
-        return json.toJson(new ErrorResult("Error: unauthorized"));
+        return JSON.toJson(new ErrorResult("Error: unauthorized"));
       }
     } catch (Exception ex) {
-      res.status(500);
-      return json.toJson(new ErrorResult("Error: "+ ex.getMessage()));
+      return throwErrorException(res, ex);
     }
   }
 
@@ -65,16 +63,15 @@ public class Handler {
     try {
       String authToken = req.headers("authorization");
       AuthRequest logoutRequest = new AuthRequest(authToken);
-      LogoutResult logoutResult = service.logoutUser(logoutRequest, memoryAuthDAO);
+      LogoutResult logoutResult = SERVICE.logoutUser(logoutRequest, MEMORY_AUTH_DAO);
       if (logoutResult != null) { // 200 OK Case
         return "{}";
       } else {
         res.status(401);
-        return json.toJson(new ErrorResult("Error: unauthorized"));
+        return JSON.toJson(new ErrorResult("Error: unauthorized"));
       }
     } catch (Exception ex) {
-      res.status(500);
-      return json.toJson(new ErrorResult("Error: "+ ex.getMessage()));
+      return throwErrorException(res, ex);
     }
   }
 
@@ -82,16 +79,15 @@ public class Handler {
     try {
       String authToken = req.headers("authorization");
       AuthRequest logoutRequest = new AuthRequest(authToken);
-      Result getGameResult = service.getGames(logoutRequest, memoryGameDAO, memoryAuthDAO);
+      GetGamesResult getGameResult = SERVICE.getGames(logoutRequest, MEMORY_GAME_DAO, MEMORY_AUTH_DAO);
       if (getGameResult != null) {
-        return json.toJson(getGameResult);
+        return JSON.toJson(getGameResult);
       } else {
         res.status(401);
-        return json.toJson(new ErrorResult("Error: unauthorized"));
+        return JSON.toJson(new ErrorResult("Error: unauthorized"));
       }
     } catch (Exception ex) {
-      res.status(500);
-      return json.toJson(new ErrorResult("Error: "+ ex.getMessage()));
+      return throwErrorException(res, ex);
     }
   }
 
@@ -100,17 +96,16 @@ public class Handler {
       String authToken = req.headers("authorization");
       AuthRequest authRequest = new AuthRequest(authToken);
 
-      CreateGameRequest createGameRequest = json.fromJson(req.body(), CreateGameRequest.class);
-      Result createGameResult = service.createGame(authRequest, createGameRequest, memoryGameDAO, memoryAuthDAO);
+      CreateGameRequest createGameRequest = JSON.fromJson(req.body(), CreateGameRequest.class);
+      CreateGameResult createGameResult = SERVICE.createGame(authRequest, createGameRequest, MEMORY_GAME_DAO, MEMORY_AUTH_DAO);
       if (createGameResult!=null) {
-        return json.toJson(createGameResult);
+        return JSON.toJson(createGameResult);
       } else{
         res.status(401);
-        return json.toJson(new ErrorResult("Error: unauthorized"));
+        return JSON.toJson(new ErrorResult("Error: unauthorized"));
       }
     } catch (Exception ex) {
-      res.status(500);
-      return json.toJson(new ErrorResult("Error: "+ ex.getMessage()));
+      return throwErrorException(res, ex);
     }
   }
 
@@ -118,42 +113,45 @@ public class Handler {
     try {
       String authToken = req.headers("authorization");
       AuthRequest authRequest = new AuthRequest(authToken);
-      JoinGameRequest joinGameRequest = json.fromJson(req.body(), JoinGameRequest.class);
+      JoinGameRequest joinGameRequest = JSON.fromJson(req.body(), JoinGameRequest.class);
 
       if (joinGameRequest.playerColor() == null) {
         res.status(400);
-        return json.toJson(new ErrorResult("Error: bad request"));
+        return JSON.toJson(new ErrorResult("Error: bad request"));
       }
 
-      JoinGameResult joinGameResult = service.joinGame(authRequest, joinGameRequest, memoryAuthDAO, memoryGameDAO);
+      JoinGameResult joinGameResult = SERVICE.joinGame(authRequest, joinGameRequest, MEMORY_AUTH_DAO, MEMORY_GAME_DAO);
 
       if (joinGameResult != null && joinGameResult.gameData()!=null &&joinGameResult.colorAvailable() ) {
         return "{}";
       } else if(joinGameResult != null&& joinGameResult.gameData()!=null) {
         res.status(403);
-        return json.toJson(new ErrorResult("Error: already taken"));
+        return JSON.toJson(new ErrorResult("Error: already taken"));
       }else if(joinGameResult!= null ) {
         res.status(400);
-        return json.toJson(new ErrorResult("Error: bad request"));
+        return JSON.toJson(new ErrorResult("Error: bad request"));
       }else{
         res.status(401);
-        return json.toJson(new ErrorResult("Error: unauthorized"));
+        return JSON.toJson(new ErrorResult("Error: unauthorized"));
       }
     } catch (Exception ex) {
-      res.status(500);
-      return json.toJson(new ErrorResult("Error: "+ ex.getMessage()));
+      return throwErrorException(res, ex);
     }
   }
 
   public static Object clear(Request req, Response res) {
     try {
-      service.clear(memoryAuthDAO, memoryUserDAO, memoryGameDAO);
+      ClearResult clearResult= SERVICE.clear(MEMORY_AUTH_DAO, MEMORY_USER_DAO, MEMORY_GAME_DAO);
+      if(clearResult != null){
       return "{}";
+      } else {
+        throw new Exception("Service.clear is not working properly");
+      }
     } catch (Exception ex) {
-      return throwError(res, ex);
+      return throwErrorException(res, ex);
     }
   }
-  public static ErrorResult throwError(Response res, Exception ex){
+  public static ErrorResult throwErrorException(Response res, Exception ex){
     res.status(500);
     return new ErrorResult("Error: "+ ex.getMessage());
   }

@@ -23,10 +23,12 @@ public class ChessBoard  implements Cloneable{
     }
     @Override
     public boolean equals(Object o) {
-        if (this == o)
+        if (this == o) {
             return true;
-        if (o == null || getClass() != o.getClass())
+        }
+        if (o == null || getClass() != o.getClass()) {
             return false;
+        }
         ChessBoard that = (ChessBoard) o;
         return Arrays.deepEquals(board, that.board) && Objects.equals(pieceTypeMap, that.pieceTypeMap);
     }
@@ -107,9 +109,8 @@ public class ChessBoard  implements Cloneable{
   @Override
   public ChessBoard clone() {
     try {
-      ChessBoard clone = (ChessBoard) super.clone();
       //clone.board = this.board.clone();
-      return clone;
+      return (ChessBoard) super.clone();
     } catch (CloneNotSupportedException e) {
       throw new AssertionError();
     }

@@ -6,7 +6,7 @@ public class MemoryUserDAO implements UserDAO {
 
   @Override
   public UserData getUser(String username) {
-    for (UserData userData : users) {
+    for (UserData userData : USERS) {
       if (userData.username().equals(username)) {
         return userData;
       }
@@ -16,11 +16,11 @@ public class MemoryUserDAO implements UserDAO {
 
   @Override
   public void addUser(UserData user) {
-    users.add(user);
+    USERS.add(user);
   }
 
   @Override
   public void deleteAllUsers() {
-    users.clear();
+    USERS.clear();
   }
 }

@@ -1,10 +1,9 @@
-package chess.PieceMoves;
+package chess.pieceMoves;
 import chess.ChessMove;
 import chess.ChessPiece;
 import chess.ChessPosition;
-import chess.InvalidMoveException;
 
-import static chess.PieceMoves.ValidateMoves.*;
+import static chess.pieceMoves.ValidateMoves.*;
 public abstract class PieceMovesRules {
 
   /**
@@ -14,7 +13,7 @@ public abstract class PieceMovesRules {
    * @param moveRow Vertical direction
    * @param moveCol horizontal direction
    */
-  public static void movesRule_1 (PieceMoves pieceMoves,int moveRow, int moveCol){
+  public static void movesRule1(PieceMoves pieceMoves, int moveRow, int moveCol){
     ChessPosition newPosition = new ChessPosition(pieceMoves.myPosition.getRow() +moveRow,
             pieceMoves.myPosition.getColumn()+moveCol);
     if(validateEdges(newPosition)
@@ -28,7 +27,7 @@ public abstract class PieceMovesRules {
    * Used for pieces that have continuous movement (Queen, Bishop, Rooks)
    * @param pieceMoves current Piece Moves object
    */
-  public static void movesRule_2(PieceMoves pieceMoves,  int moveRow, int moveCol){
+  public static void movesRule2(PieceMoves pieceMoves, int moveRow, int moveCol){
     for (int i=1; i <=8; i++){
       ChessPosition newPosition = new ChessPosition(pieceMoves.myPosition.getRow()+moveRow,
               pieceMoves.myPosition.getColumn()+moveCol);
@@ -46,7 +45,7 @@ public abstract class PieceMovesRules {
     }
 
   }
-  public  static void movesRule_3(PieceMoves pieceMoves, int moveRow, int moveCol){
+  public  static void movesRule3(PieceMoves pieceMoves, int moveRow, int moveCol){
     ChessPosition newPosition = new ChessPosition(pieceMoves.myPosition.getRow()+moveRow,
             pieceMoves.myPosition.getColumn()+moveCol);
 

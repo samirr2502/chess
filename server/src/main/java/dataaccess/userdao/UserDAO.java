@@ -7,7 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 public interface UserDAO {
-  ArrayList<UserData> users = new ArrayList<>();
+  ArrayList<UserData> USERS = new ArrayList<>();
   //Get user
 
   UserData getUser(String username) throws DataAccessException, SQLException;
