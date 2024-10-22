@@ -1,9 +1,9 @@
-package chess.pieceMoves;
+package chess.piecemoves;
 import chess.ChessMove;
 import chess.ChessPiece;
 import chess.ChessPosition;
 
-import static chess.pieceMoves.ValidateMoves.*;
+import static chess.piecemoves.ValidateMoves.*;
 public abstract class PieceMovesRules {
 
   /**

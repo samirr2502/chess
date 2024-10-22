@@ -1,10 +1,10 @@
-package chess.pieceMoves;
+package chess.piecemoves;
 
 import chess.*;
 
 import java.util.ArrayList;
 
-import static chess.pieceMoves.PieceMovesRules.*;
+import static chess.piecemoves.PieceMovesRules.*;
 
 /**
  * PieceMoves abstract class

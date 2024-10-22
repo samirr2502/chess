@@ -19,16 +19,16 @@ public class ServiceTest {
   private static MemoryUserDAO memoryUserDAO = new MemoryUserDAO();
   private static MemoryAuthDAO memoryAuthDAO = new MemoryAuthDAO();
   private static MemoryGameDAO memoryGameDAO = new MemoryGameDAO();
-  private static final Service service = new Service();
+  private static final Service SERVICE = new Service();
   private static UserData newUser;
   private static UserData existingUser;
-  private static final String validAuthToken = "1234";
-  private static final String invalidAuthToken = "0000";
+  private static final String VALID_AUTH_TOKEN = "1234";
+  private static final String INVALID_AUTH_TOKEN = "0000";
 
 
   @BeforeEach
   public void setUp() {
-    service.clear(memoryAuthDAO, memoryUserDAO, memoryGameDAO);
+    SERVICE.clear(memoryAuthDAO, memoryUserDAO, memoryGameDAO);
     //New User information with no valid log in (needs to register)
     newUser = new UserData("NewUser", "pass2", "user1@email.com");
     memoryUserDAO = new MemoryUserDAO();
@@ -38,21 +38,21 @@ public class ServiceTest {
     //Add Existing user with valid login
     existingUser = new UserData("ExistingUser", "pass1", "user12@email.com");
     memoryUserDAO.addUser(existingUser);
-    memoryAuthDAO.addAuthData(new AuthData("ExistingUser", validAuthToken));
+    memoryAuthDAO.addAuthData(new AuthData("ExistingUser", VALID_AUTH_TOKEN));
   }
 
   @Test
   public void createAuthDataTest() {
-    AuthData authData = service.createAuthData(existingUser, validAuthToken, memoryAuthDAO);
+    AuthData authData = SERVICE.createAuthData(existingUser, VALID_AUTH_TOKEN, memoryAuthDAO);
     assertNotNull(authData);
-    assertEquals(validAuthToken, authData.authToken());
+    assertEquals(VALID_AUTH_TOKEN, authData.authToken());
   }
 
   @Test
   public void createAuthDataBadTest() {
-    AuthData authData = service.createAuthData(existingUser, validAuthToken, memoryAuthDAO);
+    AuthData authData = SERVICE.createAuthData(existingUser, VALID_AUTH_TOKEN, memoryAuthDAO);
     memoryAuthDAO.addAuthData(authData);
-    AuthData authData2 = service.createAuthData(existingUser, validAuthToken, memoryAuthDAO);
+    AuthData authData2 = SERVICE.createAuthData(existingUser, VALID_AUTH_TOKEN, memoryAuthDAO);
     assertNotNull(authData);
     assertNull(authData2);
   }
@@ -62,7 +62,7 @@ public class ServiceTest {
 
     AuthRequest authRequest = new AuthRequest("123");
     memoryAuthDAO.addAuthData(new AuthData("123", "NewUser"));
-    AuthData authData = service.getAuthData(authRequest, memoryAuthDAO);
+    AuthData authData = SERVICE.getAuthData(authRequest, memoryAuthDAO);
     assertEquals("123", authData.authToken());
   }
 
@@ -70,14 +70,14 @@ public class ServiceTest {
   public void getAuthDataBadTest() {
 
     AuthRequest authRequest = new AuthRequest("123");
-    AuthData authData = service.getAuthData(authRequest, memoryAuthDAO);
+    AuthData authData = SERVICE.getAuthData(authRequest, memoryAuthDAO);
     assertNull(authData);
   }
 
   @Test
   public void registerUserTest() {
 
-    LoginResult goodResult = service.registerUser(newUser, "123", memoryUserDAO, memoryAuthDAO);
+    LoginResult goodResult = SERVICE.registerUser(newUser, "123", memoryUserDAO, memoryAuthDAO);
     assertEquals(goodResult.getClass(), LoginResult.class);
     assertEquals(goodResult.username(), "NewUser");
     assertEquals(goodResult.authToken(), "123");
@@ -86,22 +86,22 @@ public class ServiceTest {
 
   @Test
   public void registerUserTwiceTest() {
-    LoginResult goodResult = service.registerUser(newUser, "123", memoryUserDAO, memoryAuthDAO);
+    LoginResult goodResult = SERVICE.registerUser(newUser, "123", memoryUserDAO, memoryAuthDAO);
     assertEquals(goodResult.getClass(), LoginResult.class);
     assertEquals(goodResult.username(), "NewUser");
     assertEquals(goodResult.authToken(), "123");
 
-    LoginResult badResult = service.registerUser(newUser, "123", memoryUserDAO, memoryAuthDAO);
+    LoginResult badResult = SERVICE.registerUser(newUser, "123", memoryUserDAO, memoryAuthDAO);
     assertNull(badResult);
 
-    LoginResult badResult2 = service.registerUser(existingUser, "1234", memoryUserDAO, memoryAuthDAO);
+    LoginResult badResult2 = SERVICE.registerUser(existingUser, "1234", memoryUserDAO, memoryAuthDAO);
     assertNull(badResult2);
 
   }
 
   @Test
   public void loginRegisteredUserTest() {
-    LoginResult goodResult = service.loginUser(existingUser, "1234", memoryUserDAO, memoryAuthDAO);
+    LoginResult goodResult = SERVICE.loginUser(existingUser, "1234", memoryUserDAO, memoryAuthDAO);
 
     assertEquals(goodResult.username(), "ExistingUser");
     assertEquals(goodResult.authToken(), "1234");
@@ -110,7 +110,7 @@ public class ServiceTest {
   @Test
   public void loginUseNotRegisteredTest() {
     //shouldn't log in with someone that hasn't been registered
-    LoginResult nullResult = service.loginUser(newUser, "123", memoryUserDAO, memoryAuthDAO);
+    LoginResult nullResult = SERVICE.loginUser(newUser, "123", memoryUserDAO, memoryAuthDAO);
     assertNull(nullResult);
   }
 
@@ -119,7 +119,7 @@ public class ServiceTest {
     //Should be able to log out
     AuthRequest logoutRequest = new AuthRequest("1234");
     memoryAuthDAO.addAuthData(new AuthData("1234", "ExistingUser"));
-    LogoutResult goodLogoutResult = service.logoutUser(logoutRequest, memoryAuthDAO);
+    LogoutResult goodLogoutResult = SERVICE.logoutUser(logoutRequest, memoryAuthDAO);
 
     assertNotNull(goodLogoutResult);
   }
@@ -128,7 +128,7 @@ public class ServiceTest {
   public void logoutNonExistingUserTest() {
     //Should return null because the authToken is not valid
     AuthRequest logoutRequest = new AuthRequest("000");
-    LogoutResult goodLogoutResult = service.logoutUser(logoutRequest, memoryAuthDAO);
+    LogoutResult goodLogoutResult = SERVICE.logoutUser(logoutRequest, memoryAuthDAO);
 
     assertNull(goodLogoutResult);
   }
@@ -138,7 +138,7 @@ public class ServiceTest {
     AuthRequest getGamesRequest = new AuthRequest("1234");
     memoryAuthDAO.addAuthData(new AuthData("1234", "ExistingUser"));
 
-    GetGamesResult getGamesResult = service.getGames(getGamesRequest, memoryGameDAO, memoryAuthDAO);
+    GetGamesResult getGamesResult = SERVICE.getGames(getGamesRequest, memoryGameDAO, memoryAuthDAO);
     assertNotNull(getGamesResult);
   }
 
@@ -146,58 +146,58 @@ public class ServiceTest {
   public void getGamesNotAuthorizedTest() {
     AuthRequest getGamesRequest = new AuthRequest("000");
 
-    GetGamesResult getGamesResult = service.getGames(getGamesRequest, memoryGameDAO, memoryAuthDAO);
+    GetGamesResult getGamesResult = SERVICE.getGames(getGamesRequest, memoryGameDAO, memoryAuthDAO);
     assertNull(getGamesResult);
   }
 
   @Test
   public void createGamesTest() {
-    AuthRequest authRequest = new AuthRequest(validAuthToken);
+    AuthRequest authRequest = new AuthRequest(VALID_AUTH_TOKEN);
     CreateGameRequest createGameRequest = new CreateGameRequest("1");
-    memoryAuthDAO.addAuthData(new AuthData(validAuthToken, "ExistingUser"));
+    memoryAuthDAO.addAuthData(new AuthData(VALID_AUTH_TOKEN, "ExistingUser"));
 
-    CreateGameResult createGameResult = service.createGame(authRequest, createGameRequest, memoryGameDAO, memoryAuthDAO);
+    CreateGameResult createGameResult = SERVICE.createGame(authRequest, createGameRequest, memoryGameDAO, memoryAuthDAO);
     assertNotNull(createGameResult);
   }
 
   @Test
   public void createExistingGame() {
     //Auth not valid to create game
-    AuthRequest authRequest = new AuthRequest(invalidAuthToken);
+    AuthRequest authRequest = new AuthRequest(INVALID_AUTH_TOKEN);
     CreateGameRequest createGameRequest = new CreateGameRequest("1");
     //memoryAuthDAO.addAuthData(new AuthData(validAuthToken,"ExistingUser"));
 
-    CreateGameResult createGameResult = service.createGame(authRequest, createGameRequest, memoryGameDAO, memoryAuthDAO);
+    CreateGameResult createGameResult = SERVICE.createGame(authRequest, createGameRequest, memoryGameDAO, memoryAuthDAO);
     assertNull(createGameResult);
   }
 
   @Test
   public void joinExistingGame() {
-    AuthRequest authRequest = new AuthRequest(validAuthToken);
+    AuthRequest authRequest = new AuthRequest(VALID_AUTH_TOKEN);
     JoinGameRequest joinGameRequest = new JoinGameRequest("WHITE", 1);
 
     CreateGameRequest createGameRequest = new CreateGameRequest("1");
 
-    service.createGame(authRequest, createGameRequest, memoryGameDAO, memoryAuthDAO);
-    JoinGameResult joinGameResult = service.joinGame(authRequest, joinGameRequest, memoryAuthDAO, memoryGameDAO);
+    SERVICE.createGame(authRequest, createGameRequest, memoryGameDAO, memoryAuthDAO);
+    JoinGameResult joinGameResult = SERVICE.joinGame(authRequest, joinGameRequest, memoryAuthDAO, memoryGameDAO);
     assertNotNull(joinGameResult);
   }
 
   @Test
   public void joinNunExistingGame() {
-    AuthRequest authRequest = new AuthRequest(validAuthToken);
+    AuthRequest authRequest = new AuthRequest(VALID_AUTH_TOKEN);
     JoinGameRequest joinGameRequest = new JoinGameRequest("WHITE", 0);
 
     CreateGameRequest createGameRequest = new CreateGameRequest("FirsGame_ID_1");
 
-    service.createGame(authRequest, createGameRequest, memoryGameDAO, memoryAuthDAO);
-    JoinGameResult joinGameResult = service.joinGame(authRequest, joinGameRequest, memoryAuthDAO, memoryGameDAO);
+    SERVICE.createGame(authRequest, createGameRequest, memoryGameDAO, memoryAuthDAO);
+    JoinGameResult joinGameResult = SERVICE.joinGame(authRequest, joinGameRequest, memoryAuthDAO, memoryGameDAO);
     assertNull(joinGameResult.gameData());
   }
 
   @Test
   public void clear() {
-    ClearResult clearResult = service.clear(memoryAuthDAO, memoryUserDAO, memoryGameDAO);
+    ClearResult clearResult = SERVICE.clear(memoryAuthDAO, memoryUserDAO, memoryGameDAO);
     assertNotNull(clearResult);
   }
 }

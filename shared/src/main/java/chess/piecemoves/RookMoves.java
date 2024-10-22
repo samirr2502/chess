@@ -1,4 +1,4 @@
-package chess.pieceMoves;
+package chess.piecemoves;
 
 import chess.ChessBoard;
 import chess.ChessMove;
@@ -7,9 +7,9 @@ import chess.ChessPosition;
 
 import java.util.ArrayList;
 
-public class BishopMoves extends PieceMoves {
+public class RookMoves extends PieceMoves {
 
-  public BishopMoves(ChessBoard board, ChessPiece piece, ChessPosition myPosition){
+  public RookMoves(ChessBoard board, ChessPiece piece, ChessPosition myPosition){
     super();
     this.board = board;
     this.piece=piece;
@@ -18,15 +18,16 @@ public class BishopMoves extends PieceMoves {
 
   @Override
   public ArrayList<ChessMove> getPossibleMoves() {
-    setDirection(2); //See rule 2 in Parent class
+    setDirection(2);
     return super.getPossibleMoves();
   }
 
+  //1 if only one step,  if multiple
   @Override
   void setDirection(int rule)  {
-    setMoves(rule, 1, 1);//Move topRight
-    setMoves(rule, 1, -1);//Move topLeft
-    setMoves(rule, -1, -1);//Move bottomLeft
-    setMoves(rule, -1, 1);//Move bottomRight
+    setMoves(rule, 0, 1);//Move right
+    setMoves(rule, 1, 0);//Move top
+    setMoves(rule, 0, -1);//Move left
+    setMoves(rule, -1, 0);//Move bottom
   }
 }

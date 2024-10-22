@@ -129,7 +129,9 @@ public class ChessGame {
     return checkPieces;
   }
 
-  private static void addInCheckPieces(TeamColor teamColor, ChessBoard testBoard, ChessPiece opponentPiece, int i, int j, ChessPosition kingPosition, ArrayList<ChessPiece> checkPieces) {
+  private static void addInCheckPieces(TeamColor teamColor, ChessBoard testBoard,
+                                       ChessPiece opponentPiece, int i, int j,
+                                       ChessPosition kingPosition, ArrayList<ChessPiece> checkPieces) {
     if (opponentPiece != null
             && testBoard.board[i][j].getTeamColor() != teamColor) {
       ChessPosition opponentPosition = new ChessPosition(i + 1, j + 1);
@@ -231,20 +233,7 @@ public class ChessGame {
         ChessPiece savedPiece = testBoard.board[move.getEndPosition().getRow() - 1][move.getEndPosition().getColumn() - 1];
         testBoard.board[move.getEndPosition().getRow() - 1][move.getEndPosition().getColumn() - 1] = kingPiece;
         testBoard.board[move.getStartPosition().getRow() - 1][move.getStartPosition().getColumn() - 1] = null;
-        for (int i = 0; i < 8; i++) {
-          for (int j = 0; j < 8; j++) {
-            //Get piece at position
-            ChessPiece opponentPiece = testBoard.board[i][j];
-            //If position is not empty (if there's a piece) and is not the current team's piece
-            newPositionInCheck = isNewPositionInCheck(teamColor, testBoard, move, opponentPiece, i, j, newPositionInCheck, savedPiece);
-            if (newPositionInCheck) {
-              break;
-            }
-          }
-          if (newPositionInCheck) {
-            break;
-          }
-        }
+        newPositionInCheck = goThroughChesBoard(teamColor, testBoard, move, newPositionInCheck, savedPiece);
         if (newPositionInCheck) {
           counter += 1;
         }
@@ -258,7 +247,27 @@ public class ChessGame {
     return false;
   }
 
-  private static boolean isNewPositionInCheck(TeamColor teamColor, ChessBoard testBoard, ChessMove move, ChessPiece opponentPiece, int i, int j, boolean newPositionInCheck, ChessPiece savedPiece) {
+  private static boolean goThroughChesBoard(TeamColor teamColor, ChessBoard testBoard,
+                                            ChessMove move, boolean newPositionInCheck, ChessPiece savedPiece) {
+    for (int i = 0; i < 8; i++) {
+      for (int j = 0; j < 8; j++) {
+        //Get piece at position
+        ChessPiece opponentPiece = testBoard.board[i][j];
+        //If position is not empty (if there's a piece) and is not the current team's piece
+        newPositionInCheck = isNewPositionInCheck(teamColor, testBoard, move, opponentPiece, i, j, newPositionInCheck, savedPiece);
+        if (newPositionInCheck) {
+          break;
+        }
+      }
+      if (newPositionInCheck) {
+        break;
+      }
+    }
+    return newPositionInCheck;
+  }
+
+  private static boolean isNewPositionInCheck(TeamColor teamColor, ChessBoard testBoard, ChessMove move,
+                                              ChessPiece opponentPiece, int i, int j, boolean newPositionInCheck, ChessPiece savedPiece) {
     if (opponentPiece != null
             && opponentPiece.getTeamColor() != teamColor) {
       //create position

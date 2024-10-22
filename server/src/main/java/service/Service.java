@@ -77,7 +77,8 @@ public class Service {
     GameData gameData = memoryGameDAO.getGame(createGameRequest.gameName());
     if (authData != null && gameData == null) {
       ChessGame newGame = new ChessGame();
-      GameData newGameData = new GameData(memoryGameDAO.getGames().size() + 1, null, null, createGameRequest.gameName(), newGame);
+      GameData newGameData = new GameData(memoryGameDAO.getGames().size() + 1,
+              null, null, createGameRequest.gameName(), newGame);
       memoryGameDAO.addGameData(newGameData);
       return new CreateGameResult(newGameData.gameID());
     }
