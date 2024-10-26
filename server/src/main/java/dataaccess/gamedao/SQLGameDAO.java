@@ -1,6 +1,7 @@
 package dataaccess.gamedao;
 
 import dataaccess.DataAccessException;
+import dataaccess.DatabaseManager;
 import model.GameData;
 
 import java.sql.SQLException;
@@ -39,6 +40,13 @@ public class SQLGameDAO implements GameDAO{
 
   @Override
   public void deleteAllGames() throws DataAccessException, SQLException {
-
+    try (var conn = DatabaseManager.getConnection()) {
+      var statement = "TRUNCATE gameData";
+      try (var ps = conn.prepareStatement(statement)) {
+        ps.executeUpdate();
+      } catch (Exception e) {
+        throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
+      }
+    }
   }
 }

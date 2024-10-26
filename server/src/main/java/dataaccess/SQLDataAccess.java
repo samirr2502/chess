@@ -10,21 +10,47 @@ import model.AuthData;
 import java.sql.SQLException;
 
 public class SQLDataAccess extends DataAccess{
-  public SQLDataAccess(AuthDAO authDAO, GameDAO gameDAO, UserDAO userDAO){
+  public SQLDataAccess(AuthDAO authDAO, GameDAO gameDAO, UserDAO userDAO) throws SQLException, DataAccessException {
     super(authDAO, gameDAO,userDAO);
+    configureDatabase();
+
   }
+
+
   private final String[] createStatements = {
           """
-            CREATE TABLE IF NOT EXISTS authdata (
+            CREATE TABLE IF NOT EXISTS authData (
               `id` int NOT NULL AUTO_INCREMENT,
-              `name` varchar(256) NOT NULL,
-              `type` ENUM('CAT', 'DOG', 'FISH', 'FROG', 'ROCK') DEFAULT 'CAT',
+              `token` varchar(256) NOT NULL,
+              `username` varchar(256) NOT NULL,
               `json` TEXT DEFAULT NULL,
-              PRIMARY KEY (`id`),
-              INDEX(type),
-              INDEX(name)
+              PRIMARY KEY (`id`)
+              
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
-            """
+            """//
+           ,
+          """
+           CREATE TABLE IF NOT EXISTS gameData (
+              `id` int NOT NULL AUTO_INCREMENT,
+              `whiteUsername` varchar(256) NOT NULL,
+              `blackUsername` varchar(256) NOT NULL,
+              `gameName` varchar(256) NOT NULL,
+              `game` TEXT DEFAULT NULL,
+              `json` TEXT DEFAULT NULL,
+              PRIMARY KEY (`id`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+          """,
+          """
+          CREATE TABLE IF NOT EXISTS userData (
+              `id` int NOT NULL AUTO_INCREMENT,
+              `username` varchar(256) NOT NULL,
+              `password` varchar(256) NOT NULL,
+              `email` varchar(256) NOT NULL,
+              `json` TEXT DEFAULT NULL,
+              PRIMARY KEY (`id`)
+
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+          """
   };
   private void configureDatabase() throws SQLException, DataAccessException {
     DatabaseManager.createDatabase();
@@ -38,4 +64,5 @@ public class SQLDataAccess extends DataAccess{
       throw new DataAccessException(String.format("Unable to configure database: %s", ex.getMessage()));
     }
   }
+
 }

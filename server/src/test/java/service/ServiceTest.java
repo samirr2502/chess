@@ -1,17 +1,21 @@
 package service;
 
-
 import dataaccess.DataAccess;
 import dataaccess.DataAccessException;
+import dataaccess.MemoryDataAccess;
 import dataaccess.SQLDataAccess;
+import dataaccess.authdao.AuthDAO;
 import dataaccess.authdao.MemoryAuthDAO;
 import dataaccess.authdao.SQLAuthDAO;
+import dataaccess.gamedao.GameDAO;
 import dataaccess.gamedao.MemoryGameDAO;
 import dataaccess.gamedao.SQLGameDAO;
 import dataaccess.userdao.MemoryUserDAO;
 import dataaccess.userdao.SQLUserDAO;
+import dataaccess.userdao.UserDAO;
 import model.AuthData;
 import model.UserData;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import server.requests.AuthRequest;
@@ -24,45 +28,48 @@ import java.sql.SQLException;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ServiceTest {
-  private static MemoryUserDAO memoryUserDAO = new MemoryUserDAO();
-  private static MemoryAuthDAO memoryAuthDAO = new MemoryAuthDAO();
-  private static MemoryGameDAO memoryGameDAO = new MemoryGameDAO();
-  static DataAccess dataAccess = new SQLDataAccess(new SQLAuthDAO(),new SQLGameDAO(), new SQLUserDAO());
+  private static final DataAccess DATA_ACCESS;
 
-  private static final Service SERVICE = new Service(dataAccess);
-  private static UserData newUser;
-  private static UserData existingUser;
-  private static final String VALID_AUTH_TOKEN = "1234";
-  private static final String INVALID_AUTH_TOKEN = "0000";
+  static {
+    //DATA_ACCESS = new MemoryDataAccess(new MemoryAuthDAO(), new MemoryGameDAO(), new MemoryUserDAO());
+
+    try {
+      DATA_ACCESS = new SQLDataAccess(new SQLAuthDAO(), new SQLGameDAO(), new SQLUserDAO());
+    } catch (SQLException | DataAccessException e) {
+      throw new RuntimeException(e);
+    }
+  }
+  private final UserDAO userDAO = DATA_ACCESS.getUserDAO();
+  private final GameDAO gameDAO = DATA_ACCESS.getGameDAO();
+  private final AuthDAO authDAO = DATA_ACCESS.getAuthDAO();
+  private final Service service = new Service(DATA_ACCESS);
+  private final UserData newUser =new UserData("NewUser", "pass2", "user1@email.com");;
+  private final UserData existingUser = new UserData("ExistingUser", "pass1", "user12@email.com");
+  private final String validAuthToken = "1234";
+  private final String invalidAuthToken = "0000";
 
 
   @BeforeEach
-  public void setUp() throws SQLException, DataAccessException {
-    SERVICE.clear();
-    //New User information with no valid log in (needs to register)
-    newUser = new UserData("NewUser", "pass2", "user1@email.com");
-    memoryUserDAO = new MemoryUserDAO();
-    memoryAuthDAO = new MemoryAuthDAO();
-    memoryGameDAO = new MemoryGameDAO();
-
+  public void setUpUser() throws SQLException, DataAccessException {
+    service.clear();
     //Add Existing user with valid login
-    existingUser = new UserData("ExistingUser", "pass1", "user12@email.com");
-    memoryUserDAO.addUser(existingUser);
-    memoryAuthDAO.addAuthData(new AuthData("ExistingUser", VALID_AUTH_TOKEN));
+    userDAO.addUser(existingUser);
+    authDAO.addAuthData(new AuthData("ExistingUser", validAuthToken));
   }
+
 
   @Test
   public void createAuthDataTest() throws SQLException, DataAccessException {
-    AuthData authData = SERVICE.createAuthData(existingUser, VALID_AUTH_TOKEN);
+    AuthData authData = service.createAuthData(existingUser, invalidAuthToken);
     assertNotNull(authData);
-    assertEquals(VALID_AUTH_TOKEN, authData.authToken());
+    assertEquals(invalidAuthToken, authData.authToken());
   }
 
   @Test
   public void createAuthDataBadTest() throws SQLException, DataAccessException {
-    AuthData authData = SERVICE.createAuthData(existingUser, VALID_AUTH_TOKEN);
-    memoryAuthDAO.addAuthData(authData);
-    AuthData authData2 = SERVICE.createAuthData(existingUser, VALID_AUTH_TOKEN);
+    AuthData authData = service.createAuthData(existingUser, validAuthToken);
+    authDAO.addAuthData(authData);
+    AuthData authData2 = service.createAuthData(existingUser, validAuthToken);
     assertNotNull(authData);
     assertNull(authData2);
   }
@@ -71,8 +78,8 @@ public class ServiceTest {
   public void getAuthDataTest() throws SQLException, DataAccessException {
 
     AuthRequest authRequest = new AuthRequest("123");
-    memoryAuthDAO.addAuthData(new AuthData("123", "NewUser"));
-    AuthData authData = SERVICE.getAuthData(authRequest);
+    authDAO.addAuthData(new AuthData("123", "NewUser"));
+    AuthData authData = service.getAuthData(authRequest);
     assertEquals("123", authData.authToken());
   }
 
@@ -80,14 +87,14 @@ public class ServiceTest {
   public void getAuthDataBadTest() throws SQLException, DataAccessException {
 
     AuthRequest authRequest = new AuthRequest("123");
-    AuthData authData = SERVICE.getAuthData(authRequest);
+    AuthData authData = service.getAuthData(authRequest);
     assertNull(authData);
   }
 
   @Test
   public void registerUserTest() throws SQLException, DataAccessException {
 
-    LoginResult goodResult = SERVICE.registerUser(newUser, "123");
+    LoginResult goodResult = service.registerUser(newUser, "123");
     assertEquals(goodResult.getClass(), LoginResult.class);
     assertEquals(goodResult.username(), "NewUser");
     assertEquals(goodResult.authToken(), "123");
@@ -96,22 +103,22 @@ public class ServiceTest {
 
   @Test
   public void registerUserTwiceTest() throws SQLException, DataAccessException {
-    LoginResult goodResult = SERVICE.registerUser(newUser, "123");
+    LoginResult goodResult = service.registerUser(newUser, "123");
     assertEquals(goodResult.getClass(), LoginResult.class);
     assertEquals(goodResult.username(), "NewUser");
     assertEquals(goodResult.authToken(), "123");
 
-    LoginResult badResult = SERVICE.registerUser(newUser, "123");
+    LoginResult badResult = service.registerUser(newUser, "123");
     assertNull(badResult);
 
-    LoginResult badResult2 = SERVICE.registerUser(existingUser, "1234");
+    LoginResult badResult2 = service.registerUser(existingUser, "1234");
     assertNull(badResult2);
 
   }
 
   @Test
   public void loginRegisteredUserTest() throws SQLException, DataAccessException {
-    LoginResult goodResult = SERVICE.loginUser(existingUser, "1234");
+    LoginResult goodResult = service.loginUser(existingUser, "1234");
 
     assertEquals(goodResult.username(), "ExistingUser");
     assertEquals(goodResult.authToken(), "1234");
@@ -120,7 +127,7 @@ public class ServiceTest {
   @Test
   public void loginUseNotRegisteredTest() throws SQLException, DataAccessException {
     //shouldn't log in with someone that hasn't been registered
-    LoginResult nullResult = SERVICE.loginUser(newUser, "123");
+    LoginResult nullResult = service.loginUser(newUser, "123");
     assertNull(nullResult);
   }
 
@@ -128,8 +135,8 @@ public class ServiceTest {
   public void logoutExistingUserTest() throws SQLException, DataAccessException {
     //Should be able to log out
     AuthRequest logoutRequest = new AuthRequest("1234");
-    memoryAuthDAO.addAuthData(new AuthData("1234", "ExistingUser"));
-    LogoutResult goodLogoutResult = SERVICE.logoutUser(logoutRequest);
+    authDAO.addAuthData(new AuthData("1234", "ExistingUser"));
+    LogoutResult goodLogoutResult = service.logoutUser(logoutRequest);
 
     assertNotNull(goodLogoutResult);
   }
@@ -138,7 +145,7 @@ public class ServiceTest {
   public void logoutNonExistingUserTest() throws SQLException, DataAccessException {
     //Should return null because the authToken is not valid
     AuthRequest logoutRequest = new AuthRequest("000");
-    LogoutResult goodLogoutResult = SERVICE.logoutUser(logoutRequest);
+    LogoutResult goodLogoutResult = service.logoutUser(logoutRequest);
 
     assertNull(goodLogoutResult);
   }
@@ -146,9 +153,9 @@ public class ServiceTest {
   @Test
   public void getGamesTest() throws SQLException, DataAccessException {
     AuthRequest getGamesRequest = new AuthRequest("1234");
-    memoryAuthDAO.addAuthData(new AuthData("1234", "ExistingUser"));
+    authDAO.addAuthData(new AuthData("1234", "ExistingUser"));
 
-    GetGamesResult getGamesResult = SERVICE.getGames(getGamesRequest);
+    GetGamesResult getGamesResult = service.getGames(getGamesRequest);
     assertNotNull(getGamesResult);
   }
 
@@ -156,58 +163,58 @@ public class ServiceTest {
   public void getGamesNotAuthorizedTest() throws SQLException, DataAccessException {
     AuthRequest getGamesRequest = new AuthRequest("000");
 
-    GetGamesResult getGamesResult = SERVICE.getGames(getGamesRequest);
+    GetGamesResult getGamesResult = service.getGames(getGamesRequest);
     assertNull(getGamesResult);
   }
 
   @Test
   public void createGamesTest() throws SQLException, DataAccessException {
-    AuthRequest authRequest = new AuthRequest(VALID_AUTH_TOKEN);
+    AuthRequest authRequest = new AuthRequest(validAuthToken);
     CreateGameRequest createGameRequest = new CreateGameRequest("1");
-    memoryAuthDAO.addAuthData(new AuthData(VALID_AUTH_TOKEN, "ExistingUser"));
+    authDAO.addAuthData(new AuthData(validAuthToken, "ExistingUser"));
 
-    CreateGameResult createGameResult = SERVICE.createGame(authRequest, createGameRequest);
+    CreateGameResult createGameResult = service.createGame(authRequest, createGameRequest);
     assertNotNull(createGameResult);
   }
 
   @Test
   public void createExistingGame() throws SQLException, DataAccessException {
     //Auth not valid to create game
-    AuthRequest authRequest = new AuthRequest(INVALID_AUTH_TOKEN);
+    AuthRequest authRequest = new AuthRequest(invalidAuthToken);
     CreateGameRequest createGameRequest = new CreateGameRequest("1");
     //memoryAuthDAO.addAuthData(new AuthData(validAuthToken,"ExistingUser"));
 
-    CreateGameResult createGameResult = SERVICE.createGame(authRequest, createGameRequest);
+    CreateGameResult createGameResult = service.createGame(authRequest, createGameRequest);
     assertNull(createGameResult);
   }
 
   @Test
   public void joinExistingGame() throws SQLException, DataAccessException {
-    AuthRequest authRequest = new AuthRequest(VALID_AUTH_TOKEN);
+    AuthRequest authRequest = new AuthRequest(validAuthToken);
     JoinGameRequest joinGameRequest = new JoinGameRequest("WHITE", 1);
 
     CreateGameRequest createGameRequest = new CreateGameRequest("1");
 
-    SERVICE.createGame(authRequest, createGameRequest);
-    JoinGameResult joinGameResult = SERVICE.joinGame(authRequest, joinGameRequest);
+    service.createGame(authRequest, createGameRequest);
+    JoinGameResult joinGameResult = service.joinGame(authRequest, joinGameRequest);
     assertNotNull(joinGameResult);
   }
 
   @Test
-  public void joinNunExistingGame() throws SQLException, DataAccessException {
-    AuthRequest authRequest = new AuthRequest(VALID_AUTH_TOKEN);
+  public void joinNonExistingGame() throws SQLException, DataAccessException {
+    AuthRequest authRequest = new AuthRequest(validAuthToken);
     JoinGameRequest joinGameRequest = new JoinGameRequest("WHITE", 0);
 
     CreateGameRequest createGameRequest = new CreateGameRequest("FirsGame_ID_1");
 
-    SERVICE.createGame(authRequest, createGameRequest);
-    JoinGameResult joinGameResult = SERVICE.joinGame(authRequest, joinGameRequest);
+    service.createGame(authRequest, createGameRequest);
+    JoinGameResult joinGameResult = service.joinGame(authRequest, joinGameRequest);
     assertNull(joinGameResult.gameData());
   }
 
   @Test
   public void clear() throws SQLException, DataAccessException {
-    ClearResult clearResult = SERVICE.clear();
+    ClearResult clearResult = service.clear();
     assertNotNull(clearResult);
   }
 }

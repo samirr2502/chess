@@ -2,6 +2,7 @@ package server;
 
 import com.google.gson.Gson;
 import dataaccess.DataAccess;
+import dataaccess.DataAccessException;
 import dataaccess.MemoryDataAccess;
 import dataaccess.SQLDataAccess;
 import dataaccess.authdao.MemoryAuthDAO;
@@ -19,11 +20,25 @@ import service.results.*;
 import spark.Request;
 import spark.Response;
 
+import java.sql.SQLException;
+
 
 public class Handler {
-  static DataAccess sqlDataAccess = new SQLDataAccess(new SQLAuthDAO(),new SQLGameDAO(), new SQLUserDAO());
-  //static DataAccess memoryDataAccess = new MemoryDataAccess(new MemoryAuthDAO(),new MemoryGameDAO(), new MemoryUserDAO());
-  private static final Service SERVICE = new Service(sqlDataAccess);
+  static DataAccess sqlDataAccess;
+  static DataAccess memoryDataAccess;
+  static Service SERVICE;
+
+  static {
+    try {
+      sqlDataAccess = new SQLDataAccess(new SQLAuthDAO(), new SQLGameDAO(), new SQLUserDAO());
+
+    } catch (SQLException | DataAccessException e) {
+      throw new RuntimeException(e);
+    }
+    //memoryDataAccess = new MemoryDataAccess(new MemoryAuthDAO(),new MemoryGameDAO(), new MemoryUserDAO());
+    SERVICE = new Service(sqlDataAccess);
+  }
+
   private static final Gson JSON = new Gson();
 
   public static Object registerUser(Request req, Response res) {
