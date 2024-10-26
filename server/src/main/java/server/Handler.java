@@ -28,7 +28,7 @@ public class Handler {
   static DataAccess sqlDataAccess;
 
   static DataAccess memoryDataAccess;
-  static Service SERVICE;
+  private static final Service SERVICE;
 
   static {
 
@@ -53,7 +53,8 @@ public class Handler {
       UserData hashedRegisterUserRequest = new UserData(registerUserRequest.username(),hashedPassword,registerUserRequest.email());
       String authToken = Service.generateToken();
       //Check if a field is not null
-      if (registerUserRequest.password()==null|| hashedRegisterUserRequest.password() == null || hashedRegisterUserRequest.username() == null || hashedRegisterUserRequest.email() == null) {
+      if (registerUserRequest.password()==null|| hashedRegisterUserRequest.password() == null
+              || hashedRegisterUserRequest.username() == null || hashedRegisterUserRequest.email() == null) {
         res.status(400);
         return JSON.toJson(new ErrorResult("Error: bad request"));
       }
