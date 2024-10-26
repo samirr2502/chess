@@ -8,7 +8,6 @@ public class DatabaseManager {
     private static final String USER;
     private static final String PASSWORD;
     private static final String CONNECTION_URL;
-
     /*
      * Load the database information for the db.properties file.
      */
@@ -20,7 +19,8 @@ public class DatabaseManager {
                 }
                 Properties props = new Properties();
                 props.load(propStream);
-                DATABASE_NAME = props.getProperty("db.name");
+                //Change to db.chess when finish testing for prod environment
+                DATABASE_NAME = props.getProperty("db.test");
                 USER = props.getProperty("db.user");
                 PASSWORD = props.getProperty("db.password");
 

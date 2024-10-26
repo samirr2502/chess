@@ -11,7 +11,7 @@ public class SQLAuthDAO implements AuthDAO{
   @Override
   public AuthData getAuthDataByToken(String authToken) throws DataAccessException, SQLException {
     try (var conn = DatabaseManager.getConnection()) {
-      var statement = "SELECT json FROM authdata WHERE token=?";
+      var statement = "SELECT json FROM authData WHERE token=?";
       var ps = conn.prepareStatement(statement);
         ps.setString(1, authToken);
         try (var rs = ps.executeQuery()) {
@@ -42,10 +42,17 @@ public class SQLAuthDAO implements AuthDAO{
       throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
     }
   }
-
   @Override
   public void deleteAuthData(AuthData authData) throws DataAccessException, SQLException {
-
+    try (var conn = DatabaseManager.getConnection()) {
+      var statement = "DELETE FROM authData WHERE token=?";
+      try (var ps = conn.prepareStatement(statement)) {
+        ps.setString(1,authData.authToken());
+        ps.executeUpdate();
+      }
+    } catch (Exception e) {
+      throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
+    }
   }
 
   @Override
