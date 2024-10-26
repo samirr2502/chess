@@ -1,8 +1,8 @@
-package database.userdao;
+package dataaccess.userdao;
 
 import com.google.gson.Gson;
-import database.DataAccessException;
-import database.DatabaseManager;
+import dataaccess.DataAccessException;
+import dataaccess.DatabaseManager;
 import model.UserData;
 
 import java.sql.SQLException;

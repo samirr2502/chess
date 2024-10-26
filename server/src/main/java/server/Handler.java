@@ -1,16 +1,16 @@
 package server;
 
 import com.google.gson.Gson;
-import database.DataAccess;
-import database.DataAccessException;
-import database.MemoryDataAccess;
-import database.SQLDataAccess;
-import database.authdao.MemoryAuthDAO;
-import database.authdao.SQLAuthDAO;
-import database.gamedao.MemoryGameDAO;
-import database.gamedao.SQLGameDAO;
-import database.userdao.MemoryUserDAO;
-import database.userdao.SQLUserDAO;
+import dataaccess.DataAccess;
+import dataaccess.DataAccessException;
+import dataaccess.MemoryDataAccess;
+import dataaccess.SQLDataAccess;
+import dataaccess.authdao.MemoryAuthDAO;
+import dataaccess.authdao.SQLAuthDAO;
+import dataaccess.gamedao.MemoryGameDAO;
+import dataaccess.gamedao.SQLGameDAO;
+import dataaccess.userdao.MemoryUserDAO;
+import dataaccess.userdao.SQLUserDAO;
 import model.UserData;
 import org.mindrot.jbcrypt.BCrypt;
 import server.requests.AuthRequest;

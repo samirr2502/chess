@@ -1,10 +1,10 @@
-package database.authdao;
+package dataaccess.authdao;
 
-import database.DataAccess;
-import database.DataAccessException;
-import database.SQLDataAccess;
-import database.gamedao.SQLGameDAO;
-import database.userdao.SQLUserDAO;
+import dataaccess.DataAccess;
+import dataaccess.DataAccessException;
+import dataaccess.SQLDataAccess;
+import dataaccess.gamedao.SQLGameDAO;
+import dataaccess.userdao.SQLUserDAO;
 import model.AuthData;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

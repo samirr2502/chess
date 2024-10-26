@@ -1,4 +1,4 @@
-package database.gamedao;
+package dataaccess.gamedao;
 
 import model.GameData;
 

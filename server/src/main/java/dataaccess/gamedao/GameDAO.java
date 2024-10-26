@@ -1,6 +1,6 @@
-package database.gamedao;
+package dataaccess.gamedao;
 
-import database.DataAccessException;
+import dataaccess.DataAccessException;
 import model.GameData;
 
 import java.sql.SQLException;

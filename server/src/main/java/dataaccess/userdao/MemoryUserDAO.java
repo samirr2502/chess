@@ -1,4 +1,4 @@
-package database.userdao;
+package dataaccess.userdao;
 
 import model.UserData;
 

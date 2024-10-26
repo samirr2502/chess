@@ -1,6 +1,6 @@
-package database.userdao;
+package dataaccess.userdao;
 
-import database.DataAccessException;
+import dataaccess.DataAccessException;
 import model.UserData;
 
 import java.sql.SQLException;
