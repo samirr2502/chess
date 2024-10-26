@@ -1,11 +1,11 @@
-package dataaccess.userdao;
+package database.userdao;
 
-import dataaccess.DataAccess;
-import dataaccess.DataAccessException;
-import dataaccess.SQLDataAccess;
-import dataaccess.authdao.AuthDAO;
-import dataaccess.authdao.SQLAuthDAO;
-import dataaccess.gamedao.SQLGameDAO;
+import database.DataAccess;
+import database.DataAccessException;
+import database.SQLDataAccess;
+import database.authdao.AuthDAO;
+import database.authdao.SQLAuthDAO;
+import database.gamedao.SQLGameDAO;
 import model.AuthData;
 import model.UserData;
 import org.junit.jupiter.api.AfterEach;
@@ -31,7 +31,6 @@ class SQLUserDAOTest {
 
   private final UserDAO userDAO = DATA_ACCESS.getUserDAO();
   private final AuthDAO authDAO = DATA_ACCESS.getAuthDAO();
-  private final String validAuthToken = "1234";
   private final String existingUsername = "existingUsername";
   @BeforeEach
   void setUp() throws SQLException, DataAccessException {
@@ -39,6 +38,7 @@ class SQLUserDAOTest {
     userDAO.deleteAllUsers();
 
     UserData userData = new UserData(existingUsername,"existingPassword","existing@email");
+    String validAuthToken = "1234";
     AuthData authData = new AuthData(validAuthToken,userData.username());
     authDAO.addAuthData(authData);
     userDAO.addUser(userData);

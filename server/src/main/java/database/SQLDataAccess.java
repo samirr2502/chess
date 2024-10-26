@@ -1,11 +1,10 @@
-package dataaccess;
+package database;
 
 
-import dataaccess.authdao.AuthDAO;
-import dataaccess.gamedao.GameDAO;
+import database.authdao.AuthDAO;
+import database.gamedao.GameDAO;
 
-import dataaccess.userdao.UserDAO;
-import model.AuthData;
+import database.userdao.UserDAO;
 
 import java.sql.SQLException;
 

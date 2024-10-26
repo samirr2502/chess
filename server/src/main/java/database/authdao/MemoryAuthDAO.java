@@ -1,4 +1,4 @@
-package dataaccess.authdao;
+package database.authdao;
 
 import model.AuthData;
 

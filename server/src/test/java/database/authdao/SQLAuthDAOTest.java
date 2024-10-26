@@ -1,47 +1,33 @@
-package database;
+package database.authdao;
 
-import dataaccess.DataAccess;
-import dataaccess.DataAccessException;
-import dataaccess.MemoryDataAccess;
-import dataaccess.SQLDataAccess;
-import dataaccess.authdao.AuthDAO;
-import dataaccess.authdao.MemoryAuthDAO;
-import dataaccess.authdao.SQLAuthDAO;
-import dataaccess.gamedao.MemoryGameDAO;
-import dataaccess.gamedao.SQLGameDAO;
-import dataaccess.userdao.MemoryUserDAO;
-import dataaccess.userdao.SQLUserDAO;
-import dataaccess.userdao.UserDAO;
+import database.DataAccess;
+import database.DataAccessException;
+import database.SQLDataAccess;
+import database.gamedao.SQLGameDAO;
+import database.userdao.SQLUserDAO;
 import model.AuthData;
-import model.UserData;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.function.Executable;
-import server.requests.AuthRequest;
-import server.requests.CreateGameRequest;
-import server.requests.JoinGameRequest;
-import service.results.*;
-
 import java.sql.SQLException;
-
 import static org.junit.jupiter.api.Assertions.*;
 
-public class DatabaseTest {
+public class SQLAuthDAOTest {
   private static final DataAccess DATA_ACCESS;
 
   static {
-    //DATA_ACCESS = new MemoryDataAccess(new MemoryAuthDAO(), new MemoryGameDAO(), new MemoryUserDAO());
-
+    //Change Data access code: DATA_ACCESS = new MemoryDataAccess(new MemoryAuthDAO(), new MemoryGameDAO(), new MemoryUserDAO());
+    ///*
     try {
       DATA_ACCESS = new SQLDataAccess(new SQLAuthDAO(), new SQLGameDAO(), new SQLUserDAO());
     } catch (SQLException | DataAccessException e) {
       throw new RuntimeException(e);
     }
+    //*/
   }
 
   private final AuthDAO authDAO = DATA_ACCESS.getAuthDAO();
-  private String validToken = "1234";
+  private final String validToken = "1234";
 
   @BeforeEach
   public void setUp() throws SQLException, DataAccessException {
@@ -111,6 +97,4 @@ public class DatabaseTest {
     assertNull(authDAO.getAuthDataByToken("1234567"));
 
   }
-
-
 }

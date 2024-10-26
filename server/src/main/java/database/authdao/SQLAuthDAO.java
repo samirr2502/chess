@@ -1,8 +1,8 @@
-package dataaccess.authdao;
+package database.authdao;
 
 import com.google.gson.Gson;
-import dataaccess.DataAccessException;
-import dataaccess.DatabaseManager;
+import database.DataAccessException;
+import database.DatabaseManager;
 import model.AuthData;
 
 import java.sql.SQLException;

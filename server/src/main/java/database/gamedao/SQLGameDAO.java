@@ -1,10 +1,9 @@
-package dataaccess.gamedao;
+package database.gamedao;
 
 import com.google.gson.Gson;
-import dataaccess.DataAccessException;
-import dataaccess.DatabaseManager;
+import database.DataAccessException;
+import database.DatabaseManager;
 import model.GameData;
-import model.UserData;
 
 import java.sql.SQLException;
 import java.util.ArrayList;

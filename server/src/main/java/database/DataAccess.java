@@ -1,8 +1,8 @@
-package dataaccess;
+package database;
 
-import dataaccess.authdao.AuthDAO;
-import dataaccess.gamedao.GameDAO;
-import dataaccess.userdao.UserDAO;
+import database.authdao.AuthDAO;
+import database.gamedao.GameDAO;
+import database.userdao.UserDAO;
 
 public abstract class DataAccess {
   AuthDAO authDAO;

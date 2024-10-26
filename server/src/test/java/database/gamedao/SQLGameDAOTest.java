@@ -1,16 +1,13 @@
-package dataaccess.gamedao;
+package database.gamedao;
 
 import chess.ChessGame;
-import dataaccess.DataAccess;
-import dataaccess.DataAccessException;
-import dataaccess.MemoryDataAccess;
-import dataaccess.SQLDataAccess;
-import dataaccess.authdao.AuthDAO;
-import dataaccess.authdao.MemoryAuthDAO;
-import dataaccess.authdao.SQLAuthDAO;
-import dataaccess.userdao.MemoryUserDAO;
-import dataaccess.userdao.SQLUserDAO;
-import dataaccess.userdao.UserDAO;
+import database.DataAccess;
+import database.DataAccessException;
+import database.SQLDataAccess;
+import database.authdao.AuthDAO;
+import database.authdao.SQLAuthDAO;
+import database.userdao.SQLUserDAO;
+import database.userdao.UserDAO;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
