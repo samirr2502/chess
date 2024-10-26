@@ -1,9 +1,15 @@
 package server;
 
 import com.google.gson.Gson;
+import dataaccess.DataAccess;
+import dataaccess.MemoryDataAccess;
+import dataaccess.SQLDataAccess;
 import dataaccess.authdao.MemoryAuthDAO;
+import dataaccess.authdao.SQLAuthDAO;
 import dataaccess.gamedao.MemoryGameDAO;
+import dataaccess.gamedao.SQLGameDAO;
 import dataaccess.userdao.MemoryUserDAO;
+import dataaccess.userdao.SQLUserDAO;
 import model.UserData;
 import server.requests.AuthRequest;
 import server.requests.CreateGameRequest;
@@ -15,17 +21,16 @@ import spark.Response;
 
 
 public class Handler {
-  private static final Service SERVICE = new Service();
-  private static final MemoryUserDAO MEMORY_USER_DAO = new MemoryUserDAO();
-  private static final MemoryAuthDAO MEMORY_AUTH_DAO = new MemoryAuthDAO();
-  private static final MemoryGameDAO MEMORY_GAME_DAO = new MemoryGameDAO();
+  static DataAccess sqlDataAccess = new SQLDataAccess(new SQLAuthDAO(),new SQLGameDAO(), new SQLUserDAO());
+  //static DataAccess memoryDataAccess = new MemoryDataAccess(new MemoryAuthDAO(),new MemoryGameDAO(), new MemoryUserDAO());
+  private static final Service SERVICE = new Service(sqlDataAccess);
   private static final Gson JSON = new Gson();
 
   public static Object registerUser(Request req, Response res) {
     try {
       UserData registerUserRequest = JSON.fromJson(req.body(), UserData.class);
       String authToken = Service.generateToken();
-      LoginResult registerUserResult = SERVICE.registerUser(registerUserRequest, authToken, MEMORY_USER_DAO, MEMORY_AUTH_DAO);
+      LoginResult registerUserResult = SERVICE.registerUser(registerUserRequest, authToken);
 
       //Check if a field is not null
       if (registerUserRequest.password() == null || registerUserRequest.username() == null || registerUserRequest.email() == null) {
@@ -46,7 +51,7 @@ public class Handler {
     try {
       UserData loginUserRequest = JSON.fromJson(req.body(), UserData.class);
       String authToken = Service.generateToken();
-      LoginResult loginResult = SERVICE.loginUser(loginUserRequest, authToken, MEMORY_USER_DAO, MEMORY_AUTH_DAO);
+      LoginResult loginResult = SERVICE.loginUser(loginUserRequest, authToken);
 
       if (loginResult != null) { //200 ok case
         return JSON.toJson(loginResult);
@@ -63,7 +68,7 @@ public class Handler {
     try {
       String authToken = req.headers("authorization");
       AuthRequest logoutRequest = new AuthRequest(authToken);
-      LogoutResult logoutResult = SERVICE.logoutUser(logoutRequest, MEMORY_AUTH_DAO);
+      LogoutResult logoutResult = SERVICE.logoutUser(logoutRequest);
       if (logoutResult != null) { // 200 OK Case
         return "{}";
       } else {
@@ -79,7 +84,7 @@ public class Handler {
     try {
       String authToken = req.headers("authorization");
       AuthRequest logoutRequest = new AuthRequest(authToken);
-      GetGamesResult getGameResult = SERVICE.getGames(logoutRequest, MEMORY_GAME_DAO, MEMORY_AUTH_DAO);
+      GetGamesResult getGameResult = SERVICE.getGames(logoutRequest);
       if (getGameResult != null) {
         return JSON.toJson(getGameResult);
       } else {
@@ -97,7 +102,7 @@ public class Handler {
       AuthRequest authRequest = new AuthRequest(authToken);
 
       CreateGameRequest createGameRequest = JSON.fromJson(req.body(), CreateGameRequest.class);
-      CreateGameResult createGameResult = SERVICE.createGame(authRequest, createGameRequest, MEMORY_GAME_DAO, MEMORY_AUTH_DAO);
+      CreateGameResult createGameResult = SERVICE.createGame(authRequest, createGameRequest);
       if (createGameResult!=null) {
         return JSON.toJson(createGameResult);
       } else{
@@ -120,7 +125,7 @@ public class Handler {
         return JSON.toJson(new ErrorResult("Error: bad request"));
       }
 
-      JoinGameResult joinGameResult = SERVICE.joinGame(authRequest, joinGameRequest, MEMORY_AUTH_DAO, MEMORY_GAME_DAO);
+      JoinGameResult joinGameResult = SERVICE.joinGame(authRequest, joinGameRequest);
 
       if (joinGameResult != null && joinGameResult.gameData()!=null &&joinGameResult.colorAvailable() ) {
         return "{}";
@@ -141,7 +146,7 @@ public class Handler {
 
   public static Object clear(Request req, Response res) {
     try {
-      ClearResult clearResult= SERVICE.clear(MEMORY_AUTH_DAO, MEMORY_USER_DAO, MEMORY_GAME_DAO);
+      ClearResult clearResult= SERVICE.clear();
       if(clearResult != null){
       return "{}";
       } else {
