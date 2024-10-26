@@ -100,6 +100,12 @@ class SQLGameDAOTest {
     ArrayList<GameData> games = gameDAO.getGames();
     assertEquals(2,games.size());
   }
+  @Test
+  void getEmptyListGames() throws SQLException, DataAccessException {
+    gameDAO.deleteAllGames();
+    ArrayList<GameData> games = gameDAO.getGames();
+    assertEquals(0,games.size());
+  }
 
   @Test
   void addGameData() throws SQLException, DataAccessException {
@@ -129,14 +135,21 @@ class SQLGameDAOTest {
     GameData updatedGameData2 = gameDAO.getGameByName(existingGameName2);
     assertEquals("anotherWhiteUser",updatedGameData2.whiteUsername());
   }
+  @Test
+  void updateNotExistingGame() throws SQLException, DataAccessException {
+    GameData gameData3 =new GameData(3,"anotherWhiteUser","blackUser",
+            "notExisting",new ChessGame());
+    if(gameDAO.getGameByID(3)!=null) {
+      gameDAO.updateGame(gameData3);
+    }
+    GameData updatedGameData3 = gameDAO.getGameByName("notExisting");
+    assertNull(updatedGameData3);
+  }
 
   @Test
   void deleteGameData() throws SQLException, DataAccessException {
-
     GameData gameData2 = gameDAO.getGameByID(2);
-
     assertNotNull(gameData2);
-
     gameDAO.deleteGameData(gameData2);
     GameData gameDataResult = gameDAO.getGameByID(2);
     assertNull(gameDataResult);

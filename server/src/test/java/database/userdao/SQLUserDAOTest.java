@@ -60,14 +60,19 @@ class SQLUserDAOTest {
     UserData userData = userDAO.getUser("notExistent");
     assertNull(userData);
   }
-
+  @Test
+  void addUser() throws SQLException, DataAccessException{
+    UserData newUserData = new UserData("newUser1","password1","email1");
+    UserData getUserData = userDAO.getUser(newUserData.username());
+    assertNull(getUserData);
+    userDAO.addUser(newUserData);
+    UserData getUserData2 = userDAO.getUser(newUserData.username());
+    assertNotNull(getUserData2);
+  }
   @Test
   void addExistentUser() throws SQLException, DataAccessException {
     UserData newUserData = new UserData(existingUsername,"password2","email2");
     UserData getUserData = userDAO.getUser(newUserData.username());
-    if(getUserData ==null) {
-      userDAO.addUser(newUserData);
-    }
     assertNotNull(getUserData);
   }
 
