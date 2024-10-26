@@ -8,12 +8,10 @@ import model.GameData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class SQLGameDAO implements GameDAO{
   @Override
-  public GameData getGameByName(String gameName) throws DataAccessException, SQLException {
+  public GameData getGameByName(String gameName) throws SQLException {
     try (var conn = DatabaseManager.getConnection()) {
       var statement = "SELECT json FROM gameData WHERE gameName=?";
       var ps = conn.prepareStatement(statement);
@@ -26,12 +24,12 @@ public class SQLGameDAO implements GameDAO{
         return null;
       }
     } catch (Exception e) {
-      throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
+      throw new SQLException(String.format("Unable to read data: %s", e.getMessage()));
     }
   }
 
   @Override
-  public GameData getGameByID(int gameID) throws DataAccessException, SQLException {
+  public GameData getGameByID(int gameID) throws SQLException {
     try (var conn = DatabaseManager.getConnection()) {
       var statement = "SELECT json FROM gameData WHERE gameId=?";
       var ps = conn.prepareStatement(statement);
@@ -44,7 +42,7 @@ public class SQLGameDAO implements GameDAO{
         return null;
       }
     } catch (Exception e) {
-      throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
+      throw new SQLException(String.format("Unable to read data: %s", e.getMessage()));
     }
   }
 
@@ -67,7 +65,7 @@ public class SQLGameDAO implements GameDAO{
   }
 
   @Override
-  public void addGameData(GameData gameData) throws DataAccessException, SQLException {
+  public void addGameData(GameData gameData) throws SQLException {
     try (var conn = DatabaseManager.getConnection()) {
       var statement = "INSERT INTO gameData (gameId, whiteUsername, blackUsername, gameName,game,json) values (?,?,?,?,?,?)";
       var json = new Gson().toJson(gameData);
@@ -82,7 +80,7 @@ public class SQLGameDAO implements GameDAO{
         ps.executeUpdate();
       }
     } catch (Exception e) {
-      throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
+      throw new SQLException(String.format("Unable to read data: %s", e.getMessage()));
     }
   }
 
@@ -93,7 +91,7 @@ public class SQLGameDAO implements GameDAO{
   }
 
   @Override
-  public void deleteGameData(GameData gameData) throws DataAccessException, SQLException {
+  public void deleteGameData(GameData gameData) throws SQLException {
     try (var conn = DatabaseManager.getConnection()) {
       var statement = "DELETE FROM gameData WHERE gameId=?";
       try (var ps = conn.prepareStatement(statement)) {
@@ -101,7 +99,7 @@ public class SQLGameDAO implements GameDAO{
         ps.executeUpdate();
       }
     } catch (Exception e) {
-      throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
+      throw new SQLException(String.format("Unable to read data: %s", e.getMessage()));
     }
   }
 

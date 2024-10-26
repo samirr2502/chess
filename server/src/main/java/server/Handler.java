@@ -3,9 +3,13 @@ package server;
 import com.google.gson.Gson;
 import database.DataAccess;
 import database.DataAccessException;
+import database.MemoryDataAccess;
 import database.SQLDataAccess;
+import database.authdao.MemoryAuthDAO;
 import database.authdao.SQLAuthDAO;
+import database.gamedao.MemoryGameDAO;
 import database.gamedao.SQLGameDAO;
+import database.userdao.MemoryUserDAO;
 import database.userdao.SQLUserDAO;
 import model.UserData;
 import org.mindrot.jbcrypt.BCrypt;
@@ -21,20 +25,23 @@ import java.sql.SQLException;
 
 
 public class Handler {
-  static DataAccess dataAccess;
+  static DataAccess sqlDataAccess;
+
+  static DataAccess memoryDataAccess;
   static Service SERVICE;
 
   static {
-    ///*
+
     try {
-      dataAccess = new SQLDataAccess(new SQLAuthDAO(), new SQLGameDAO(), new SQLUserDAO());
+      sqlDataAccess = new SQLDataAccess(new SQLAuthDAO(), new SQLGameDAO(), new SQLUserDAO());
 
     } catch (SQLException | DataAccessException e) {
       throw new RuntimeException(e);
     }
-     //*/
-    //dataAccess = new MemoryDataAccess(new MemoryAuthDAO(),new MemoryGameDAO(), new MemoryUserDAO());
-    SERVICE = new Service(dataAccess);
+    memoryDataAccess = new MemoryDataAccess(new MemoryAuthDAO(),new MemoryGameDAO(), new MemoryUserDAO());
+
+    //Change the database here:
+    SERVICE = new Service(sqlDataAccess);
   }
 
   private static final Gson JSON = new Gson();

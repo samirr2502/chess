@@ -36,15 +36,9 @@ class SQLGameDAOTest {
   private final GameDAO gameDAO = DATA_ACCESS.getGameDAO();
   private final AuthDAO authDAO = DATA_ACCESS.getAuthDAO();
   private final UserDAO userDAO = DATA_ACCESS.getUserDAO();
-
-  private final String validAuthToken = "1234";
-  private  final String existingUsernameWhite = "existingUsernameWhite";
-  private  final String existingUsernameBlack = "existingUsernameBlack";
   private final String existingGameName1 = "existingGame";
   private final String existingGameName2 = "existingGame2";
-
   private final ChessGame chessGame= new ChessGame();
-  private final int existingGameID = 1;
 
   @BeforeEach
   void setUp() throws SQLException, DataAccessException {
@@ -52,7 +46,9 @@ class SQLGameDAOTest {
     userDAO.deleteAllUsers();
     authDAO.deleteAllAuthData();
 
+    String existingUsernameWhite = "existingUsernameWhite";
     UserData userDataWhite = new UserData(existingUsernameWhite,"ps1","1@email");
+    String existingUsernameBlack = "existingUsernameBlack";
     UserData userDataBlack = new UserData(existingUsernameBlack,"ps2","2@email");
     AuthData authDataWhite1 = new AuthData("1234",userDataWhite.username());
     AuthData authDataBlack1 = new AuthData("12345",userDataBlack.username());

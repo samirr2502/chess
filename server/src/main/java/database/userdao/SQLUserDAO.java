@@ -9,7 +9,7 @@ import java.sql.SQLException;
 
 public class SQLUserDAO implements UserDAO{
   @Override
-  public UserData getUser(String username) throws DataAccessException, SQLException {
+  public UserData getUser(String username) throws SQLException {
     try (var conn = DatabaseManager.getConnection()) {
       var statement = "SELECT json FROM userData WHERE username=?";
       var ps = conn.prepareStatement(statement);
@@ -22,12 +22,12 @@ public class SQLUserDAO implements UserDAO{
         return null;
       }
     } catch (Exception e) {
-      throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
+      throw new SQLException(String.format("Unable to read data: %s", e.getMessage()));
     }
   }
 
   @Override
-  public void addUser(UserData user) throws DataAccessException, SQLException {
+  public void addUser(UserData user) throws SQLException {
     try (var conn = DatabaseManager.getConnection()) {
       var statement = "INSERT INTO userData (username, password, email,json) values (?,?,?,?)";
       var json = new Gson().toJson(user);
@@ -39,7 +39,7 @@ public class SQLUserDAO implements UserDAO{
         ps.executeUpdate();
       }
     } catch (Exception e) {
-      throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
+      throw new SQLException(String.format("Unable to read data: %s", e.getMessage()));
     }
   }
 

@@ -64,7 +64,7 @@ public class SQLDataAccess extends DataAccess{
         }
       }
     } catch (SQLException ex) {
-      throw new DataAccessException(String.format("Unable to configure database: %s", ex.getMessage()));
+      throw new SQLException(String.format("Unable to configure database: %s", ex.getMessage()));
     }
   }
 
