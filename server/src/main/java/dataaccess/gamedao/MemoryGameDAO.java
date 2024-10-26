@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 public class MemoryGameDAO implements GameDAO {
   @Override
-  public GameData getGame(String gameName) {
+  public GameData getGameByName(String gameName) {
     for (GameData game : GAMES) {
       if (game.gameName().equals(gameName)) {
         return game;
@@ -37,7 +37,7 @@ public class MemoryGameDAO implements GameDAO {
 
   @Override
   public void updateGame(GameData gameData) {
-    deleteGameData(getGame(gameData.gameName()));
+    deleteGameData(getGameByName(gameData.gameName()));
     addGameData(gameData);
   }
 

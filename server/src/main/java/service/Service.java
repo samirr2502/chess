@@ -85,7 +85,7 @@ public class Service{
 
   public CreateGameResult createGame(AuthRequest authRequest, CreateGameRequest createGameRequest) throws SQLException, DataAccessException {
     AuthData authData = getAuthData(authRequest);
-    GameData gameData = this.gameDAO.getGame(createGameRequest.gameName());
+    GameData gameData = this.gameDAO.getGameByName(createGameRequest.gameName());
     if (authData != null && gameData == null) {
       ChessGame newGame = new ChessGame();
       GameData newGameData = new GameData(this.gameDAO.getGames().size() + 1,

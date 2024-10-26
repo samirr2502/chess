@@ -24,19 +24,20 @@ import java.sql.SQLException;
 
 
 public class Handler {
-  static DataAccess sqlDataAccess;
-  static DataAccess memoryDataAccess;
+  static DataAccess dataAccess;
   static Service SERVICE;
 
   static {
+    ///*
     try {
-      sqlDataAccess = new SQLDataAccess(new SQLAuthDAO(), new SQLGameDAO(), new SQLUserDAO());
+      dataAccess = new SQLDataAccess(new SQLAuthDAO(), new SQLGameDAO(), new SQLUserDAO());
 
     } catch (SQLException | DataAccessException e) {
       throw new RuntimeException(e);
     }
-    //memoryDataAccess = new MemoryDataAccess(new MemoryAuthDAO(),new MemoryGameDAO(), new MemoryUserDAO());
-    SERVICE = new Service(sqlDataAccess);
+     //*/
+    //dataAccess = new MemoryDataAccess(new MemoryAuthDAO(),new MemoryGameDAO(), new MemoryUserDAO());
+    SERVICE = new Service(dataAccess);
   }
 
   private static final Gson JSON = new Gson();
@@ -45,13 +46,13 @@ public class Handler {
     try {
       UserData registerUserRequest = JSON.fromJson(req.body(), UserData.class);
       String authToken = Service.generateToken();
-      LoginResult registerUserResult = SERVICE.registerUser(registerUserRequest, authToken);
-
       //Check if a field is not null
       if (registerUserRequest.password() == null || registerUserRequest.username() == null || registerUserRequest.email() == null) {
         res.status(400);
         return JSON.toJson(new ErrorResult("Error: bad request"));
-      } else if (registerUserResult == null) {
+      }
+      LoginResult registerUserResult = SERVICE.registerUser(registerUserRequest, authToken);
+      if (registerUserResult == null) {
         res.status(403);
         return JSON.toJson(new ErrorResult("Error: already taken"));
       } else {

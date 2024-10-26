@@ -20,7 +20,7 @@ public class DatabaseManager {
                 Properties props = new Properties();
                 props.load(propStream);
                 //Change to db.chess when finish testing for prod environment
-                DATABASE_NAME = props.getProperty("db.test");
+                DATABASE_NAME = props.getProperty("db.name");
                 USER = props.getProperty("db.user");
                 PASSWORD = props.getProperty("db.password");
 
