@@ -16,6 +16,8 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 public class Service {
+
+
   public AuthData createAuthData(UserData userData, String authToken, MemoryAuthDAO memoryAuthDAO) {
     AuthData authData = memoryAuthDAO.getAuthDataByToken(authToken);
     if (authData == null) {
