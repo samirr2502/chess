@@ -9,11 +9,14 @@ import model.UserData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 public class SQLGameDAO implements GameDAO{
   @Override
-  public GameData getGame(String gameName) throws DataAccessException, SQLException {
+  public GameData getGameByName(String gameName) throws DataAccessException, SQLException {
     try (var conn = DatabaseManager.getConnection()) {
-      var statement = "SELECT json FROM gameData WHERE username=?";
+      var statement = "SELECT json FROM gameData WHERE gameName=?";
       var ps = conn.prepareStatement(statement);
       ps.setString(1, gameName);
       try (var rs = ps.executeQuery()) {
@@ -31,7 +34,7 @@ public class SQLGameDAO implements GameDAO{
   @Override
   public GameData getGameByID(int gameID) throws DataAccessException, SQLException {
     try (var conn = DatabaseManager.getConnection()) {
-      var statement = "SELECT json FROM gameData WHERE id=?";
+      var statement = "SELECT json FROM gameData WHERE gameId=?";
       var ps = conn.prepareStatement(statement);
       ps.setInt(1, gameID);
       try (var rs = ps.executeQuery()) {
@@ -67,15 +70,16 @@ public class SQLGameDAO implements GameDAO{
   @Override
   public void addGameData(GameData gameData) throws DataAccessException, SQLException {
     try (var conn = DatabaseManager.getConnection()) {
-      var statement = "INSERT INTO gameData (whiteUsername, blackUsername, gameName,game,json) values (?,?,?,?,?)";
+      var statement = "INSERT INTO gameData (gameId, whiteUsername, blackUsername, gameName,game,json) values (?,?,?,?,?,?)";
       var json = new Gson().toJson(gameData);
       var game = new Gson().toJson(gameData.game());
       try (var ps = conn.prepareStatement(statement)) {
-        ps.setString(1,gameData.whiteUsername());
-        ps.setString(2,gameData.blackUsername());
-        ps.setString(3,gameData.gameName());
-        ps.setString(4,game);
-        ps.setString(5,json);
+        ps.setInt(1,gameData.gameID());
+        ps.setString(2,gameData.whiteUsername());
+        ps.setString(3,gameData.blackUsername());
+        ps.setString(4,gameData.gameName());
+        ps.setString(5,game);
+        ps.setString(6,json);
         ps.executeUpdate();
       }
     } catch (Exception e) {
@@ -85,14 +89,14 @@ public class SQLGameDAO implements GameDAO{
 
   @Override
   public void updateGame(GameData gameData) throws DataAccessException, SQLException {
-    deleteGameData(gameData);
+    deleteGameData(getGameByID(gameData.gameID()));
     addGameData(gameData);
   }
 
   @Override
   public void deleteGameData(GameData gameData) throws DataAccessException, SQLException {
     try (var conn = DatabaseManager.getConnection()) {
-      var statement = "DELETE FROM gameData WHERE id=?";
+      var statement = "DELETE FROM gameData WHERE gameId=?";
       try (var ps = conn.prepareStatement(statement)) {
         ps.setInt(1,gameData.gameID());
         ps.executeUpdate();

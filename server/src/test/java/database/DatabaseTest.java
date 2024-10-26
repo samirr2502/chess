@@ -14,6 +14,7 @@ import dataaccess.userdao.SQLUserDAO;
 import dataaccess.userdao.UserDAO;
 import model.AuthData;
 import model.UserData;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
@@ -47,6 +48,11 @@ public class DatabaseTest {
     authDAO.deleteAllAuthData();
     AuthData authData = new AuthData(validToken,"existing");
     authDAO.addAuthData(authData);
+
+  }
+  @AfterEach
+  public void clear() throws SQLException, DataAccessException {
+    authDAO.deleteAllAuthData();
 
   }
   @Test

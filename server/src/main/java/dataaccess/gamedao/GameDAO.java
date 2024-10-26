@@ -9,7 +9,7 @@ import java.util.ArrayList;
 public interface GameDAO {
   ArrayList<GameData> GAMES = new ArrayList<>();
 
-  GameData getGame(String gameName) throws DataAccessException, SQLException;
+  GameData getGameByName(String gameName) throws DataAccessException, SQLException;
   GameData getGameByID(int gameID) throws DataAccessException, SQLException;
   ArrayList<GameData> getGames() throws DataAccessException, SQLException;
   void addGameData(GameData gameData) throws DataAccessException, SQLException;
