@@ -53,7 +53,7 @@ public class Handler {
       UserData hashedRegisterUserRequest = new UserData(registerUserRequest.username(),hashedPassword,registerUserRequest.email());
       String authToken = Service.generateToken();
       //Check if a field is not null
-      if (hashedRegisterUserRequest.password() == null || hashedRegisterUserRequest.username() == null || hashedRegisterUserRequest.email() == null) {
+      if (registerUserRequest.password()==null|| hashedRegisterUserRequest.password() == null || hashedRegisterUserRequest.username() == null || hashedRegisterUserRequest.email() == null) {
         res.status(400);
         return JSON.toJson(new ErrorResult("Error: bad request"));
       }
