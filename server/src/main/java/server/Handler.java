@@ -12,6 +12,7 @@ import dataaccess.gamedao.SQLGameDAO;
 import dataaccess.userdao.MemoryUserDAO;
 import dataaccess.userdao.SQLUserDAO;
 import model.UserData;
+import org.mindrot.jbcrypt.BCrypt;
 import server.requests.AuthRequest;
 import server.requests.CreateGameRequest;
 import server.requests.JoinGameRequest;
@@ -45,13 +46,15 @@ public class Handler {
   public static Object registerUser(Request req, Response res) {
     try {
       UserData registerUserRequest = JSON.fromJson(req.body(), UserData.class);
+      String hashedPassword = BCrypt.hashpw(registerUserRequest.password(), BCrypt.gensalt());
+      UserData hashedRegisterUserRequest = new UserData(registerUserRequest.username(),hashedPassword,registerUserRequest.email());
       String authToken = Service.generateToken();
       //Check if a field is not null
-      if (registerUserRequest.password() == null || registerUserRequest.username() == null || registerUserRequest.email() == null) {
+      if (hashedRegisterUserRequest.password() == null || hashedRegisterUserRequest.username() == null || hashedRegisterUserRequest.email() == null) {
         res.status(400);
         return JSON.toJson(new ErrorResult("Error: bad request"));
       }
-      LoginResult registerUserResult = SERVICE.registerUser(registerUserRequest, authToken);
+      LoginResult registerUserResult = SERVICE.registerUser(hashedRegisterUserRequest, authToken);
       if (registerUserResult == null) {
         res.status(403);
         return JSON.toJson(new ErrorResult("Error: already taken"));

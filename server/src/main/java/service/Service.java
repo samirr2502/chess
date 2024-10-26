@@ -9,6 +9,7 @@ import dataaccess.userdao.UserDAO;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
+import org.mindrot.jbcrypt.BCrypt;
 import server.requests.AuthRequest;
 import server.requests.CreateGameRequest;
 import server.requests.JoinGameRequest;
@@ -44,6 +45,7 @@ public class Service{
   public LoginResult registerUser(UserData registerUserRequest, String authToken) throws SQLException, DataAccessException {
     UserData user = this.userDAO.getUser(registerUserRequest.username());
     if (user == null) {
+
       this.userDAO.addUser(registerUserRequest);
       AuthData newAuthData = createAuthData(registerUserRequest, authToken);
       this.authDAO.addAuthData(newAuthData);
@@ -54,7 +56,8 @@ public class Service{
 
   public LoginResult loginUser(UserData loginRequest, String authToken) throws SQLException, DataAccessException {
     UserData user = this.userDAO.getUser(loginRequest.username());
-    if (user != null && loginRequest.password().equals(user.password())) {
+
+    if (user != null && BCrypt.checkpw(loginRequest.password(), user.password())){
       AuthData newAuthData = createAuthData(user, authToken);
       this.authDAO.addAuthData(newAuthData);
       return new LoginResult(newAuthData.username(), newAuthData.authToken());

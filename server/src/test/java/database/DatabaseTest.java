@@ -53,7 +53,6 @@ public class DatabaseTest {
   @AfterEach
   public void clear() throws SQLException, DataAccessException {
     authDAO.deleteAllAuthData();
-
   }
   @Test
   public void addAuthDataTest() throws SQLException, DataAccessException {

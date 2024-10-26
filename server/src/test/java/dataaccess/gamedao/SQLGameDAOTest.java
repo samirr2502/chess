@@ -76,9 +76,9 @@ class SQLGameDAOTest {
 
   @AfterEach
   void tearDown() throws SQLException, DataAccessException {
-//    gameDAO.deleteAllGames();
-//    userDAO.deleteAllUsers();
-//    authDAO.deleteAllAuthData();
+    gameDAO.deleteAllGames();
+    userDAO.deleteAllUsers();
+    authDAO.deleteAllAuthData();
   }
 
   @Test
