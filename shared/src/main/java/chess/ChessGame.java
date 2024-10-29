@@ -208,7 +208,6 @@ public class ChessGame {
           testBoard.board[move.getStartPosition().getRow() - 1][move.getStartPosition().getColumn() - 1] = null;
           testBoard.board[move.getEndPosition().getRow() - 1][move.getEndPosition().getColumn() - 1] = myPiece;
           return true;
-
         }
       }
     }
