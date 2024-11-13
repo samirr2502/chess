@@ -47,7 +47,7 @@ public class LoggedInClientTest {
     currentClient.eval("create game1");
     String result = currentClient.eval("join 1 white");
     Assertions.assertNotNull(result);
-    Assertions.assertEquals("Joined game: game1", result);
+    Assertions.assertEquals("Joined  game: game1\n\nUse -help to see options", result);
   }
 
   @Test
@@ -74,7 +74,7 @@ public class LoggedInClientTest {
 
     String result = currentClient.eval("observe 1");
     Assertions.assertNotNull(result);
-    Assertions.assertEquals("Observing game: game1", result);
+    Assertions.assertEquals("Observing game: game1\n\nUse -help to see options", result);
   }
 
   @Test

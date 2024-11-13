@@ -12,7 +12,6 @@ public class InGameClient implements ChessClient{
 
   public InGameClient(String serverUrl){
    // server = new ServerFacade(serverUrl);
-
   }
   @Override
   public String eval(String input) {

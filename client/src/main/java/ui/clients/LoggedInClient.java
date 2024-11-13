@@ -11,6 +11,7 @@ import ui.State;
 import java.util.Arrays;
 
 import static java.lang.Integer.parseInt;
+import static ui.Repl.inGameClient;
 
 public class LoggedInClient implements ChessClient{
   private final ServerFacade server;
@@ -65,7 +66,9 @@ public class LoggedInClient implements ChessClient{
       AuthRequest authRequest = new AuthRequest(Repl.authData.authToken());
       CreateGameRequest createGameRequest = new CreateGameRequest(params[0]);
       server.createGame(authRequest, createGameRequest);
-
+      //Add to list
+      GetGamesResult getGamesResult = server.getGames(authRequest);
+      Repl.games = getGamesResult.games;
       return String.format("Game %s, successfully created", createGameRequest.gameName());
     }
     throw new Exception("Expected: <Game Name>");
@@ -80,7 +83,8 @@ public class LoggedInClient implements ChessClient{
       if (Repl.games.size() >= parseInt(params[0])) {
         Repl.currentGame = Repl.games.get(parseInt(params[0]) - 1);
         Repl.state = State.IN_GAME;
-        return "Observing game: " + Repl.currentGame.gameName;
+        inGameClient.eval("board");
+        return String.format("Observing game: %s\n\nUse -help to see options", Repl.currentGame.gameName);
       } else{
         return "Game not listed. \n\nuse -list to see games";
       }
@@ -102,7 +106,8 @@ public class LoggedInClient implements ChessClient{
         Repl.currentGame = Repl.games.get((parseInt(params[0]) - 1));
         //Repl.chessBoard = joinGameResult.gameData().game().getBoard();
         Repl.state = State.IN_GAME;
-        return "Joined game: " + Repl.currentGame.gameName;
+        inGameClient.eval("board");
+      return String.format("Joined  game: %s\n\nUse -help to see options", Repl.currentGame.gameName);
       }else{
       return "Game not listed. \n\nuse -list to see games";
     }

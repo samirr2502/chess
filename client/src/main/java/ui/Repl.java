@@ -19,9 +19,10 @@ public class Repl {
   private ChessClient currentClient;
   private final ChessClient loggedOutClient;
   private final ChessClient loggedInClient;
-  private final ChessClient inGameClient;
+  public static ChessClient inGameClient;
   public static AuthData authData;
   public static State state;
+  public static State previousState;
   public static ArrayList<GameResult> games;
   public static GameResult currentGame;
   public static ChessBoard chessBoard = new ChessBoard();
