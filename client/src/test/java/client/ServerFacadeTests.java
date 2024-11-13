@@ -1,6 +1,5 @@
 package client;
 
-import chess.ChessGame;
 import model.UserData;
 import org.junit.jupiter.api.*;
 import requests.AuthRequest;
@@ -8,7 +7,6 @@ import requests.CreateGameRequest;
 import requests.JoinGameRequest;
 import results.*;
 import server.Server;
-import ui.Repl;
 import ui.ServerFacade;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -19,17 +17,17 @@ public class ServerFacadeTests {
 
     private static ServerFacade serverFacade;
     private static Server server;
-
+    public static int port;
     @BeforeAll
     public static void init() {
         server =new Server();
-        server.run(PORT);
+        port =server.run(PORT);
 
-        System.out.println("Started test HTTP server on " + Repl.PORT);
+        System.out.println("Started test HTTP server on " +port);
     }
     @BeforeEach
     public void setUp(){
-        var serverUrl = "http://localhost:" + PORT;
+        var serverUrl = "http://localhost:" + port;
         serverFacade = new ServerFacade(serverUrl);
     }
 
@@ -40,7 +38,7 @@ public class ServerFacadeTests {
         assertNotNull(user);
     }
     @Test
-    public void registerUserBad() throws Exception {
+    public void registerUserBad() {
         try {
             serverFacade.registerUser(new UserData("samir", "123", "samir123"));
             serverFacade.registerUser(new UserData("samir", "123", "samir123"));
@@ -51,7 +49,7 @@ public class ServerFacadeTests {
     }
     @Test
     public void loginUserGood() throws Exception {
-        LoginResult user = serverFacade.registerUser(new UserData("samirr14", "123", "samir123"));
+        serverFacade.registerUser(new UserData("samirr14", "123", "samir123"));
         LoginResult userLogin = serverFacade.loginUser(new UserData("samirr14", "123", "samir123"));
         assertNotNull(userLogin);
     }
