@@ -61,7 +61,7 @@ public class LoggedInClient implements ChessClient{
       }
       return printList;
     }
-    throw new Exception("Expected: logout");
+    throw new Exception("Expected: list");
   }
   public String createGame(String ... params) throws Exception {
     if (params.length ==1 ) {
@@ -69,9 +69,9 @@ public class LoggedInClient implements ChessClient{
       CreateGameRequest createGameRequest = new CreateGameRequest(params[0]);
       CreateGameResult createGameResult = server.createGame(authRequest, createGameRequest);
 
-      return "Game "+createGameRequest.gameName()+", succesfully created";
+      return String.format("Game %s, successfully created", createGameRequest.gameName());
     }
-    throw new Exception("Expected: <ListNumber>");
+    throw new Exception("Expected: <Game Name>");
   }
   public String observeGame(String... params) throws Exception{
     if (params.length == 1) {
@@ -88,7 +88,7 @@ public class LoggedInClient implements ChessClient{
         return "Game not listed. \n\nuse -list to see games";
       }
     }
-    throw new Exception("Expected <gameID");
+    throw new Exception("Expected <gameID>");
   }
   public String joinGame(String ... params) throws Exception {
     if (params.length == 2 &&
@@ -129,12 +129,12 @@ public class LoggedInClient implements ChessClient{
   public String help() {
     return """
             Commands:
-            - list games
-            - create <gameName>
-            - join <GameID> <WHITE|BLACK>
-            - observe <GameID>
-            - logout
-            - quit
-            - help""";
+               - list games
+               - create <gameName>
+               - join <GameID> <WHITE|BLACK>
+               - observe <GameID>
+               - logout
+               - quit
+               - help""";
   }
 }
