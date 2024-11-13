@@ -22,18 +22,14 @@ public class LoggedInClientTest {
     server = new Server();
     port =server.run(0);
   }
-  @AfterAll
-  public static void stop(){
-    currentClient.eval("clear");
-    server.stop();
-  }
+
   @BeforeEach
   public void setUp(){
+
     var serverUrl = "http://localhost:" + port;
     repl = new Repl(serverUrl);
-    serverFacade = new ServerFacade(serverUrl);
     currentClient = new LoggedInClient(serverUrl);
-    currentClient.eval("clear");
+    serverFacade = new ServerFacade(serverUrl);
 
     LoggedOutClient loggedOutClient = new LoggedOutClient(serverUrl);
     loggedOutClient.eval("clear");
@@ -135,4 +131,9 @@ public class LoggedInClientTest {
 
   }
 
+  @AfterAll
+  public static void stop(){
+    currentClient.eval("clear");
+    server.stop();
+  }
 }

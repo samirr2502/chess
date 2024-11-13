@@ -45,9 +45,9 @@ public class ServerFacade {
     var path ="/game";
     return this.makeRequest("PUT",path, authRequest.authToken(), joinGameRequest, JoinGameResult.class);
   }
-  public ClearResult clear() throws Exception {
+  public void clear() throws Exception {
     var path = "/db";
-    return this.makeRequest("DELETE", path, null,null, ClearResult.class);
+    this.makeRequest("DELETE", path, null,null, ClearResult.class);
   }
 
   private <T> T makeRequest(String method, String path,String header, Object request, Class<T> result) throws Exception {
@@ -63,8 +63,7 @@ public class ServerFacade {
       int responseCode = http.getResponseCode();
 
       if (responseCode == HttpURLConnection.HTTP_OK) { // 200
-        //System.out.println("Request successful");
-        // Process the response (e.g., read input stream)
+        return readBody(http,result);
       } else if (responseCode == HttpURLConnection.HTTP_BAD_REQUEST) { // 400
         throw new Exception("Bad request");
         // Handle error (e.g., read error stream)
@@ -79,9 +78,8 @@ public class ServerFacade {
         throw new Exception("Internal Error");
         // Handle other status codes
       }
-      return readBody(http,result);
     } catch (Exception ex) {
-      throw new Exception(ex.getMessage());
+      throw new Exception("Could not connect to Server");
     }
   }
   private static void writeHeader(String header, HttpURLConnection http) {
