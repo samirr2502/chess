@@ -1,7 +1,6 @@
 package client;
 
 import org.junit.jupiter.api.*;
-import server.Server;
 import ui.Clients.ChessClient;
 import ui.Clients.LoggedInClient;
 import ui.Clients.LoggedOutClient;
@@ -18,14 +17,14 @@ public class ClientTests {
   public void evalLoggedOutClientTest(){
     ChessClient currentClient = new LoggedOutClient("urlTest");
 
-    String result = currentClient.eval("quit", State.LOGGEDOUT);
+    String result = currentClient.eval("quit");
     Assertions.assertEquals("Quit Successful!", result);
   }
 
   @Test
   public void evalLoggedInClientTest(){
-    ChessClient currentClient = new LoggedInClient();
-    String result = currentClient.eval("quit", State.LOGGEDIN);
+    ChessClient currentClient = new LoggedInClient("urlTest");
+    String result = currentClient.eval("quit");
     Assertions.assertEquals("Quit Successful!", result);
   }
 
