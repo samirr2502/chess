@@ -1,6 +1,5 @@
 package ui.Clients;
 
-import chess.ChessBoard;
 import chess.ChessGame;
 import ui.DrawnBoard;
 import ui.Repl;

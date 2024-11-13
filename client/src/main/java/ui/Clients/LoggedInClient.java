@@ -1,12 +1,9 @@
 package ui.Clients;
 
-import com.google.gson.Gson;
-import model.GameData;
 import server.requests.AuthRequest;
 import server.requests.CreateGameRequest;
 import server.requests.JoinGameRequest;
 import service.results.*;
-import ui.DrawnBoard;
 import ui.Repl;
 import ui.ServerFacade;
 import ui.State;

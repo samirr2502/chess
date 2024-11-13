@@ -1,7 +1,6 @@
 package ui;
 
 import com.google.gson.Gson;
-import com.sun.net.httpserver.Request;
 import model.UserData;
 import server.requests.AuthRequest;
 import server.requests.CreateGameRequest;
@@ -15,22 +14,11 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
-import java.util.Objects;
 
 public class ServerFacade {
   String serverUrl;
   public ServerFacade(String serverUrl){
     this.serverUrl =  serverUrl;
-//    Spark.post("/user", Handler::registerUser);
-//    Spark.post("/session",Handler::loginUser);
-//    Spark.delete("/session",Handler::logoutUser);
-//
-//    Spark.get("/game", Handler::getGames);
-//    Spark.post("/game",Handler::createGame);
-//    Spark.put("/game", Handler::joinGame);
-//
-//    Spark.delete("/db",Handler::clear);
-
   }
   public LoginResult registerUser(UserData user) throws Exception {
     var path = "/user";
