@@ -9,7 +9,6 @@ import ui.clients.LoggedOutClient;
 import ui.Repl;
 import ui.ServerFacade;
 
-import static ui.Repl.PORT;
 
 public class LoggedInClientTest {
 

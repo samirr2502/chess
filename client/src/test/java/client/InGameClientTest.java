@@ -9,7 +9,6 @@ import ui.Repl;
 import ui.ServerFacade;
 import ui.clients.LoggedOutClient;
 
-import static ui.Repl.PORT;
 
 public class InGameClientTest {
 
