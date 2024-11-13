@@ -8,7 +8,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class LoggedOutClient implements ChessClient{
+  private ServerFacade server;
   public LoggedOutClient(String serverUrl){
+    server = new ServerFacade(serverUrl);
 
   }
   @Override
@@ -28,6 +30,7 @@ public class LoggedOutClient implements ChessClient{
     }
   }
   public String register(String[] params){
+
     return null;
   }
   public String login(String[] params){
