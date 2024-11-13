@@ -7,7 +7,6 @@ import ui.clients.ChessClient;
 import ui.clients.InGameClient;
 import ui.Repl;
 import ui.ServerFacade;
-import ui.clients.LoggedOutClient;
 
 
 public class InGameClientTest {
@@ -35,9 +34,6 @@ public class InGameClientTest {
     currentClient = new InGameClient(serverUrl);
     currentClient.eval("clear");
 
-    LoggedOutClient loggedOutClient = new LoggedOutClient(serverUrl);
-    loggedOutClient.eval("clear");
-    loggedOutClient.eval("register samir 123 sam@123");
   }
   @Test
   public void leaveGoodInput(){
