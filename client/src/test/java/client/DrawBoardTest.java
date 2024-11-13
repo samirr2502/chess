@@ -2,18 +2,13 @@ package client;
 
 import chess.ChessBoard;
 import chess.ChessGame;
-import chess.ChessPiece;
-import chess.ChessPosition;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ui.DrawnBoard;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
 
-import static ui.EscapeSequences.*;
+
 
 public class DrawBoardTest {
   ChessBoard board;

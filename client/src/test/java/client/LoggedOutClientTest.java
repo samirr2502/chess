@@ -7,15 +7,19 @@ import ui.Clients.LoggedOutClient;
 import ui.Repl;
 import ui.ServerFacade;
 
+import static ui.Repl.PORT;
+
 public class LoggedOutClientTest {
 
-  public  ServerFacade server = new ServerFacade("http://localhost:8080");
-  Repl repl = new Repl("http://localhost:8080");
-  private ChessClient currentClient = new LoggedOutClient("http://localhost:8080");
+  public  ServerFacade server;
+  Repl repl;
+  private ChessClient currentClient;
   @BeforeEach
-  public void setUp() throws Exception {
-    server = new ServerFacade("http://localhost:8080");
-    currentClient = new LoggedOutClient("http://localhost:8080");
+  public void setUp()  {
+    var serverUrl = "http://localhost:" + PORT;
+    repl = new Repl(serverUrl);
+    server = new ServerFacade(serverUrl);
+    currentClient = new LoggedOutClient(serverUrl);
     currentClient.eval("clear");
 
   }

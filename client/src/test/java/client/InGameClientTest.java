@@ -4,19 +4,22 @@ import org.junit.jupiter.api.*;
 
 import ui.Clients.ChessClient;
 import ui.Clients.InGameClient;
-import ui.Clients.LoggedOutClient;
 import ui.Repl;
 import ui.ServerFacade;
 
+import static ui.Repl.PORT;
+
 public class InGameClientTest {
 
-  public  ServerFacade server = new ServerFacade("http://localhost:8080");
-  Repl repl = new Repl("http://localhost:8080");
-  private ChessClient currentClient = new InGameClient("http://localhost:8080");
+  public  ServerFacade server;
+  Repl repl;
+  private ChessClient currentClient;
   @BeforeEach
-  public void setUp() throws Exception {
-    server = new ServerFacade("http://localhost:8080");
-    currentClient = new InGameClient("http://localhost:8080");
+  public void setUp() {
+    var serverUrl = "http://localhost:" + PORT;
+    repl = new Repl(serverUrl);
+    server = new ServerFacade(serverUrl);
+    currentClient = new InGameClient(serverUrl);
     currentClient.eval("clear");
 
   }

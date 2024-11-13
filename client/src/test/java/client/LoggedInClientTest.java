@@ -8,17 +8,22 @@ import ui.Clients.LoggedOutClient;
 import ui.Repl;
 import ui.ServerFacade;
 
+import static ui.Repl.PORT;
+
 public class LoggedInClientTest {
 
-  public  ServerFacade server = new ServerFacade("http://localhost:8080");
-  Repl repl = new Repl("http://localhost:8080");
-  private ChessClient currentClient = new LoggedInClient("http://localhost:8080");
+  ServerFacade server;
+  Repl repl;
+  ChessClient currentClient;
   @BeforeEach
-  public void setUp() throws Exception {
-    server = new ServerFacade("http://localhost:8080");
-    currentClient = new LoggedInClient("http://localhost:8080");
+  public void setUp(){
+    var serverUrl = "http://localhost:" + PORT;
+    repl = new Repl(serverUrl);
+    server = new ServerFacade(serverUrl);
+    currentClient = new LoggedInClient(serverUrl);
+    currentClient.eval("clear");
 
-    LoggedOutClient loggedOutClient = new LoggedOutClient("http://localhost:8080");
+    LoggedOutClient loggedOutClient = new LoggedOutClient(serverUrl);
     loggedOutClient.eval("clear");
 
     loggedOutClient.eval("register samir 123 sam@123");

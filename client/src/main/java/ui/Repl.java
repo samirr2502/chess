@@ -13,7 +13,10 @@ import java.util.Scanner;
 
 import static ui.EscapeSequences.*;
 
+
 public class Repl {
+  public static int PORT = 0;
+
   private ChessClient currentClient;
   private final ChessClient loggedOutClient;
   private final ChessClient loggedInClient;
