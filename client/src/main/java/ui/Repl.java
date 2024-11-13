@@ -35,11 +35,10 @@ public class Repl {
       String line = scanner.nextLine();
       try {
         result = currentClient.eval(line);
-        System.out.println(state);
         System.out.print(SET_TEXT_COLOR_BLUE + result);
         switch (state){
-          case State.LOGGED_IN -> switchClient(loggedInClient);
-          case State.IN_GAME -> switchClient(inGameClient);
+          case State.LOGGED_IN -> currentClient =loggedInClient;
+          case State.IN_GAME -> currentClient =inGameClient;
           default -> currentClient= loggedOutClient;
         }
       } catch (Throwable e) {
@@ -51,9 +50,9 @@ public class Repl {
   }
   public void switchClient(ChessClient toClient){
     currentClient =toClient;
-    currentClient.help();
+    System.out.println(currentClient.help());
   }
   private void printPrompt() {
-    System.out.print("\n" + RESET_TEXT_COLOR + ">>> " + SET_TEXT_COLOR_GREEN);
+    System.out.print("\n["+ SET_TEXT_COLOR_GREEN+ state+ "] " + RESET_TEXT_COLOR + ">>> " + SET_TEXT_COLOR_GREEN);
   }
 }

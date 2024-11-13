@@ -4,9 +4,9 @@ import com.google.gson.Gson;
 import com.sun.net.httpserver.Request;
 import model.UserData;
 import server.requests.AuthRequest;
-import service.results.ClearResult;
-import service.results.LoginResult;
-import service.results.LogoutResult;
+import server.requests.CreateGameRequest;
+import server.requests.JoinGameRequest;
+import service.results.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,6 +15,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
+import java.util.Objects;
 
 public class ServerFacade {
   String serverUrl;
@@ -44,13 +45,18 @@ public class ServerFacade {
     var path = "/session";
     return this.makeRequest("DELETE", path,logoutRequest.authToken(), logoutRequest, LogoutResult.class);
   }
-  public void getGames(){
-
+  public GetGamesResult getGames(AuthRequest getGamesRequest) throws Exception {
+    var path ="/game";
+    return this.makeRequest("GET", path, getGamesRequest.authToken(), getGamesRequest, GetGamesResult.class);
   }
-  public void createGame(){
+  public CreateGameResult createGame(AuthRequest authRequest, CreateGameRequest createGameRequest) throws Exception {
+    var path = "/game";
+    return this.makeRequest("POST",path, authRequest.authToken(), createGameRequest, CreateGameResult.class);
   }
-  public void joinGame(){
-
+  public JoinGameResult joinGame(AuthRequest authRequest, JoinGameRequest joinGameRequest) throws Exception {
+    var path ="/game";
+    System.out.println(joinGameRequest);
+    return this.makeRequest("PUT",path, authRequest.authToken(), joinGameRequest, JoinGameResult.class);
   }
   public ClearResult clear() throws Exception {
     var path = "/db";
@@ -62,9 +68,9 @@ public class ServerFacade {
       URL url = (new URI(serverUrl + path)).toURL();
       HttpURLConnection http = (HttpURLConnection) url.openConnection();
       http.setRequestMethod(method);
-      http.setDoOutput(true);
-      writeBody(request, http);
+      http.setDoOutput(!method.equals("GET"));
       writeHeader(header, http);
+      writeBody(request, http);
       http.connect();
 //      throwIfNotSuccessful(http);
       return readBody(http,result);
@@ -74,11 +80,11 @@ public class ServerFacade {
   }
   private static void writeHeader(String header, HttpURLConnection http) {
     if (header != null){
-      http.addRequestProperty("authorization",header);
+      http.setRequestProperty("authorization",header);
     }
   }
   private static void writeBody(Object request, HttpURLConnection http) throws IOException {
-    if (request != null) {
+    if (request != null && http.getDoOutput()) {
       http.addRequestProperty("Content-Type", "application/json");
       String reqData = new Gson().toJson(request);
       try (OutputStream reqBody = http.getOutputStream()) {

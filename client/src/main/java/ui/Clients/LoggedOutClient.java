@@ -40,9 +40,8 @@ public class LoggedOutClient implements ChessClient{
       UserData userData = new UserData(username,password,email);
       LoginResult loginResult = server.registerUser(userData);
       Repl.authData = new AuthData(loginResult.authToken(),loginResult.username());
-
       Repl.state=State.LOGGED_IN;
-      return String.format("You signed in as %s.", loginResult.username());
+      return String.format("You signed in as %s. \n\n Type help for commands", loginResult.username());
     }
     throw new Exception("Expected: <username> <password> <email>");
   }
@@ -54,7 +53,7 @@ public class LoggedOutClient implements ChessClient{
       LoginResult loginResult = server.loginUser(userData);
       Repl.authData = new AuthData(loginResult.authToken(),loginResult.username());
       Repl.state=State.LOGGED_IN;
-      return String.format("You signed in as %s.", loginResult.username());
+      return String.format("You signed in as %s.\n \n Type help for commands", loginResult.username());
     }
     throw new Exception("Expected: <username> <password>");
   }
@@ -69,10 +68,7 @@ public class LoggedOutClient implements ChessClient{
   @Override
   public String help() {
     return """
-            STATE: Logged Out
-            help info
-            Useful Commands:
-
+            Commands:
             - register <username> <password> <email>
             - login <username> <password>
             - clear

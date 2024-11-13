@@ -1,10 +1,10 @@
 package service.results;
 
 public class GameResult extends Result {
-  int gameID;
-  String whiteUsername;
-  String blackUsername;
-  String gameName;
+  public int gameID;
+  public String whiteUsername;
+  public String blackUsername;
+  public String gameName;
   public GameResult(int gameID, String whiteUsername, String blackUsername,
                      String gameName){
     this.gameID=gameID;
