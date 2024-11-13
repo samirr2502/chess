@@ -78,21 +78,22 @@ public class ServerFacade {
         //System.out.println("Request successful");
         // Process the response (e.g., read input stream)
       } else if (responseCode == HttpURLConnection.HTTP_BAD_REQUEST) { // 400
-        System.out.println("Bad Request");
+        throw new Exception("Bad request");
         // Handle error (e.g., read error stream)
       } else if (responseCode == HttpURLConnection.HTTP_UNAUTHORIZED) { // 401
-        System.out.println("Unauthorized");
+        throw new Exception("Unauthorized");
+
         // Handle unauthorized access
       }  else if (responseCode == HttpURLConnection.HTTP_FORBIDDEN) { // 401
-        System.out.println("Already taken");
+        throw new Exception("Already taken");
         // Handle unauthorized access
       } else {
-        System.out.println("Internal Error");
+        throw new Exception("Internal Error");
         // Handle other status codes
       }
       return readBody(http,result);
     } catch (Exception ex) {
-      throw new Exception("");
+      throw new Exception(ex.getMessage());
     }
   }
   private static void writeHeader(String header, HttpURLConnection http) {
