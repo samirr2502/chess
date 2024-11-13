@@ -96,6 +96,9 @@ public class Service{
       this.gameDAO.addGameData(newGameData);
       return new CreateGameResult(newGameData.gameID());
     }
+    if(gameData!=null){
+      return new CreateGameResult(0);
+    }
     return null;
   }
 

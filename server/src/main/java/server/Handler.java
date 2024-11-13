@@ -126,7 +126,10 @@ public class Handler {
 
       CreateGameRequest createGameRequest = JSON.fromJson(req.body(), CreateGameRequest.class);
       CreateGameResult createGameResult = SERVICE.createGame(authRequest, createGameRequest);
-      if (createGameResult!=null) {
+      if (createGameResult!=null && createGameResult.getGameID() ==0){
+        res.status(403);
+        return JSON.toJson(new ErrorResult("Error: Already taken"));
+      } else if(createGameResult!=null) {
         return JSON.toJson(createGameResult);
       } else{
         res.status(401);

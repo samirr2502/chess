@@ -5,4 +5,8 @@ public class CreateGameResult extends Result {
   public CreateGameResult(int gameID){
     this.gameID = gameID;
   }
+
+  public int getGameID() {
+    return gameID;
+  }
 }

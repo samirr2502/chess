@@ -53,7 +53,7 @@ public class LoggedInClientTest {
   @Test
   public void createBadInput(){
     String result = currentClient.eval("create");
-    Assertions.assertEquals("Expected: <Game Name>", result);
+    Assertions.assertEquals("Expected: <GameName>", result);
   }
   @Test
   public void createGoodInput(){

@@ -70,16 +70,14 @@ public class LoggedInClient implements ChessClient{
       GetGamesResult getGamesResult = server.getGames(authRequest);
       Repl.games = getGamesResult.games;
       return String.format("Game %s, successfully created", createGameRequest.gameName());
+    } else{
+      return "Expected: <GameName>";
     }
-    throw new Exception("Expected: <Game Name>");
   }
   public String observeGame(String... params) throws Exception{
     if (params.length == 1) {
-      if (Repl.games== null){
-        AuthRequest authRequest = new AuthRequest(Repl.authData.authToken());
-        GetGamesResult getGamesResult = server.getGames(authRequest);
-        Repl.games = getGamesResult.games;
-      }
+      createGameListIfNotExist();
+      checkIDNotString(params);
       if (Repl.games.size() >= parseInt(params[0])) {
         Repl.currentGame = Repl.games.get(parseInt(params[0]) - 1);
         Repl.state = State.IN_GAME;
@@ -94,12 +92,9 @@ public class LoggedInClient implements ChessClient{
   public String joinGame(String ... params) throws Exception {
     if (params.length == 2 &&
             (params[1].equalsIgnoreCase("WHITE") || params[1].equalsIgnoreCase("BLACK"))) {
-      if (Repl.games== null){
-      AuthRequest authRequest = new AuthRequest(Repl.authData.authToken());
-      GetGamesResult getGamesResult = server.getGames(authRequest);
-      Repl.games = getGamesResult.games;
-    }
-    if(Repl.games.size()>= parseInt(params[0])) {
+      createGameListIfNotExist();
+      checkIDNotString(params);
+      if(Repl.games.size()>= parseInt(params[0])) {
         AuthRequest authRequest = new AuthRequest(Repl.authData.authToken());
         JoinGameRequest joinGameRequest = new JoinGameRequest(params[1].toUpperCase(), Repl.games.get((parseInt(params[0]) - 1)).gameID);
         server.joinGame(authRequest, joinGameRequest);
@@ -114,6 +109,23 @@ public class LoggedInClient implements ChessClient{
     }
     throw new Exception("Expected: <ListNumber> <WHITE|BLACK>");
   }
+
+  private static void checkIDNotString(String[] params) {
+    try {
+      parseInt(params[0]);
+    }catch (NumberFormatException ex){
+      throw new NumberFormatException("GameID needs to be a number");
+    }
+  }
+
+  private void createGameListIfNotExist() throws Exception {
+    if (Repl.games== null){
+    AuthRequest authRequest = new AuthRequest(Repl.authData.authToken());
+    GetGamesResult getGamesResult = server.getGames(authRequest);
+    Repl.games = getGamesResult.games;
+  }
+  }
+
   public String logout(String ... params) throws Exception {
     if (params.length ==0 ) {
       AuthRequest logoutRequest = new AuthRequest(Repl.authData.authToken());
