@@ -2,28 +2,44 @@ package client;
 
 import org.junit.jupiter.api.*;
 
+import server.Server;
 import ui.clients.ChessClient;
 import ui.clients.InGameClient;
 import ui.Repl;
 import ui.ServerFacade;
+import ui.clients.LoggedOutClient;
 
 import static ui.Repl.PORT;
 
 public class InGameClientTest {
 
-  public  ServerFacade server;
+  public static Server server;
+  static ServerFacade serverFacade;
+  static int port;
   Repl repl;
-  private ChessClient currentClient;
+  static ChessClient currentClient;
+  @BeforeAll
+  public static void init(){
+    server = new Server();
+    port =server.run(0);
+  }
+  @AfterAll
+  public static void stop(){
+    currentClient.eval("clear");
+    server.stop();
+  }
   @BeforeEach
-  public void setUp() {
-    var serverUrl = "http://localhost:" + PORT;
+  public void setUp(){
+    var serverUrl = "http://localhost:" + port;
     repl = new Repl(serverUrl);
-    server = new ServerFacade(serverUrl);
+    serverFacade = new ServerFacade(serverUrl);
     currentClient = new InGameClient(serverUrl);
     currentClient.eval("clear");
 
+    LoggedOutClient loggedOutClient = new LoggedOutClient(serverUrl);
+    loggedOutClient.eval("clear");
+    loggedOutClient.eval("register samir 123 sam@123");
   }
-
   @Test
   public void leaveGoodInput(){
     String result = currentClient.eval("leave");
