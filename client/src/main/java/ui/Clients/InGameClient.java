@@ -24,7 +24,6 @@ public class InGameClient implements ChessClient{
       var params = Arrays.copyOfRange(tokens, 1, tokens.length);
       return switch (cmd) {
         case "board" -> getBoard(params);
-        case "surrender" -> surrender(params);
         case "leave" -> leaveGame(params);
         case "quit" -> "quit";
         default -> help();
@@ -39,14 +38,15 @@ public class InGameClient implements ChessClient{
       Repl.chessBoard.resetBoard();
       return drawBoard(params);
     }
-    throw new Exception("Expected: <board>");
+    throw new Exception("Expected: board");
   }
-  private String surrender(String[] params) {
-    return "not implemented yet";
-  }
-  private String leaveGame(String[] params) {
-    Repl.state=State.LOGGED_IN;
-    return "You left the Game \n\n Type help for commands";
+  private String leaveGame(String[] params) throws Exception {
+    if(params.length==0) {
+
+      Repl.state = State.LOGGED_IN;
+      return "You left the Game \n\n Type help for commands";
+    }
+    throw new Exception("Expected: leave");
   }
   private String drawBoard(String[] params){
      DrawnBoard.run(ChessGame.TeamColor.WHITE,Repl.chessBoard);
@@ -59,10 +59,9 @@ public class InGameClient implements ChessClient{
   public String help() {
     return """
             Commands:
-            - board - show current board
-            - surrender - admit defeat
-            - leave - leave game
-            - quit
-            - help""";
+               - board - show current board
+               - leave - leave game
+               - quit
+               - help""";
   }
 }

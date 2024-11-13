@@ -36,12 +36,14 @@ public class LoggedOutClientTest {
   }
 
   @Test
-  public void register_badd_input(){
+  public void register_bad_input(){
     String result = currentClient.eval("register 1");
     Assertions.assertEquals("Expected: <username> <password> <email>", result);
   }
   @Test
   public void register_already_taken_input(){
+    currentClient.eval("register samir 123 sam@123");
+
     String result = currentClient.eval("register samir 123 sam@123");
     Assertions.assertEquals("Already taken", result);
   }
