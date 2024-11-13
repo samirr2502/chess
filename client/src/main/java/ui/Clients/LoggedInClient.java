@@ -1,9 +1,12 @@
 package ui.Clients;
 
+import com.google.gson.Gson;
+import model.GameData;
 import server.requests.AuthRequest;
 import server.requests.CreateGameRequest;
 import server.requests.JoinGameRequest;
 import service.results.*;
+import ui.DrawnBoard;
 import ui.Repl;
 import ui.ServerFacade;
 import ui.State;
@@ -30,7 +33,8 @@ public class LoggedInClient implements ChessClient{
       return switch (cmd) {
         case "list" -> listGames(params);
         case "create" -> createGame(params);
-        case "join", "observe" -> joinGame(params);
+        case "join" -> joinGame(params);
+        case "observe" -> observeGame(params);
         case "logout" -> logout(params);
         case "quit" -> "quit";
         default -> help();
@@ -65,26 +69,49 @@ public class LoggedInClient implements ChessClient{
       CreateGameRequest createGameRequest = new CreateGameRequest(params[0]);
       CreateGameResult createGameResult = server.createGame(authRequest, createGameRequest);
 
-      return createGameResult.toString();
+      return "Game "+createGameRequest.gameName()+", succesfully created";
     }
-    throw new Exception("Expected: <GameName>");
+    throw new Exception("Expected: <ListNumber>");
+  }
+  public String observeGame(String... params) throws Exception{
+    if (params.length == 1) {
+      if (Repl.games== null){
+        AuthRequest authRequest = new AuthRequest(Repl.authData.authToken());
+        GetGamesResult getGamesResult = server.getGames(authRequest);
+        Repl.games = getGamesResult.games;
+      }
+      if (Repl.games.size() >= parseInt(params[0])) {
+        Repl.currentGame = Repl.games.get(parseInt(params[0]) - 1);
+        Repl.state = State.IN_GAME;
+        return "Observing game: " + Repl.currentGame.gameName;
+      } else{
+        return "Game not listed. \n\nuse -list to see games";
+      }
+    }
+    throw new Exception("Expected <gameID");
   }
   public String joinGame(String ... params) throws Exception {
-
-    if (params.length ==1) {
-      Repl.state = State.IN_GAME;
-      Repl.currentGame= Repl.games.get(parseInt(params[0])-1);
-      return "Observing game: " + Repl.currentGame.gameName;
-    }
-    if (params.length ==2 ) {
+    if (params.length == 2 &&
+            (params[1].equalsIgnoreCase("WHITE") || params[1].equalsIgnoreCase("BLACK"))) {
+      if (Repl.games== null){
       AuthRequest authRequest = new AuthRequest(Repl.authData.authToken());
-      JoinGameRequest joinGameRequest = new JoinGameRequest(params[1].toUpperCase(),Repl.games.get((parseInt(params[0])-1)).gameID);
-      JoinGameResult joinGameResult = server.joinGame(authRequest, joinGameRequest);
-      Repl.currentGame= Repl.games.get((parseInt(params[0])-1));
-      Repl.state = State.IN_GAME;
-      return "Joined game: " + Repl.currentGame.gameName;
+      GetGamesResult getGamesResult = server.getGames(authRequest);
+      Repl.games = getGamesResult.games;
     }
-    throw new Exception("Expected: <GameName>");  }
+    if(Repl.games.size()>= parseInt(params[0])) {
+        AuthRequest authRequest = new AuthRequest(Repl.authData.authToken());
+        JoinGameRequest joinGameRequest = new JoinGameRequest(params[1].toUpperCase(), Repl.games.get((parseInt(params[0]) - 1)).gameID);
+        JoinGameResult joinGameResult = server.joinGame(authRequest, joinGameRequest);
+        Repl.currentGame = Repl.games.get((parseInt(params[0]) - 1));
+        //Repl.chessBoard = joinGameResult.gameData().game().getBoard();
+        Repl.state = State.IN_GAME;
+        return "Joined game: " + Repl.currentGame.gameName;
+      }else{
+      return "Game not listed. \n\nuse -list to see games";
+    }
+    }
+    throw new Exception("Expected: <ListNumber> <WHITE|BLACK>");
+  }
   public String logout(String ... params) throws Exception {
     if (params.length ==0 ) {
       AuthRequest logoutRequest = new AuthRequest(Repl.authData.authToken());

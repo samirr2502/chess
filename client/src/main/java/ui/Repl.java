@@ -1,8 +1,10 @@
 package ui;
 
+import chess.ChessBoard;
 import model.AuthData;
 import model.GameData;
 import service.results.GameResult;
+import service.results.GetGamesResult;
 import ui.Clients.ChessClient;
 import ui.Clients.InGameClient;
 import ui.Clients.LoggedInClient;
@@ -22,6 +24,7 @@ public class Repl {
   public static State state;
   public static ArrayList<GameResult> games;
   public static GameResult currentGame;
+  public static ChessBoard chessBoard = new ChessBoard();
 
   public Repl(String serverUrl) {
     currentClient = new LoggedOutClient(serverUrl);
@@ -52,10 +55,6 @@ public class Repl {
       }
     }
     System.out.println();
-  }
-  public void switchClient(ChessClient toClient){
-    currentClient =toClient;
-    System.out.println(currentClient.help());
   }
   private void printPrompt() {
     System.out.print("\n["+ SET_TEXT_COLOR_GREEN+ state+ "] " + RESET_TEXT_COLOR + ">>> " + SET_TEXT_COLOR_GREEN);
