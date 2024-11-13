@@ -7,12 +7,13 @@ import ui.clients.ChessClient;
 import ui.clients.InGameClient;
 import ui.Repl;
 import ui.ServerFacade;
+import ui.clients.LoggedOutClient;
 
 
 public class InGameClientTest {
-
   public static Server server;
   static ServerFacade serverFacade;
+  static String serverUrl;
   static int port;
   Repl repl;
   static ChessClient currentClient;
@@ -21,14 +22,10 @@ public class InGameClientTest {
     server = new Server();
     port =server.run(0);
   }
-  @AfterAll
-  public static void stop(){
-    currentClient.eval("clear");
-    server.stop();
-  }
+
   @BeforeEach
   public void setUp(){
-    var serverUrl = "http://localhost:" + port;
+    serverUrl = "http://localhost:" + port;
     repl = new Repl(serverUrl);
     serverFacade = new ServerFacade(serverUrl);
     currentClient = new InGameClient(serverUrl);
@@ -72,4 +69,10 @@ public class InGameClientTest {
 
   }
 
+  @AfterAll
+  public static void stop(){
+    LoggedOutClient loggedOutClient = new LoggedOutClient(serverUrl);
+    loggedOutClient.eval("clear");
+    server.stop();
+  }
 }
