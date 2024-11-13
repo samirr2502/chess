@@ -44,9 +44,9 @@ public class DrawnBoard {
 
   private static void drawHeaders(PrintStream out, ChessGame.TeamColor color) {
 
-    String[] headers_white = {"  ", "a", "b", "c", "d", "e", "f", "g", "h", "  "};
-    String[] headers_black = {"  ", "h", "g", "f", "e", "d", "c", "b", "a", "  "};
-    String[] headers = color == ChessGame.TeamColor.WHITE ? headers_white : headers_black;
+    String[] headersWhite = {"  ", "a", "b", "c", "d", "e", "f", "g", "h", "  "};
+    String[] headersBlack = {"  ", "h", "g", "f", "e", "d", "c", "b", "a", "  "};
+    String[] headers = color == ChessGame.TeamColor.WHITE ? headersWhite : headersBlack;
     for (int boardCol = 0; boardCol < BOARD_SIZE_IN_SQUARES; ++boardCol) {
       drawHeader(out, headers[boardCol]);
       if (boardCol < BOARD_SIZE_IN_SQUARES - 1) {
