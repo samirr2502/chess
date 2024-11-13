@@ -15,7 +15,6 @@ import static ui.EscapeSequences.*;
 
 
 public class Repl {
-  public final static int PORT = 0;
 
   private ChessClient currentClient;
   private final ChessClient loggedOutClient;

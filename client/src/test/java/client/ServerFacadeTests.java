@@ -10,7 +10,6 @@ import server.Server;
 import ui.ServerFacade;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static ui.Repl.PORT;
 
 
 public class ServerFacadeTests {
@@ -21,16 +20,12 @@ public class ServerFacadeTests {
     @BeforeAll
     public static void init() {
         server =new Server();
-        port =server.run(PORT);
+        port =server.run(0);
 
         System.out.println("Started test HTTP server on " +port);
-    }
-    @BeforeEach
-    public void setUp(){
         var serverUrl = "http://localhost:" + port;
         serverFacade = new ServerFacade(serverUrl);
     }
-
 
     @Test
     public void registerUserGood() throws Exception {

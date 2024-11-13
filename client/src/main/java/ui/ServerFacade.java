@@ -45,9 +45,9 @@ public class ServerFacade {
     var path ="/game";
     return this.makeRequest("PUT",path, authRequest.authToken(), joinGameRequest, JoinGameResult.class);
   }
-  public void clear() throws Exception {
+  public ClearResult clear() throws Exception {
     var path = "/db";
-    this.makeRequest("DELETE", path, null,null, ClearResult.class);
+    return this.makeRequest("DELETE", path, null,null, ClearResult.class);
   }
 
   private <T> T makeRequest(String method, String path,String header, Object request, Class<T> result) throws Exception {
@@ -63,7 +63,8 @@ public class ServerFacade {
       int responseCode = http.getResponseCode();
 
       if (responseCode == HttpURLConnection.HTTP_OK) { // 200
-        return readBody(http,result);
+        //System.out.println("Request successful");
+        // Process the response (e.g., read input stream)
       } else if (responseCode == HttpURLConnection.HTTP_BAD_REQUEST) { // 400
         throw new Exception("Bad request");
         // Handle error (e.g., read error stream)
@@ -71,15 +72,19 @@ public class ServerFacade {
         throw new Exception("Unauthorized");
 
         // Handle unauthorized access
-      }  else if (responseCode == HttpURLConnection.HTTP_FORBIDDEN) { // 401
+      }  else if (responseCode == HttpURLConnection.HTTP_FORBIDDEN) { // 403
         throw new Exception("Already taken");
         // Handle unauthorized access
-      } else {
-        throw new Exception("Internal Error");
-        // Handle other status codes
+      }   else if (responseCode == HttpURLConnection.HTTP_INTERNAL_ERROR) { // 403
+        throw new Exception("Error: Couldn't connect to server");
+        // Handle unauthorized access
       }
+      else {
+        throw new Exception("Internal Error");
+      }
+      return readBody(http,result);
     } catch (Exception ex) {
-      throw new Exception("Could not connect to Server");
+      throw new Exception(ex.getMessage());
     }
   }
   private static void writeHeader(String header, HttpURLConnection http) {
