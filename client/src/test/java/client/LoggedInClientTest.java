@@ -2,9 +2,9 @@ package client;
 
 import org.junit.jupiter.api.*;
 
-import ui.Clients.ChessClient;
-import ui.Clients.LoggedInClient;
-import ui.Clients.LoggedOutClient;
+import ui.clients.ChessClient;
+import ui.clients.LoggedInClient;
+import ui.clients.LoggedOutClient;
 import ui.Repl;
 import ui.ServerFacade;
 
@@ -30,13 +30,13 @@ public class LoggedInClientTest {
   }
 
   @Test
-  public void join_bad(){
+  public void joinBad(){
     String result = currentClient.eval("join 1");
     Assertions.assertEquals("Expected: <ListNumber> <WHITE|BLACK>", result);
   }
 
   @Test
-  public void join_good_input(){
+  public void joinGoodInput(){
     currentClient.eval("create game1");
 
     String result = currentClient.eval("join 1 white");
@@ -45,17 +45,17 @@ public class LoggedInClientTest {
   }
 
   @Test
-  public void create_bad_input(){
+  public void createBadInput(){
     String result = currentClient.eval("create");
     Assertions.assertEquals("Expected: <Game Name>", result);
   }
   @Test
-  public void creat_good_input(){
+  public void createGoodInput(){
     String result = currentClient.eval("create game1");
     Assertions.assertEquals("Game game1, successfully created", result);
   }
   @Test
-  public void observe_bad_input(){
+  public void observeBadInput(){
     currentClient.eval("create game1");
 
     String result = currentClient.eval("observe 1 white");
@@ -63,7 +63,7 @@ public class LoggedInClientTest {
     Assertions.assertEquals("Expected <gameID>", result);
   }
   @Test
-  public void observe_good_input(){
+  public void observeGoodInput(){
     currentClient.eval("create game1");
 
     String result = currentClient.eval("observe 1");
@@ -72,7 +72,7 @@ public class LoggedInClientTest {
   }
 
   @Test
-  public void list_bad_input(){
+  public void listBadInput(){
     currentClient.eval("create game1");
 
     String result = currentClient.eval("list 1");
@@ -81,7 +81,7 @@ public class LoggedInClientTest {
   }
 
   @Test
-  public void list_good_input(){
+  public void listGoodInput(){
     currentClient.eval("create game1");
 
     String result = currentClient.eval("list");
@@ -94,7 +94,7 @@ public class LoggedInClientTest {
     Assertions.assertEquals(expected, result);
   }
   @Test
-  public void logout_bad_input(){
+  public void logoutBadInput(){
     currentClient.eval("create game1");
 
     String result = currentClient.eval("logout 1");
@@ -102,7 +102,7 @@ public class LoggedInClientTest {
     Assertions.assertEquals("Expected: logout", result);
   }
   @Test
-  public void logout_good_input(){
+  public void logoutGoodInput(){
 
     String result = currentClient.eval("logout");
     Assertions.assertNotNull(result);

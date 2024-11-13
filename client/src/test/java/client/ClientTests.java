@@ -1,13 +1,11 @@
 package client;
 
 import org.junit.jupiter.api.*;
-import ui.Clients.ChessClient;
-import ui.Clients.LoggedInClient;
-import ui.Clients.LoggedOutClient;
-import ui.State;
+import ui.clients.ChessClient;
+import ui.clients.LoggedInClient;
+import ui.clients.LoggedOutClient;
 
 public class ClientTests {
-  private final ChessClient currentClient = new LoggedOutClient("urlTest");
   @BeforeEach
   public void setUp(){
 

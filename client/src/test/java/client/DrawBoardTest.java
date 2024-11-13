@@ -24,8 +24,4 @@ public class DrawBoardTest {
       DrawnBoard.run(ChessGame.TeamColor.BLACK, board);
 
   }
-  @Test
-  public void printBoard(){
-   // DrawnBoard.run(ChessGame.TeamColor.WHITE, new ChessBoard());
-  }
 }

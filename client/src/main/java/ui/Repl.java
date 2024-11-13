@@ -3,10 +3,10 @@ package ui;
 import chess.ChessBoard;
 import model.AuthData;
 import results.GameResult;
-import ui.Clients.ChessClient;
-import ui.Clients.InGameClient;
-import ui.Clients.LoggedInClient;
-import ui.Clients.LoggedOutClient;
+import ui.clients.ChessClient;
+import ui.clients.InGameClient;
+import ui.clients.LoggedInClient;
+import ui.clients.LoggedOutClient;
 
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -15,7 +15,7 @@ import static ui.EscapeSequences.*;
 
 
 public class Repl {
-  public static int PORT = 0;
+  public final static int PORT = 62036;
 
   private ChessClient currentClient;
   private final ChessClient loggedOutClient;

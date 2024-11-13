@@ -1,18 +1,17 @@
-package ui.Clients;
+package ui.clients;
 
 import chess.ChessGame;
 import ui.DrawnBoard;
 import ui.Repl;
-import ui.ServerFacade;
 import ui.State;
 
 import java.util.Arrays;
 
 public class InGameClient implements ChessClient{
-  private final ServerFacade server;
+  //private final ServerFacade server;
 
   public InGameClient(String serverUrl){
-    server = new ServerFacade(serverUrl);
+   // server = new ServerFacade(serverUrl);
 
   }
   @Override
@@ -35,7 +34,7 @@ public class InGameClient implements ChessClient{
   private String getBoard(String[] params) throws Exception {
     if(params.length==0) {
       Repl.chessBoard.resetBoard();
-      return drawBoard(params);
+      return drawBoard();
     }
     throw new Exception("Expected: board");
   }
@@ -47,7 +46,7 @@ public class InGameClient implements ChessClient{
     }
     throw new Exception("Expected: leave");
   }
-  private String drawBoard(String[] params){
+  private String drawBoard(){
      DrawnBoard.run(ChessGame.TeamColor.WHITE,Repl.chessBoard);
      System.out.println();
      DrawnBoard.run(ChessGame.TeamColor.BLACK,Repl.chessBoard);

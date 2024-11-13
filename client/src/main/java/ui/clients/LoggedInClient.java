@@ -1,4 +1,4 @@
-package ui.Clients;
+package ui.clients;
 
 import requests.AuthRequest;
 import requests.CreateGameRequest;
@@ -64,7 +64,7 @@ public class LoggedInClient implements ChessClient{
     if (params.length ==1 ) {
       AuthRequest authRequest = new AuthRequest(Repl.authData.authToken());
       CreateGameRequest createGameRequest = new CreateGameRequest(params[0]);
-      CreateGameResult createGameResult = server.createGame(authRequest, createGameRequest);
+      server.createGame(authRequest, createGameRequest);
 
       return String.format("Game %s, successfully created", createGameRequest.gameName());
     }
@@ -98,7 +98,7 @@ public class LoggedInClient implements ChessClient{
     if(Repl.games.size()>= parseInt(params[0])) {
         AuthRequest authRequest = new AuthRequest(Repl.authData.authToken());
         JoinGameRequest joinGameRequest = new JoinGameRequest(params[1].toUpperCase(), Repl.games.get((parseInt(params[0]) - 1)).gameID);
-        JoinGameResult joinGameResult = server.joinGame(authRequest, joinGameRequest);
+        server.joinGame(authRequest, joinGameRequest);
         Repl.currentGame = Repl.games.get((parseInt(params[0]) - 1));
         //Repl.chessBoard = joinGameResult.gameData().game().getBoard();
         Repl.state = State.IN_GAME;

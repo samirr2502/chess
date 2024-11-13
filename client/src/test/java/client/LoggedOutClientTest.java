@@ -2,8 +2,8 @@ package client;
 
 import org.junit.jupiter.api.*;
 
-import ui.Clients.ChessClient;
-import ui.Clients.LoggedOutClient;
+import ui.clients.ChessClient;
+import ui.clients.LoggedOutClient;
 import ui.Repl;
 import ui.ServerFacade;
 
@@ -25,13 +25,13 @@ public class LoggedOutClientTest {
   }
 
   @Test
-  public void login_bad_input(){
+  public void loginBadInput(){
     String result = currentClient.eval("login");
     Assertions.assertEquals("Expected: <username> <password>", result);
   }
 
   @Test
-  public void login_good_input(){
+  public void loginGoodInput(){
     currentClient.eval("register samir 123 sam@123");
 
     String result = currentClient.eval("login samir 123");
@@ -40,19 +40,19 @@ public class LoggedOutClientTest {
   }
 
   @Test
-  public void register_bad_input(){
+  public void registerBadInput(){
     String result = currentClient.eval("register 1");
     Assertions.assertEquals("Expected: <username> <password> <email>", result);
   }
   @Test
-  public void register_already_taken_input(){
+  public void registerAlreadyTakenInput(){
     currentClient.eval("register samir 123 sam@123");
 
     String result = currentClient.eval("register samir 123 sam@123");
     Assertions.assertEquals("Already taken", result);
   }
   @Test
-  public void register_good_input(){
+  public void registerGoodInput(){
     String result = currentClient.eval("register samir14 123 sam@123");
     Assertions.assertEquals(String.format("You signed in as %s.\n\nType help for commands","samir14"), result);
 

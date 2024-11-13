@@ -2,8 +2,8 @@ package client;
 
 import org.junit.jupiter.api.*;
 
-import ui.Clients.ChessClient;
-import ui.Clients.InGameClient;
+import ui.clients.ChessClient;
+import ui.clients.InGameClient;
 import ui.Repl;
 import ui.ServerFacade;
 
@@ -25,25 +25,25 @@ public class InGameClientTest {
   }
 
   @Test
-  public void leave_good_input(){
+  public void leaveGoodInput(){
     String result = currentClient.eval("leave");
     Assertions.assertEquals("You left the Game \n\n Type help for commands", result);
   }
 
   @Test
-  public void leave_bad_input(){
+  public void leaveBadInput(){
     String result = currentClient.eval("leave 1");
     Assertions.assertNotNull(result);
     Assertions.assertEquals("Expected: leave", result);
   }
 
   @Test
-  public void board_bad_input(){
+  public void boarBadInput(){
     String result = currentClient.eval("board 1");
     Assertions.assertEquals("Expected: board", result);
   }
   @Test
-  public void board_good_input(){
+  public void boardGoodInput(){
     String result = currentClient.eval("board");
     String expected= "";
     Assertions.assertEquals(expected, result);

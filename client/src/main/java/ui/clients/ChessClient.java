@@ -1,6 +1,4 @@
-package ui.Clients;
-
-import ui.State;
+package ui.clients;
 
 public interface ChessClient {
   String eval(String prompt);
