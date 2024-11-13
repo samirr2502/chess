@@ -1,11 +1,14 @@
 package ui;
 
 import model.AuthData;
+import model.GameData;
+import service.results.GameResult;
 import ui.Clients.ChessClient;
 import ui.Clients.InGameClient;
 import ui.Clients.LoggedInClient;
 import ui.Clients.LoggedOutClient;
 
+import java.util.ArrayList;
 import java.util.Scanner;
 
 import static ui.EscapeSequences.*;
@@ -17,6 +20,8 @@ public class Repl {
   private final ChessClient inGameClient;
   public static AuthData authData;
   public static State state;
+  public static ArrayList<GameResult> games;
+  public static GameResult currentGame;
 
   public Repl(String serverUrl) {
     currentClient = new LoggedOutClient(serverUrl);

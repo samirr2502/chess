@@ -1,8 +1,5 @@
 package ui.Clients;
 
-import model.AuthData;
-import model.GameData;
-import model.UserData;
 import server.requests.AuthRequest;
 import server.requests.CreateGameRequest;
 import server.requests.JoinGameRequest;
@@ -33,8 +30,7 @@ public class LoggedInClient implements ChessClient{
       return switch (cmd) {
         case "list" -> listGames(params);
         case "create" -> createGame(params);
-        case "join" -> joinGame(params);
-        case "observe" -> joinGame(params);
+        case "join", "observe" -> joinGame(params);
         case "logout" -> logout(params);
         case "quit" -> "quit";
         default -> help();
@@ -48,13 +44,16 @@ public class LoggedInClient implements ChessClient{
 
       AuthRequest authRequest = new AuthRequest(Repl.authData.authToken());
       GetGamesResult getGamesResult = server.getGames(authRequest);
+      Repl.games = getGamesResult.games;
       var printList ="";
-      for (GameResult game :getGamesResult.games){
+      int index=1;
+      for (GameResult game :Repl.games){
         printList =printList.concat(String.format("""
-                   GameName: %s | ID: %d
+                   %d.) GameName: %s,
                    White Player: %s,
                    Black Player: %s
-                  """,game.gameName,game.gameID,game.whiteUsername, game.blackUsername));
+                  """,index,game.gameName,game.whiteUsername, game.blackUsername));
+       index++;
       }
       return printList;
     }
@@ -71,18 +70,23 @@ public class LoggedInClient implements ChessClient{
     throw new Exception("Expected: <GameName>");
   }
   public String joinGame(String ... params) throws Exception {
+
+    if (params.length ==1) {
+      Repl.state = State.IN_GAME;
+      Repl.currentGame= Repl.games.get(parseInt(params[0])-1);
+      return "Observing game: " + Repl.currentGame.gameName;
+    }
     if (params.length ==2 ) {
       AuthRequest authRequest = new AuthRequest(Repl.authData.authToken());
-      JoinGameRequest joinGameRequest = new JoinGameRequest(params[1].toUpperCase(), parseInt(params[0]));
+      JoinGameRequest joinGameRequest = new JoinGameRequest(params[1].toUpperCase(),Repl.games.get((parseInt(params[0])-1)).gameID);
       JoinGameResult joinGameResult = server.joinGame(authRequest, joinGameRequest);
-
+      Repl.currentGame= Repl.games.get((parseInt(params[0])-1));
       Repl.state = State.IN_GAME;
-      return joinGameResult.toString();
+      return "Joined game: " + Repl.currentGame.gameName;
     }
     throw new Exception("Expected: <GameName>");  }
   public String logout(String ... params) throws Exception {
     if (params.length ==0 ) {
-
       AuthRequest logoutRequest = new AuthRequest(Repl.authData.authToken());
       server.logoutUser(logoutRequest);
       Repl.state=State.LOGGED_OUT;
