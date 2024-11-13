@@ -86,7 +86,7 @@ public class LoggedInClient implements ChessClient{
       AuthRequest logoutRequest = new AuthRequest(Repl.authData.authToken());
       server.logoutUser(logoutRequest);
       Repl.state=State.LOGGED_OUT;
-      return "You are signed out \n\n Type help for commands";
+      return "You are signed out \n\nType -help- for commands";
     }
     throw new Exception("Expected: logout");
   }

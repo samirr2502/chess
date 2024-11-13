@@ -6,6 +6,8 @@ import ui.State;
 
 import java.util.Arrays;
 
+import static ui.EscapeSequences.*;
+
 public class InGameClient implements ChessClient{
   private final ServerFacade server;
   public InGameClient(String serverUrl){
@@ -31,7 +33,7 @@ public class InGameClient implements ChessClient{
   }
 
   private String getBoard(String[] params) {
-    return "";
+    return drawBoardWhite(params);
   }
   private String surrender(String[] params) {
     return "";
@@ -41,12 +43,20 @@ public class InGameClient implements ChessClient{
     return "You left the Game out \n\n Type help for commands";
   }
   private String drawBoardWhite(String[] params){
-    return """
-              1 2
-            b     b
-            a     a
-              1 2
-            """;
+    return String.format("""
+              1 2 3 4 5 6 7 8
+            h %s 0 0 0 0 0 0 0 h
+            g 0 0 0 0 0 0 0 0 g
+            f 0 0 0 0 0 0 0 0 f
+            e 0 0 0 0 0 0 0 0 e
+            d 0 0 0 0 0 0 0 0 d
+            c 0 0 0 0 0 0 0 0 c
+            b X X X X X X X X b
+            a Y Y Y Y Y Y Y Y a
+              1 2 3 4 5 6 7 8
+            """,
+            WHITE_PAWN)
+            ;
   }
   @Override
   public String help() {
