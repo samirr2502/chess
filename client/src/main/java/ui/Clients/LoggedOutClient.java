@@ -2,7 +2,7 @@ package ui.Clients;
 
 import model.AuthData;
 import model.UserData;
-import service.results.LoginResult;
+import results.LoginResult;
 import ui.Repl;
 import ui.ServerFacade;
 import ui.State;

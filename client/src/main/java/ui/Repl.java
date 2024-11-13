@@ -2,9 +2,7 @@ package ui;
 
 import chess.ChessBoard;
 import model.AuthData;
-import model.GameData;
-import service.results.GameResult;
-import service.results.GetGamesResult;
+import results.GameResult;
 import ui.Clients.ChessClient;
 import ui.Clients.InGameClient;
 import ui.Clients.LoggedInClient;

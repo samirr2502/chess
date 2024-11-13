@@ -18,14 +18,14 @@ public class ClientTests {
     ChessClient currentClient = new LoggedOutClient("urlTest");
 
     String result = currentClient.eval("quit");
-    Assertions.assertEquals("Quit Successful!", result);
+    Assertions.assertEquals("quit", result);
   }
 
   @Test
   public void evalLoggedInClientTest(){
     ChessClient currentClient = new LoggedInClient("urlTest");
     String result = currentClient.eval("quit");
-    Assertions.assertEquals("Quit Successful!", result);
+    Assertions.assertEquals("quit", result);
   }
 
   @AfterAll

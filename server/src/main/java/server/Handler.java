@@ -13,11 +13,11 @@ import dataaccess.userdao.MemoryUserDAO;
 import dataaccess.userdao.SQLUserDAO;
 import model.UserData;
 import org.mindrot.jbcrypt.BCrypt;
-import server.requests.AuthRequest;
-import server.requests.CreateGameRequest;
-import server.requests.JoinGameRequest;
+import requests.AuthRequest;
+import requests.CreateGameRequest;
+import requests.JoinGameRequest;
 import service.Service;
-import service.results.*;
+import results.*;
 import spark.Request;
 import spark.Response;
 

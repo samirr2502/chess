@@ -1,9 +1,9 @@
 package ui.Clients;
 
-import server.requests.AuthRequest;
-import server.requests.CreateGameRequest;
-import server.requests.JoinGameRequest;
-import service.results.*;
+import requests.AuthRequest;
+import requests.CreateGameRequest;
+import requests.JoinGameRequest;
+import results.*;
 import ui.Repl;
 import ui.ServerFacade;
 import ui.State;

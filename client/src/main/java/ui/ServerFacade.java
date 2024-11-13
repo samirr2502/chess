@@ -2,10 +2,10 @@ package ui;
 
 import com.google.gson.Gson;
 import model.UserData;
-import server.requests.AuthRequest;
-import server.requests.CreateGameRequest;
-import server.requests.JoinGameRequest;
-import service.results.*;
+import requests.AuthRequest;
+import requests.CreateGameRequest;
+import requests.JoinGameRequest;
+import results.*;
 
 import java.io.IOException;
 import java.io.InputStream;

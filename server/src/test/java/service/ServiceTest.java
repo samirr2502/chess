@@ -16,10 +16,10 @@ import model.AuthData;
 import model.UserData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import server.requests.AuthRequest;
-import server.requests.CreateGameRequest;
-import server.requests.JoinGameRequest;
-import service.results.*;
+import requests.AuthRequest;
+import requests.CreateGameRequest;
+import requests.JoinGameRequest;
+import results.*;
 
 import java.sql.SQLException;
 

@@ -10,10 +10,10 @@ import model.AuthData;
 import model.GameData;
 import model.UserData;
 import org.mindrot.jbcrypt.BCrypt;
-import server.requests.AuthRequest;
-import server.requests.CreateGameRequest;
-import server.requests.JoinGameRequest;
-import service.results.*;
+import requests.AuthRequest;
+import requests.CreateGameRequest;
+import requests.JoinGameRequest;
+import results.*;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
