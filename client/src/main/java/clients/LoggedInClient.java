@@ -1,5 +1,6 @@
-package ui.clients;
+package clients;
 
+import chess.ChessGame;
 import requests.AuthRequest;
 import requests.CreateGameRequest;
 import requests.JoinGameRequest;
@@ -11,7 +12,7 @@ import ui.State;
 import java.util.Arrays;
 
 import static java.lang.Integer.parseInt;
-import static ui.Repl.inGameClient;
+import static ui.Repl.*;
 
 public class LoggedInClient implements ChessClient{
   private final ServerFacade server;
@@ -96,17 +97,20 @@ public class LoggedInClient implements ChessClient{
       checkIDNotString(params);
       if(Repl.games.size()>= parseInt(params[0]) && parseInt(params[0])>0) {
         AuthRequest authRequest = new AuthRequest(Repl.authData.authToken());
-
         JoinGameRequest joinGameRequest = new JoinGameRequest(params[1].toUpperCase(), Repl.games.get((parseInt(params[0]) - 1)).gameID);
-
         JoinGameResult joinGameResult = server.joinGame(authRequest, joinGameRequest);
 
         Repl.currentGame = Repl.games.get((parseInt(params[0]) - 1));
 
         Repl.currentGameData = joinGameResult.gameData();
-
+        System.out.println(joinGameResult);
         //Repl.chessBoard = joinGameResult.gameData().game().getBoard();
+        switch (params[1].toUpperCase()){
+          case "WHITE" -> lastJoinedGameColor = ChessGame.TeamColor.WHITE;
+          case "BLACK" -> lastJoinedGameColor = ChessGame.TeamColor.BLACK;
+        }
         Repl.state = State.IN_GAME;
+
         inGameClient.eval("board");
       return String.format("Joined  game: %s\n\nUse -help to see options", Repl.currentGame.gameName);
       }else{

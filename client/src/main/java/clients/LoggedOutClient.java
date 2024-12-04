@@ -1,4 +1,4 @@
-package ui.clients;
+package clients;
 
 import model.AuthData;
 import model.UserData;

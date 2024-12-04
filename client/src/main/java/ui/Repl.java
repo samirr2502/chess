@@ -5,10 +5,10 @@ import chess.ChessGame;
 import model.AuthData;
 import model.GameData;
 import results.GameResult;
-import ui.clients.ChessClient;
-import ui.clients.InGameClient;
-import ui.clients.LoggedInClient;
-import ui.clients.LoggedOutClient;
+import clients.ChessClient;
+import clients.InGameClient;
+import clients.LoggedInClient;
+import clients.LoggedOutClient;
 
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -24,10 +24,10 @@ public class Repl {
   public static ChessClient inGameClient;
   public static AuthData authData;
   public static State state;
-  public static State previousState;
   public static ArrayList<GameResult> games;
   public static GameResult currentGame;
   public static GameData currentGameData;
+  public static ChessGame.TeamColor lastJoinedGameColor;
   public static ChessBoard chessBoard = new ChessBoard();
 
   public Repl(String serverUrl) {

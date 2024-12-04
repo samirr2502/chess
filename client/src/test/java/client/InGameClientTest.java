@@ -3,11 +3,11 @@ package client;
 import org.junit.jupiter.api.*;
 
 import server.Server;
-import ui.clients.ChessClient;
-import ui.clients.InGameClient;
+import clients.ChessClient;
+import clients.InGameClient;
 import ui.Repl;
 import ui.ServerFacade;
-import ui.clients.LoggedOutClient;
+import clients.LoggedOutClient;
 
 
 public class InGameClientTest {

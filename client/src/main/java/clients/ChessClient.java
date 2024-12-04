@@ -1,4 +1,4 @@
-package ui.clients;
+package clients;
 
 public interface ChessClient {
   String eval(String prompt);

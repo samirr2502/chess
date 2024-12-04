@@ -3,8 +3,8 @@ package client;
 import org.junit.jupiter.api.*;
 
 import server.Server;
-import ui.clients.ChessClient;
-import ui.clients.LoggedOutClient;
+import clients.ChessClient;
+import clients.LoggedOutClient;
 import ui.Repl;
 import ui.ServerFacade;
 

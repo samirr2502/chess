@@ -1,12 +1,11 @@
 package ui;
 
-import chess.ChessBoard;
-import chess.ChessGame;
-import chess.ChessPiece;
-import chess.ChessPosition;
+import chess.*;
 
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import static java.lang.Math.abs;
 import static ui.EscapeSequences.*;
@@ -21,9 +20,8 @@ public class DrawnBoard {
   private static final String EMPTY = "  ";
 
 
-  public static void run(ChessGame.TeamColor teamColor, ChessBoard board) {
+  public static void run(ChessGame.TeamColor teamColor, ChessBoard board, Collection<ChessMove> validMoves) {
     board.resetBoard();
-
     var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
 
     out.print(ERASE_SCREEN);
@@ -31,12 +29,12 @@ public class DrawnBoard {
     switch (teamColor) {
       case WHITE -> {
         drawHeaders(out, ChessGame.TeamColor.WHITE);
-        drawChessBoard(out, ChessGame.TeamColor.WHITE, board);
+        drawChessBoard(out, ChessGame.TeamColor.WHITE, board,validMoves);
         drawHeaders(out, ChessGame.TeamColor.WHITE);
       }
       case BLACK -> {
         drawHeaders(out, ChessGame.TeamColor.BLACK);
-        drawChessBoard(out, ChessGame.TeamColor.BLACK, board);
+        drawChessBoard(out, ChessGame.TeamColor.BLACK, board, validMoves);
         drawHeaders(out, ChessGame.TeamColor.BLACK);
       }
     }
@@ -72,12 +70,16 @@ public class DrawnBoard {
     out.print(player);
   }
 
-  private static void drawChessBoard(PrintStream out, ChessGame.TeamColor teamColor, ChessBoard board) {
+  private static void drawChessBoard(PrintStream out, ChessGame.TeamColor teamColor, ChessBoard board, Collection<ChessMove> validMoves) {
     int offset = (teamColor == ChessGame.TeamColor.WHITE) ? 7 : 0;
     int rows = 0;
     int cols = 7;
     int r2;
     int c2;
+    Collection<ChessPosition> positions = new ArrayList<>();
+    for (ChessMove move: validMoves){
+      positions.add(move.getEndPosition());
+    }
     for (int r = 8; r > rows; r--) {
       r2 = abs(8 - (r + offset));
       out.print(SET_BG_COLOR_DARK_GREEN);
@@ -85,9 +87,13 @@ public class DrawnBoard {
       out.printf(" %d ", r2 + 1);
       for (int c = 0; c <= cols; c++) {
         c2 = abs(7 - (c + offset));
+        ChessPosition position = new ChessPosition(r2,c2);
+
         out.print(SET_TEXT_COLOR_WHITE);
         ChessPosition pos = new ChessPosition(r2 + 1, c2 + 1);
-        if ((c + r) % 2 != 0) {
+        if (positions.contains(position)){
+          out.print(SET_BG_COLOR_YELLOW);
+        } else if ((c + r) % 2 != 0) {
           out.print(SET_BG_COLOR_DARK_GREY);
         } else {
           out.print(SET_BG_COLOR_LIGHT_GREY);
