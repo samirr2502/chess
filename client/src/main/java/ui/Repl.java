@@ -1,7 +1,9 @@
 package ui;
 
 import chess.ChessBoard;
+import chess.ChessGame;
 import model.AuthData;
+import model.GameData;
 import results.GameResult;
 import ui.clients.ChessClient;
 import ui.clients.InGameClient;
@@ -25,6 +27,7 @@ public class Repl {
   public static State previousState;
   public static ArrayList<GameResult> games;
   public static GameResult currentGame;
+  public static GameData currentGameData;
   public static ChessBoard chessBoard = new ChessBoard();
 
   public Repl(String serverUrl) {

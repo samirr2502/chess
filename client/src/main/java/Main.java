@@ -2,7 +2,7 @@ import chess.*;
 import ui.Repl;
 
 public class Main {
-    public final static int PORT = 50252;
+    public final static int PORT = 54754;
 
     public static void main(String[] args) {
         var piece = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);

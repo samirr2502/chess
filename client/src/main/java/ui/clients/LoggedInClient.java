@@ -78,7 +78,7 @@ public class LoggedInClient implements ChessClient{
     if (params.length == 1) {
       createGameListIfNotExist();
       checkIDNotString(params);
-      if (Repl.games.size() >= parseInt(params[0])) {
+      if (Repl.games.size() >= parseInt(params[0]) && parseInt(params[0])>0) {
         Repl.currentGame = Repl.games.get(parseInt(params[0]) - 1);
         Repl.state = State.IN_GAME;
         inGameClient.eval("board");
@@ -94,11 +94,17 @@ public class LoggedInClient implements ChessClient{
             (params[1].equalsIgnoreCase("WHITE") || params[1].equalsIgnoreCase("BLACK"))) {
       createGameListIfNotExist();
       checkIDNotString(params);
-      if(Repl.games.size()>= parseInt(params[0])) {
+      if(Repl.games.size()>= parseInt(params[0]) && parseInt(params[0])>0) {
         AuthRequest authRequest = new AuthRequest(Repl.authData.authToken());
+
         JoinGameRequest joinGameRequest = new JoinGameRequest(params[1].toUpperCase(), Repl.games.get((parseInt(params[0]) - 1)).gameID);
-        server.joinGame(authRequest, joinGameRequest);
+
+        JoinGameResult joinGameResult = server.joinGame(authRequest, joinGameRequest);
+
         Repl.currentGame = Repl.games.get((parseInt(params[0]) - 1));
+
+        Repl.currentGameData = joinGameResult.gameData();
+
         //Repl.chessBoard = joinGameResult.gameData().game().getBoard();
         Repl.state = State.IN_GAME;
         inGameClient.eval("board");
@@ -117,6 +123,7 @@ public class LoggedInClient implements ChessClient{
       throw new NumberFormatException("GameID needs to be a number");
     }
   }
+
 
   private void createGameListIfNotExist() throws Exception {
     if (Repl.games== null){
