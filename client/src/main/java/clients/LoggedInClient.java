@@ -102,13 +102,9 @@ public class LoggedInClient implements ChessClient{
       if(Repl.games.size()>= parseInt(params[0]) && parseInt(params[0])>0) {
         AuthRequest authRequest = new AuthRequest(Repl.authData.authToken());
         JoinGameRequest joinGameRequest = new JoinGameRequest(params[1].toUpperCase(), Repl.games.get((parseInt(params[0]) - 1)).gameID);
-        JoinGameResult joinGameResult = server.joinGame(authRequest, joinGameRequest);
+        server.joinGame(authRequest, joinGameRequest);
 
         Repl.currentGame = Repl.games.get((parseInt(params[0]) - 1));
-
-        Repl.currentGameData = joinGameResult.gameData();
-        System.out.println(joinGameResult);
-        //Repl.chessBoard = joinGameResult.gameData().game().getBoard();
         switch (params[1].toUpperCase()){
           case "WHITE" -> lastJoinedGameColor = ChessGame.TeamColor.WHITE;
           case "BLACK" -> lastJoinedGameColor = ChessGame.TeamColor.BLACK;

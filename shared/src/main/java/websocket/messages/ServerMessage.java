@@ -19,7 +19,7 @@ public class ServerMessage {
     public enum ServerMessageType {
         LOAD_GAME,
         ERROR,
-        NOTIFICATION
+        NOTIFICATION,
     }
     public ServerMessage(ServerMessageType type, String messageType) {
         this.serverMessageType = type;
@@ -32,6 +32,9 @@ public class ServerMessage {
 
     public ServerMessageType getServerMessageType() {
         return this.serverMessageType;
+    }
+    public String getGame(){
+        return this.game;
     }
 
     @Override

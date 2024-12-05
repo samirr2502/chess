@@ -1,11 +1,13 @@
 package websocket;
 
+import chess.ChessMove;
 import com.google.gson.Gson;
+import model.GameData;
+import ui.Repl;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ServerMessage;
 
 
-import javax.management.Notification;
 import javax.websocket.*;
 import java.io.IOException;
 import java.net.URI;
@@ -13,16 +15,12 @@ import java.net.URISyntaxException;
 
 //need to extend Endpoint for websocket to work properly
 public class WebSocketFacade extends Endpoint {
-
   Session session;
-//  NotificationHandler notificationHandler;
-
 
   public WebSocketFacade(String url) throws Exception {
     try {
       url = url.replace("http", "ws");
       URI socketURI = new URI(url + "/ws");
-     // this.notificationHandler = notificationHandler;
 
       WebSocketContainer container = ContainerProvider.getWebSocketContainer();
       this.session = container.connectToServer(this, socketURI);
@@ -32,6 +30,9 @@ public class WebSocketFacade extends Endpoint {
         @Override
         public void onMessage(String message) {
           ServerMessage serverMessage = new Gson().fromJson(message, ServerMessage.class);
+          if(serverMessage.getServerMessageType() == ServerMessage.ServerMessageType.LOAD_GAME){
+            Repl.currentGameData = new Gson().fromJson(serverMessage.getGame(), GameData.class);
+          }
           printNotification(serverMessage);
         }
       });
@@ -48,9 +49,9 @@ public class WebSocketFacade extends Endpoint {
 
   public void printNotification(ServerMessage serverMessage){
     switch (serverMessage.getServerMessageType()){
-      case NOTIFICATION -> System.out.println("new notification");
-      case LOAD_GAME -> System.out.println("joined");
-      case ERROR -> System.out.println("oops Error");
+      case NOTIFICATION -> System.out.println("new notification\n");
+      case LOAD_GAME -> System.out.println("joined \n");
+      case ERROR -> System.out.println("oops Error\n");
 
     }
 
@@ -63,9 +64,17 @@ public class WebSocketFacade extends Endpoint {
       throw new Exception(ex.getMessage());
     }
   }
-  public void makeMove(String authToken, int gameId ) throws Exception {
+  public void makeMove(String authToken, int gameId,ChessMove move ) throws Exception {
     try {
-      var command = new UserGameCommand(UserGameCommand.CommandType.MAKE_MOVE, authToken, gameId, );
+      var command = new UserGameCommand(UserGameCommand.CommandType.MAKE_MOVE, authToken, gameId, move);
+      this.session.getBasicRemote().sendText(new Gson().toJson(command));
+    } catch (IOException ex) {
+      throw new Exception(ex.getMessage());
+    }
+  }
+  public void getGame(String authToken, int gameId) throws Exception {
+    try {
+      var command = new UserGameCommand(UserGameCommand.CommandType.GET_GAME, authToken, gameId, null);
       this.session.getBasicRemote().sendText(new Gson().toJson(command));
     } catch (IOException ex) {
       throw new Exception(ex.getMessage());

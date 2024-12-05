@@ -1,6 +1,8 @@
 package websocket;
 
+import chess.ChessGame;
 import chess.ChessMove;
+import chess.InvalidMoveException;
 import com.google.gson.Gson;
 import dataaccess.DataAccess;
 import dataaccess.DataAccessException;
@@ -28,7 +30,11 @@ import websocket.messages.ServerMessage;
 
 
 import java.io.IOException;
+import java.sql.Blob;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Objects;
 
 
 @WebSocket
@@ -57,7 +63,7 @@ public class WebSocketHandler {
     private final ConnectionManager connections = new ConnectionManager();
 
     @OnWebSocketMessage
-    public void onMessage(Session session, String message) throws IOException, SQLException, DataAccessException {
+    public void onMessage(Session session, String message) throws IOException, SQLException, DataAccessException, InvalidMoveException {
         UserGameCommand command = new Gson().fromJson(message, UserGameCommand.class);
         GameData gameData = getGameData(command.getGameID());
         if(gameData== null) {
@@ -65,7 +71,7 @@ public class WebSocketHandler {
             connections.sendToMe(command.getGameID(),session, messageToMe);
 
         } else  if (authDAO.getAuthDataByToken(command.getAuthToken()) == null){
-            var messageToMe = new ServerMessage(ServerMessage.ServerMessageType.ERROR,"Error Not authorized Game");
+            var messageToMe = new ServerMessage(ServerMessage.ServerMessageType.ERROR,"Error Not authorized");
             connections.sendToMe(command.getGameID(),session, messageToMe);
         }
         else {
@@ -74,11 +80,21 @@ public class WebSocketHandler {
                 case MAKE_MOVE -> makeMove(command, session, gameData);
                 case LEAVE -> leave(command.getGameID(), session);
                 case RESIGN -> resign(command.getGameID(), session);
+                case GET_GAME -> getGame(command.getGameID(), session);
             }
         }
     }
+    private GameData getGame(Integer gameId, Session session) throws SQLException, DataAccessException, IOException {
+
+        String jsonGame = new Gson().toJson(gameDAO.getGameByID(gameId));
+        LoadGameMessage loadGameMessage = new LoadGameMessage(jsonGame);
+        var messageToMe = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME, loadGameMessage.gameData);
+        connections.sendToMe(gameId,session, messageToMe);
+        return null;
+    }
     //Data Access methods:
     private GameData getGameData(Integer gameId) throws SQLException, DataAccessException {
+
         return gameDAO.getGameByID(gameId);
     }
 
@@ -98,27 +114,56 @@ public class WebSocketHandler {
         connections.broadcast(command.getGameID(), session, messageToAll);
 
     }
-    private void makeMove(UserGameCommand command, Session session,GameData gameData) throws IOException {
-        String jsonGameData = new Gson().toJson(gameData);
+    private void makeMove(UserGameCommand command, Session session,GameData gameData) throws IOException, SQLException, DataAccessException, InvalidMoveException {
 
-        LoadGameMessage loadGameMessage = new LoadGameMessage(jsonGameData);
-        var loadGameServerMessage = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME, loadGameMessage.gameData);
-        connections.sendToMe(command.getGameID(),session, loadGameServerMessage);
+        if (gameData.game().isInCheckmate(ChessGame.TeamColor.WHITE) ||gameData.game().isInCheckmate(ChessGame.TeamColor.BLACK)
+//        ||gameData.game().isInStalemate(ChessGame.TeamColor.WHITE) || gameData.game().isInStalemate(ChessGame.TeamColor.BLACK)
+            ) {
+            var errorMessage = new ServerMessage(ServerMessage.ServerMessageType.ERROR, "Error: game over");
+            connections.sendToMe(command.getGameID(), session, errorMessage);
+            return;
+        }
+       else if (gameData.game().getTeamTurn() == ChessGame.TeamColor.WHITE){
+            if (!Objects.equals(authDAO.getAuthDataByToken(command.getAuthToken()).username(), gameData.whiteUsername())) {
+                var errorMessage = new ServerMessage(ServerMessage.ServerMessageType.ERROR, "Error: Not your turn");
+                connections.sendToMe(command.getGameID(), session, errorMessage);
+                return;
+            }
+        }else if (gameData.game().getTeamTurn() == ChessGame.TeamColor.BLACK){
+            if (!Objects.equals(authDAO.getAuthDataByToken(command.getAuthToken()).username(), gameData.blackUsername())) {
+                var errorMessage = new ServerMessage(ServerMessage.ServerMessageType.ERROR, "Error: Not your turn");
+                connections.sendToMe(command.getGameID(), session, errorMessage);
+                return;
+            }
+        }
+        Collection<ChessMove> validMoves =gameData.game().validMoves(command.getMove().getStartPosition());
 
-        NotificationMessage notificationMessage = new NotificationMessage("new message");
-        var notificationServerMessage = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, notificationMessage.message);
-        connections.broadcast(command.getGameID(),session, notificationServerMessage);
+        if (validMoves == null || validMoves.isEmpty()){
+            var errorMessage = new ServerMessage(ServerMessage.ServerMessageType.ERROR, "Error: invalid move");
+            connections.sendToMe(command.getGameID(), session, errorMessage);
+        } else {
+            gameData.game().makeMove(command.getMove());
+            gameDAO.updateGame(gameData);
+            String jsonGameData = new Gson().toJson(gameData);
+            LoadGameMessage loadGameMessage = new LoadGameMessage(jsonGameData);
+
+            var loadGameServerMessage = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME, loadGameMessage.gameData);
+            connections.sendToMe(command.getGameID(), session, loadGameServerMessage);
+            connections.broadcast(command.getGameID(), session, loadGameServerMessage);
+
+            NotificationMessage notificationMessage = new NotificationMessage("new message");
+            var notificationServerMessage = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, notificationMessage.message);
+            connections.broadcast(command.getGameID(), session, notificationServerMessage);
+        }
     }
 
     private void leave(Integer gameId, Session session) throws IOException {
         connections.remove(gameId,session );
-//        var message = String.format("%s left the shop", visitorName);
         var message = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, null);
         connections.broadcast(gameId,session, message);
     }
     private void resign(Integer gameId, Session session) throws IOException {
         connections.remove(gameId, session);
-        //var message = String.format("%s left the shop", visitorName);
         var message = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, null);
         connections.broadcast(gameId, session, message);
     }

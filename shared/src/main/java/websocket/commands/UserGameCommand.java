@@ -15,22 +15,26 @@ public class UserGameCommand {
     private final CommandType commandType;
     private final String authToken;
     private final Integer gameID;
-    private MakeMoveCommand makeMoveCommand;
+    private final ChessMove move;
 
-    public UserGameCommand(CommandType commandType, String authToken, Integer gameID, String move) {
+
+    public UserGameCommand(CommandType commandType, String authToken, Integer gameID, ChessMove chessMove) {
         this.commandType = commandType;
         this.authToken = authToken;
         this.gameID = gameID;
-        this.makeMoveCommand = new MakeMoveCommand(move);
+        this.move = chessMove;
     }
 
     public enum CommandType {
         CONNECT,
         MAKE_MOVE,
         LEAVE,
-        RESIGN
+        RESIGN,
+        GET_GAME
     }
-
+    public ChessMove getMove() {
+        return move;
+    }
     public CommandType getCommandType() {
         return commandType;
     }

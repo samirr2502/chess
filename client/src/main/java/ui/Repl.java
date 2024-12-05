@@ -27,7 +27,7 @@ public class Repl {
   public static GameResult currentGame;
   public static GameData currentGameData;
   public static ChessGame.TeamColor lastJoinedGameColor;
-  public static ChessBoard chessBoard = new ChessBoard();
+//  public static ChessBoard chessBoard = new ChessBoard();
 
   public Repl(String serverUrl) throws Exception {
     currentClient = new LoggedOutClient(serverUrl);
