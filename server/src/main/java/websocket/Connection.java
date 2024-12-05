@@ -5,15 +5,15 @@ import org.eclipse.jetty.websocket.api.Session;
 import java.io.IOException;
 
 public class Connection {
-    public String clientUserName;
+    public Integer gameID;
     public Session session;
 
-    public Connection(String clientUserName, Session session) {
-        this.clientUserName = clientUserName;
+    public Connection(Integer gameId, Session session) {
+        this.gameID = gameId;
         this.session = session;
     }
 
     public void send(String msg) throws IOException {
-        session.getRemote().sendString(msg);
+        this.session.getRemote().sendString(msg);
     }
 }

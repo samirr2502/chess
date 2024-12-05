@@ -1,5 +1,6 @@
 package websocket.messages;
 
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -11,14 +12,22 @@ import java.util.Objects;
 public class ServerMessage {
     ServerMessageType serverMessageType;
 
+    String game;
+    String message;
+    String errorMessage;
+
     public enum ServerMessageType {
         LOAD_GAME,
         ERROR,
         NOTIFICATION
     }
-
-    public ServerMessage(ServerMessageType type) {
+    public ServerMessage(ServerMessageType type, String messageType) {
         this.serverMessageType = type;
+        switch (type){
+            case NOTIFICATION -> this.message = messageType;
+            case LOAD_GAME -> this.game = messageType;
+            case ERROR ->  this.errorMessage = messageType;
+        }
     }
 
     public ServerMessageType getServerMessageType() {

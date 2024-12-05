@@ -85,6 +85,7 @@ public class LoggedInClient implements ChessClient{
       if (Repl.games.size() >= parseInt(params[0]) && parseInt(params[0])>0) {
         Repl.currentGame = Repl.games.get(parseInt(params[0]) - 1);
         Repl.state = State.IN_GAME;
+        inGameClient.onStart();
         inGameClient.eval("board");
         return String.format("Observing game: %s\n\nUse -help to see options", Repl.currentGame.gameName);
       } else{
