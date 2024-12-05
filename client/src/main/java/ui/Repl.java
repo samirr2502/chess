@@ -17,7 +17,6 @@ import static ui.EscapeSequences.*;
 
 
 public class Repl {
-
   private ChessClient currentClient;
   private final ChessClient loggedOutClient;
   private final ChessClient loggedInClient;
@@ -30,7 +29,7 @@ public class Repl {
   public static ChessGame.TeamColor lastJoinedGameColor;
   public static ChessBoard chessBoard = new ChessBoard();
 
-  public Repl(String serverUrl) {
+  public Repl(String serverUrl) throws Exception {
     currentClient = new LoggedOutClient(serverUrl);
     loggedOutClient = new LoggedOutClient(serverUrl);
     loggedInClient = new LoggedInClient(serverUrl);

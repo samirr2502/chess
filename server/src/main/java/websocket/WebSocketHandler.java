@@ -29,11 +29,11 @@ public class WebSocketHandler {
         }
     }
 
-    private void connect(String visitorName, Session session) throws IOException {
-        connections.add(visitorName, session);
+    private void connect(String clientUserName, Session session) throws IOException {
+        connections.add(clientUserName, session);
         //var message = String.format("%s is in the shop", visitorName);
         var message = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
-        connections.broadcast(visitorName, message);
+        connections.broadcast(clientUserName, message);
     }
     private void makeMove(String commandMove) throws IOException {
         connections.remove(commandMove);
@@ -42,17 +42,17 @@ public class WebSocketHandler {
         connections.broadcast(commandMove, message);
     }
 
-    private void leave(String visitorName) throws IOException {
-        connections.remove(visitorName);
+    private void leave(String clientUserName) throws IOException {
+        connections.remove(clientUserName);
 //        var message = String.format("%s left the shop", visitorName);
         var message = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
-        connections.broadcast(visitorName, message);
+        connections.broadcast(clientUserName, message);
     }
-    private void resign(String visitorName) throws IOException {
-        connections.remove(visitorName);
+    private void resign(String clientUserName) throws IOException {
+        connections.remove(clientUserName);
         //var message = String.format("%s left the shop", visitorName);
         var message = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
-        connections.broadcast(visitorName, message);
+        connections.broadcast(clientUserName, message);
     }
 
     public void makeNoise(String petName, String sound) throws Exception {

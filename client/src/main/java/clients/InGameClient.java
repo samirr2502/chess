@@ -4,6 +4,7 @@ import chess.ChessGame;
 import chess.ChessMove;
 import chess.ChessPosition;
 
+import clients.websocket.WebSocketFacade;
 import ui.DrawnBoard;
 import ui.Repl;
 import ui.ServerFacade;
@@ -17,10 +18,19 @@ import static java.lang.Integer.parseInt;
 
 public class InGameClient implements ChessClient{
   private final ServerFacade server;
+  private WebSocketFacade ws;
+  private String serverUrl;
   private Collection<ChessMove> validMoves = new ArrayList<>();
 
-  public InGameClient(String serverUrl){
-   server = new ServerFacade(serverUrl);
+  public InGameClient(String serverUrl) throws Exception {
+   this.server = new ServerFacade(serverUrl);
+   this.serverUrl = serverUrl;
+  }
+
+  @Override
+  public void onStart() throws Exception {
+    ws = new WebSocketFacade(this.serverUrl);
+    ws.connectToGame(Repl.authData.username(),Repl.currentGame.gameID);
   }
 
   @Override
@@ -50,10 +60,9 @@ public class InGameClient implements ChessClient{
     throw new Exception("Expected: board");
   }
   private String getMoves(String[] params) throws Exception{
-    if(params.length==1){
-
+    if(params.length==2){
       int row = parseInt(params[0]);
-      int col = parseInt(params[0]);
+      int col = parseInt(params[1]);
       validMoves= Repl.currentGameData.game().validMoves(new ChessPosition(row -1, col-1));
       highLightValidMoves(validMoves);
     }
@@ -66,6 +75,7 @@ public class InGameClient implements ChessClient{
   }
 
   private String makeMove(String[] params) {
+
     return "";
   }
 
@@ -77,6 +87,7 @@ public class InGameClient implements ChessClient{
         case WHITE ->Repl.currentGame.whiteUsername = null;
         case BLACK -> Repl.currentGame.blackUsername =null;
       }
+      ws.leaveGame(Repl.authData.authToken(), Repl.currentGame.gameID);
       Repl.state = State.LOGGED_IN;
       return "You left the Game \n\n Type help for commands";
     }
@@ -104,4 +115,9 @@ public class InGameClient implements ChessClient{
                - quit - exit program
                - help""";
   }
+
+  /**
+   *
+   */
+
 }

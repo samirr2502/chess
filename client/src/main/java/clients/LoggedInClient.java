@@ -19,6 +19,9 @@ public class LoggedInClient implements ChessClient{
   public LoggedInClient(String serverUrl){
     this.server = new ServerFacade(serverUrl);
   }
+  @Override
+  public void onStart() throws Exception {
+  }
   /**
    * @param input to evaluate
    * @return Response
@@ -110,7 +113,7 @@ public class LoggedInClient implements ChessClient{
           case "BLACK" -> lastJoinedGameColor = ChessGame.TeamColor.BLACK;
         }
         Repl.state = State.IN_GAME;
-
+        inGameClient.onStart();
         inGameClient.eval("board");
       return String.format("Joined  game: %s\n\nUse -help to see options", Repl.currentGame.gameName);
       }else{
@@ -162,4 +165,9 @@ public class LoggedInClient implements ChessClient{
                - quit
                - help""";
   }
+
+  /**
+   * @throws Exception
+   */
+
 }

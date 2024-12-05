@@ -16,6 +16,10 @@ public class LoggedOutClient implements ChessClient{
 
   }
   @Override
+  public void onStart() throws Exception {
+
+  }
+  @Override
   public String eval(String input) {
     try {
       var tokens = input.toLowerCase().split(" ");

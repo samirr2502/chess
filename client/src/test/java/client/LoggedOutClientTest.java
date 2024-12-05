@@ -26,7 +26,7 @@ public class LoggedOutClientTest {
     server.stop();
   }
   @BeforeEach
-  public void setUp(){
+  public void setUp() throws Exception {
     var serverUrl = "http://localhost:" + port;
     repl = new Repl(serverUrl);
     serverFacade = new ServerFacade(serverUrl);

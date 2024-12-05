@@ -1,8 +1,11 @@
 package clients.websocket;
 
 import com.google.gson.Gson;
+import websocket.commands.UserGameCommand;
+import websocket.messages.ServerMessage;
 
 
+import javax.management.Notification;
 import javax.websocket.*;
 import java.io.IOException;
 import java.net.URI;
@@ -28,12 +31,12 @@ public class WebSocketFacade extends Endpoint {
       this.session.addMessageHandler(new MessageHandler.Whole<String>() {
         @Override
         public void onMessage(String message) {
-//          Notification notification = new Gson().fromJson(message, Notification.class);
-//          notificationHandler.notify(notification);
+          ServerMessage serverMessage = new Gson().fromJson(message, ServerMessage.class);
+          printNotification(serverMessage);
         }
       });
     } catch (DeploymentException | IOException | URISyntaxException ex) {
-//      throw new ResponseException(500, ex.getMessage());
+      throw new Exception(ex.getMessage());
     }
   }
 
@@ -42,24 +45,52 @@ public class WebSocketFacade extends Endpoint {
   public void onOpen(Session session, EndpointConfig endpointConfig) {
   }
 
-//  public void enterPetShop(String visitorName) throws ResponseException {
-//    try {
-//      var action = new Action(Action.Type.ENTER, visitorName);
-//      this.session.getBasicRemote().sendText(new Gson().toJson(action));
-//    } catch (IOException ex) {
-//      throw new ResponseException(500, ex.getMessage());
-//    }
-//  }
 
-//  public void leavePetShop(String visitorName) throws ResponseException {
-//    try {
-//      var action = new Action(Action.Type.EXIT, visitorName);
-//      this.session.getBasicRemote().sendText(new Gson().toJson(action));
-//      this.session.close();
-//    } catch (IOException ex) {
-//      throw new ResponseException(500, ex.getMessage());
-//    }
-//  }
+  public void printNotification(ServerMessage serverMessage){
+    switch (serverMessage.getServerMessageType()){
+      case NOTIFICATION -> System.out.println("new notification");
+      case LOAD_GAME -> System.out.println("joined");
+      case ERROR -> System.out.println("oops Error");
 
+    }
+
+  }
+  public void connectToGame(String authToken, int gameId ) throws Exception {
+    try {
+      var command = new UserGameCommand(UserGameCommand.CommandType.CONNECT,authToken, gameId );
+      this.session.getBasicRemote().sendText(new Gson().toJson(command));
+    } catch (Exception ex) {
+      throw new Exception(ex.getMessage());
+    }
+  }
+  public void makeMove(String authToken, int gameId ) throws Exception {
+    try {
+      var command = new UserGameCommand(UserGameCommand.CommandType.MAKE_MOVE, authToken, gameId );
+      this.session.getBasicRemote().sendText(new Gson().toJson(command));
+    } catch (IOException ex) {
+      throw new Exception(ex.getMessage());
+    }
+  }
+
+  public void leaveGame(String authToken, int gameId ) throws Exception {
+    try {
+      if (this.session.isOpen()) {
+        var command = new UserGameCommand(UserGameCommand.CommandType.LEAVE, authToken, gameId);
+        this.session.getBasicRemote().sendText(new Gson().toJson(command));
+        this.session.close();
+      }
+    } catch (IOException ex) {
+      throw new Exception(ex.getMessage());
+    }
+  }
+  public void resign(String authToken, int gameId ) throws Exception {
+    try {
+      var command = new UserGameCommand(UserGameCommand.CommandType.RESIGN,authToken, gameId );
+      this.session.getBasicRemote().sendText(new Gson().toJson(command));
+      //this.session.close();
+    } catch (IOException ex) {
+      throw new Exception(ex.getMessage());
+    }
+  }
 }
 
