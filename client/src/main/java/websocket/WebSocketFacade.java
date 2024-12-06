@@ -59,13 +59,7 @@ public class WebSocketFacade extends Endpoint {
   public void printNotification(ServerMessage serverMessage){
     switch (serverMessage.getServerMessageType()){
       case NOTIFICATION -> System.out.println(serverMessage.getMessage());
-      case LOAD_GAME -> {
-//        ChessGame game = new Gson().fromJson(serverMessage.getGame(), ChessGame.class);
-//        GameData newGameData = new GameData(Repl.currentGame.gameID, Repl.currentGameData.whiteUsername(), Repl.currentGameData.blackUsername(),
-//                                        Repl.currentGameData.gameName(), game);
-//        Repl.currentGameData =newGameData;
-        System.out.println();
-      }
+      case LOAD_GAME -> System.out.println();
       case ERROR -> System.out.println(serverMessage.getErrorMessage());
     }
   }
