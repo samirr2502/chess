@@ -16,38 +16,23 @@ public abstract class PieceMovesRules {
   public static void movesRule1(PieceMoves pieceMoves, int moveRow, int moveCol){
     ChessPosition newPosition = new ChessPosition(pieceMoves.myPosition.getRow() +moveRow,
             pieceMoves.myPosition.getColumn()+moveCol);
-//    boolean edges = validateEdges(newPosition);
-//    boolean edges = validateEdges(newPosition);
-//    boolean empty = validateEmptyPosition(pieceMoves, newPosition);
-//    boolean take = validateTakeTeamPiece(pieceMoves,newPosition);
-//    if(edges && (empty|| take)){
-//      pieceMoves.possibleMoves.add(new ChessMove(pieceMoves.myPosition, newPosition,null));
-//    }
 
-    if (validateEdges(newPosition)){
-        boolean empty = validateEmptyPosition(pieceMoves, newPosition);
-        if (empty){
-          pieceMoves.possibleMoves.add(new ChessMove(pieceMoves.myPosition, newPosition,null));
+
+    if (validateEdges(newPosition)) {
+      boolean empty = validateEmptyPosition(pieceMoves, newPosition);
+      if (empty) {
+        pieceMoves.possibleMoves.add(new ChessMove(pieceMoves.myPosition, newPosition, null));
+      } else {
+        boolean take = validateTakeTeamPiece(pieceMoves, newPosition);
+        if (take) {
+          pieceMoves.possibleMoves.add(new ChessMove(pieceMoves.myPosition, newPosition, null));
+
         } else {
-          boolean take =validateTakeTeamPiece(pieceMoves,newPosition);
-          if(take){
-            pieceMoves.possibleMoves.add(new ChessMove(pieceMoves.myPosition, newPosition,null));
 
-          } else{
-
-          }
         }
+      }
 
-//        boolean take = validateTakeTeamPiece(pieceMoves,newPosition);
-//        if(empty|| take){
-//          pieceMoves.possibleMoves.add(new ChessMove(pieceMoves.myPosition, newPosition,null));
-//        }
     }
-//    if(validateEdges(newPosition)
-//            && (validateEmptyPosition(pieceMoves, newPosition)
-//  || validateTakeTeamPiece(pieceMoves,newPosition))){
-//      pieceMoves.possibleMoves.add(new ChessMove(pieceMoves.myPosition, newPosition,null));
-//    }
   }
 
   /**

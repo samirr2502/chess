@@ -172,22 +172,25 @@ public class WebSocketHandler {
                         case BLACK -> oponnetUserName = gameData.blackUsername();
                         case WHITE -> oponnetUserName = gameData.whiteUsername();
                     }
+
+                    NotificationMessage notificationMessage2 = new NotificationMessage(oponnetUserName + " is in check mate ");
+                    var serverMessage = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, notificationMessage2.message);
                     if (gameData.game().isInCheckmate(gameData.game().getTeamTurn())){
 
-                        NotificationMessage notificationMessage2 = new NotificationMessage(oponnetUserName + " is in check mate ");
-                        var notificationMessage_ = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, notificationMessage2.message);
-                        connections.broadcast(command.getGameID(), session, notificationMessage_);
-                        connections.sendToMe(command.getGameID(), session, notificationMessage_);
+                        notificationMessage2 = new NotificationMessage(oponnetUserName + " is in check mate ");
+                        serverMessage = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, notificationMessage2.message);
+                        connections.broadcast(command.getGameID(), session, serverMessage);
+                        connections.sendToMe(command.getGameID(), session, serverMessage);
                     } else if(gameData.game().isInCheck(gameData.game().getTeamTurn())) {
-                        NotificationMessage notificationMessage2 = new NotificationMessage(oponnetUserName+ " is in Check ");
-                        var notificationMessage_ = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, notificationMessage2.message);
-                        connections.broadcast(command.getGameID(), session, notificationMessage_);
-                        connections.sendToMe(command.getGameID(), session, notificationMessage_);
+                        notificationMessage2 = new NotificationMessage(oponnetUserName+ " is in Check ");
+                        serverMessage = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, notificationMessage2.message);
+                        connections.broadcast(command.getGameID(), session, serverMessage);
+                        connections.sendToMe(command.getGameID(), session, serverMessage);
                     } else if(gameData.game().isInStalemate(gameData.game().getTeamTurn())) {
-                        NotificationMessage notificationMessage2 = new NotificationMessage(oponnetUserName + " is in StaleMate");
-                        var notificationMessage_ = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, notificationMessage2.message);
-                        connections.broadcast(command.getGameID(), session, notificationMessage_);
-                        connections.sendToMe(command.getGameID(), session, notificationMessage_);
+                        notificationMessage2 = new NotificationMessage(oponnetUserName + " is in StaleMate");
+                        serverMessage= new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, notificationMessage2.message);
+                        connections.broadcast(command.getGameID(), session, serverMessage);
+                        connections.sendToMe(command.getGameID(), session, serverMessage);
                     }
                 } catch (InvalidMoveException ex) {
                     var errorMessage = new ServerMessage(ServerMessage.ServerMessageType.ERROR, "Error: invalid move");
