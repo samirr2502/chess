@@ -150,6 +150,8 @@ public class WebSocketHandler {
             } else {
                 try {
                     gameData.game().makeMove(command.getMove());
+                    AuthData authData = authDAO.getAuthDataByToken(command.getAuthToken());
+
 
                     String jsonGameData = new Gson().toJson(gameData);
                     LoadGameMessage loadGameMessage = new LoadGameMessage(jsonGameData);
@@ -159,16 +161,34 @@ public class WebSocketHandler {
                     connections.broadcast(command.getGameID(), session, loadGameServerMessage);
                     gameDAO.updateGame(gameData);
 
-
-                    NotificationMessage notificationMessage = new NotificationMessage("player "+ command.getTeamColor() +
-                            " made a move: " +
-                            command.getMove().getStartPosition()+
-                            " to " + command.getMove().getEndPosition());
+                    String jsonMove = new Gson().toJson(command.getMove());
+                    NotificationMessage notificationMessage = new NotificationMessage(authData.username() + " ["+ command.getTeamColor() +
+                            "] made a move: " + jsonMove);
                     var notificationServerMessage = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION,
                             notificationMessage.message);
                     connections.broadcast(command.getGameID(), session, notificationServerMessage);
+                    String oponnetUserName = "";
+                    switch (gameData.game().getTeamTurn()){
+                        case BLACK -> oponnetUserName = gameData.blackUsername();
+                        case WHITE -> oponnetUserName = gameData.whiteUsername();
+                    }
+                    if (gameData.game().isInCheckmate(gameData.game().getTeamTurn())){
 
-
+                        NotificationMessage notificationMessage2 = new NotificationMessage(oponnetUserName + " is in check mate ");
+                        var notificationMessage_ = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, notificationMessage2.message);
+                        connections.broadcast(command.getGameID(), session, notificationMessage_);
+                        connections.sendToMe(command.getGameID(), session, notificationMessage_);
+                    } else if(gameData.game().isInCheck(gameData.game().getTeamTurn())) {
+                        NotificationMessage notificationMessage2 = new NotificationMessage(oponnetUserName+ " is in Check ");
+                        var notificationMessage_ = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, notificationMessage2.message);
+                        connections.broadcast(command.getGameID(), session, notificationMessage_);
+                        connections.sendToMe(command.getGameID(), session, notificationMessage_);
+                    } else if(gameData.game().isInStalemate(gameData.game().getTeamTurn())) {
+                        NotificationMessage notificationMessage2 = new NotificationMessage(oponnetUserName + " is in StaleMate");
+                        var notificationMessage_ = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, notificationMessage2.message);
+                        connections.broadcast(command.getGameID(), session, notificationMessage_);
+                        connections.sendToMe(command.getGameID(), session, notificationMessage_);
+                    }
                 } catch (InvalidMoveException ex) {
                     var errorMessage = new ServerMessage(ServerMessage.ServerMessageType.ERROR, "Error: invalid move");
                     connections.sendToMe(command.getGameID(), session, errorMessage);
@@ -190,7 +210,7 @@ public class WebSocketHandler {
             gameDAO.updateGame(newGameData);
         }
 
-        NotificationMessage notificationMessage2 = new NotificationMessage("player left the game");
+        NotificationMessage notificationMessage2 = new NotificationMessage(authData.username()+" left the game");
         var notificationServerMessage2 = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, notificationMessage2.message);
         connections.broadcast(command.getGameID(), session, notificationServerMessage2);
         connections.remove(command.getGameID(),session);
@@ -207,11 +227,10 @@ public class WebSocketHandler {
                 connections.sendToMe(command.getGameID(), session, messageToAll);
                 return;
             }
-
             gameData.game().setGameOver(true);
             gameDAO.updateGame(gameData);
 
-            NotificationMessage notificationMessage = new NotificationMessage(command.getTeamColor() + " resigned");
+            NotificationMessage notificationMessage = new NotificationMessage(authData.username()+ " resigned");
 
             var messageToAll = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, notificationMessage.message);
             connections.broadcast(command.getGameID(), session, messageToAll);

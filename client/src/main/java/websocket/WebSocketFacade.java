@@ -15,6 +15,8 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import static ui.EscapeSequences.SET_TEXT_COLOR_BLUE;
+
 //need to extend Endpoint for websocket to work properly
 public class WebSocketFacade extends Endpoint {
   Session session;
@@ -37,9 +39,22 @@ public class WebSocketFacade extends Endpoint {
           if(serverMessage.getServerMessageType() == ServerMessage.ServerMessageType.LOAD_GAME){
             Repl.currentGameData = new Gson().fromJson(serverMessage.getGame(), GameData.class);
             drawBoard();
-            System.out.println("it's "+ Repl.currentGameData.game().getTeamTurn() + " turn");
 
-
+            if(Repl.currentGameData.game().getGameOver()) {
+              System.out.println(SET_TEXT_COLOR_BLUE +
+                      "Game was over by resign");
+            } else if(Repl.currentGameData.game().isInStalemate(ChessGame.TeamColor.WHITE)
+                    ||Repl.currentGameData.game().isInCheckmate(ChessGame.TeamColor.WHITE)) {
+              System.out.println(SET_TEXT_COLOR_BLUE +
+                      "game is over, BLACK won");
+            }else if(Repl.currentGameData.game().isInStalemate(ChessGame.TeamColor.BLACK)
+                    ||Repl.currentGameData.game().isInCheckmate(ChessGame.TeamColor.BLACK)) {
+              System.out.println(SET_TEXT_COLOR_BLUE +
+                      "game is over, WHITE won");
+            } else{
+              System.out.println(SET_TEXT_COLOR_BLUE +
+                      "it's " + Repl.currentGameData.game().getTeamTurn() + " turn");
+            }
           }
           printNotification(serverMessage);
           Repl.printPrompt();

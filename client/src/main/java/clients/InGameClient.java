@@ -70,10 +70,15 @@ public class InGameClient implements ChessClient{
   private String getMoves(String[] params) throws Exception{
     if(params.length==1){
       ChessPosition position = parsePosition(params[0]);
+      if(Repl.currentGameData.game().getBoard().getPiece(position)==null) {
+        return "invalid position [no piece]";
+      }
       Repl.validMoves= Repl.currentGameData.game().validMoves(position);
       highLightValidMoves(Repl.validMoves);
+    } else {
+      return ("invalid Syntax -> try: a2 [letterNumber]");
     }
-    return "";
+    return "something went wrong";
   }
 
   private void highLightValidMoves(Collection<ChessMove> validMoves) {
@@ -88,6 +93,8 @@ public class InGameClient implements ChessClient{
         ChessPosition end = parsePosition(params[1]);
         ChessMove move = new ChessMove(start,end,null);
         ws.makeMove(Repl.authData.authToken(), Repl.currentGameData.gameID(), move);
+    }else {
+      return ("invalid Syntax -> try: a2 [letterNumber]");
     }
     return "";
   }
