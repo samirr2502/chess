@@ -115,7 +115,8 @@ public class WebSocketHandler {
         connections.broadcast(command.getGameID(), session, messageToAll);
 
     }
-    private void makeMove(UserGameCommand command, Session session,GameData gameData) throws IOException, SQLException, DataAccessException, InvalidMoveException {
+    private void makeMove(UserGameCommand command, Session session,GameData gameData)
+            throws IOException, SQLException, DataAccessException {
         if (gameData.game().gameOver){
             var errorMessage = new ServerMessage(ServerMessage.ServerMessageType.ERROR, "Error: game over");
             connections.sendToMe(command.getGameID(), session, errorMessage);
@@ -159,8 +160,12 @@ public class WebSocketHandler {
                     gameDAO.updateGame(gameData);
 
 
-                    NotificationMessage notificationMessage = new NotificationMessage("player "+ command.getTeamColor() +" made a move: " + command.getMove().getStartPosition()+ " to " + command.getMove().getEndPosition());
-                    var notificationServerMessage = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, notificationMessage.message);
+                    NotificationMessage notificationMessage = new NotificationMessage("player "+ command.getTeamColor() +
+                            " made a move: " +
+                            command.getMove().getStartPosition()+
+                            " to " + command.getMove().getEndPosition());
+                    var notificationServerMessage = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION,
+                            notificationMessage.message);
                     connections.broadcast(command.getGameID(), session, notificationServerMessage);
 
 
@@ -176,19 +181,15 @@ public class WebSocketHandler {
         GameData gameData =gameDAO.getGameByID(command.getGameID());
         AuthData authData = authDAO.getAuthDataByToken(command.getAuthToken());
         if(Objects.equals(gameData.whiteUsername(), authData.username())){
-            GameData newGameData = new GameData(gameData.gameID(), null, gameData.blackUsername(), gameData.gameName(), gameData.game());
+            GameData newGameData = new GameData(gameData.gameID(), null,
+                    gameData.blackUsername(), gameData.gameName(), gameData.game());
             gameDAO.updateGame(newGameData);
         } else if (Objects.equals(gameData.blackUsername(), authData.username())){
-            GameData newGameData = new GameData(gameData.gameID(), gameData.whiteUsername(), null, gameData.gameName(), gameData.game());
+            GameData newGameData = new GameData(gameData.gameID(), gameData.whiteUsername(),
+                    null, gameData.gameName(), gameData.game());
             gameDAO.updateGame(newGameData);
         }
-//        if (command.getTeamColor() == ChessGame.TeamColor.WHITE) {
-//            GameData newGameData = new GameData(gameData.gameID(), null, gameData.blackUsername(), gameData.gameName(), gameData.game());
-//            gameDAO.updateGame(newGameData);
-//        } else if(command.getTeamColor() == ChessGame.TeamColor.BLACK){
-//            GameData newGameData = new GameData(gameData.gameID(), gameData.whiteUsername(), null, gameData.gameName(), gameData.game());
-//            gameDAO.updateGame(newGameData);
-//        }
+
         NotificationMessage notificationMessage2 = new NotificationMessage("player left the game");
         var notificationServerMessage2 = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, notificationMessage2.message);
         connections.broadcast(command.getGameID(), session, notificationServerMessage2);
