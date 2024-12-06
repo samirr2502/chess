@@ -19,6 +19,7 @@ import dataaccess.userdao.SQLUserDAO;
 import dataaccess.userdao.UserDAO;
 import model.AuthData;
 import model.GameData;
+import model.UserData;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
@@ -78,8 +79,8 @@ public class WebSocketHandler {
             switch (command.getCommandType()) {
                 case CONNECT -> connect(command, session, gameData);
                 case MAKE_MOVE -> makeMove(command, session, gameData);
-                case LEAVE -> leave(command.getGameID(), session);
-                case RESIGN -> resign(command.getGameID(), session);
+                case LEAVE -> leave(command, session);
+                case RESIGN -> resign(command, session);
                 case GET_GAME -> getGame(command.getGameID(), session);
             }
         }
@@ -122,8 +123,7 @@ public class WebSocketHandler {
             var errorMessage = new ServerMessage(ServerMessage.ServerMessageType.ERROR, "Error: game over");
             connections.sendToMe(command.getGameID(), session, errorMessage);
             return;
-        }
-       else if (gameData.game().getTeamTurn() == ChessGame.TeamColor.WHITE){
+        } else if (gameData.game().getTeamTurn() == ChessGame.TeamColor.WHITE){
             if (!Objects.equals(authDAO.getAuthDataByToken(command.getAuthToken()).username(), gameData.whiteUsername())) {
                 var errorMessage = new ServerMessage(ServerMessage.ServerMessageType.ERROR, "Error: Not your turn");
                 connections.sendToMe(command.getGameID(), session, errorMessage);
@@ -136,45 +136,55 @@ public class WebSocketHandler {
                 return;
             }
         }
-        Collection<ChessMove> validMoves =gameData.game().validMoves(command.getMove().getStartPosition());
+        if(command.getMove()!= null) {
+            Collection<ChessMove> validMoves = gameData.game().validMoves(command.getMove().getStartPosition());
+            if (validMoves == null || validMoves.isEmpty()) {
+                var errorMessage = new ServerMessage(ServerMessage.ServerMessageType.ERROR, "Error: invalid move");
+                connections.sendToMe(command.getGameID(), session, errorMessage);
+            } else {
+                try {
+                    System.out.println(new Gson().toJson(gameData.game().getBoard()));
+                    gameData.game().makeMove(command.getMove());
+                    System.out.println(new Gson().toJson(gameData.game().getBoard()));
 
-        if (validMoves == null || validMoves.isEmpty()){
-            var errorMessage = new ServerMessage(ServerMessage.ServerMessageType.ERROR, "Error: invalid move");
-            connections.sendToMe(command.getGameID(), session, errorMessage);
-        } else {
-            gameData.game().makeMove(command.getMove());
-            gameDAO.updateGame(gameData);
-            String jsonGameData = new Gson().toJson(gameData);
-            LoadGameMessage loadGameMessage = new LoadGameMessage(jsonGameData);
+                    String jsonGameData = new Gson().toJson(gameData);
+                    System.out.println(jsonGameData);
+                    LoadGameMessage loadGameMessage = new LoadGameMessage(jsonGameData);
 
-            var loadGameServerMessage = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME, loadGameMessage.gameData);
-            connections.sendToMe(command.getGameID(), session, loadGameServerMessage);
-            connections.broadcast(command.getGameID(), session, loadGameServerMessage);
+                    var loadGameServerMessage = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME, loadGameMessage.gameData);
+                    connections.sendToMe(command.getGameID(), session, loadGameServerMessage);
+                    connections.broadcast(command.getGameID(), session, loadGameServerMessage);
+                    gameDAO.updateGame(gameData);
 
-            NotificationMessage notificationMessage = new NotificationMessage("new message");
-            var notificationServerMessage = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, notificationMessage.message);
-            connections.broadcast(command.getGameID(), session, notificationServerMessage);
+
+                    NotificationMessage notificationMessage = new NotificationMessage("new message");
+                    var notificationServerMessage = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, notificationMessage.message);
+                    connections.broadcast(command.getGameID(), session, notificationServerMessage);
+                } catch (InvalidMoveException ex) {
+                    var errorMessage = new ServerMessage(ServerMessage.ServerMessageType.ERROR, "Error: invalid move");
+                    connections.sendToMe(command.getGameID(), session, errorMessage);
+                }
+            }
         }
     }
 
-    private void leave(Integer gameId, Session session) throws IOException {
-        connections.remove(gameId,session );
-        var message = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, null);
-        connections.broadcast(gameId,session, message);
-    }
-    private void resign(Integer gameId, Session session) throws IOException {
-        connections.remove(gameId, session);
-        var message = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, null);
-        connections.broadcast(gameId, session, message);
-    }
-
-    public void makeNoise(String petName, String sound) throws Exception {
-        try {
-            var message = String.format("%s says %s", petName, sound);
-            //var notification = new Notification(Notification.Type.NOISE, message);
-            //connections.broadcast("", notification);
-        } catch (Exception ex) {
-           // throw new ResponseException(500, ex.getMessage());
+    private void leave(UserGameCommand command, Session session) throws IOException, SQLException, DataAccessException {
+        GameData gameData =gameDAO.getGameByID(command.getGameID());
+        AuthData authData = authDAO.getAuthDataByToken(command.getAuthToken());
+        if (Objects.equals(authData.username(), gameData.whiteUsername())) {
+            GameData newGameData = new GameData(gameData.gameID(), null, gameData.blackUsername(), gameData.gameName(), gameData.game());
+            gameDAO.updateGame(newGameData);
+        } else if(Objects.equals(authData.username(), gameData.blackUsername())){
+            GameData newGameData = new GameData(gameData.gameID(), gameData.whiteUsername(), null, gameData.gameName(), gameData.game());
+            gameDAO.updateGame(newGameData);
         }
+        connections.remove(command.getGameID(),session);
+        var message = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, null);
+        connections.broadcast(command.getGameID(),session, message);
+    }
+    private void resign(UserGameCommand command, Session session) throws IOException, SQLException, DataAccessException {
+        GameData gameData =gameDAO.getGameByID(command.getGameID());
+        var message = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, null);
+        connections.broadcast(command.getGameID(), session, message);
     }
 }

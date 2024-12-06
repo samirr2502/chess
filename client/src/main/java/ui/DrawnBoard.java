@@ -21,7 +21,6 @@ public class DrawnBoard {
 
 
   public static void run(ChessGame.TeamColor teamColor, ChessBoard board, Collection<ChessMove> validMoves) {
-    board.resetBoard();
     var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
 
     out.print(ERASE_SCREEN);

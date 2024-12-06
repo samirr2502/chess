@@ -97,6 +97,7 @@ public class ChessGame {
       }
       board.board[move.getStartPosition().getRow() - 1][move.getStartPosition().getColumn() - 1] = null;
       board.board[move.getEndPosition().getRow() - 1][move.getEndPosition().getColumn() - 1] = myPiece;
+      myPiece.myPosition = new ChessPosition(move.getEndPosition().getRow(),move.getEndPosition().getColumn() );
       teamColor = teamColor == TeamColor.WHITE ? TeamColor.BLACK : TeamColor.WHITE;
       setTeamTurn(teamColor);
     } else {

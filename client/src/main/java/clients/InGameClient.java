@@ -2,7 +2,6 @@ package clients;
 
 import chess.ChessGame;
 import chess.ChessMove;
-import chess.ChessPiece;
 import chess.ChessPosition;
 
 import websocket.WebSocketFacade;
@@ -11,11 +10,9 @@ import ui.Repl;
 import ui.ServerFacade;
 import ui.State;
 
-import java.lang.reflect.Type;
 import java.util.*;
+import com.google.gson.Gson;
 
-import static java.lang.Integer.parseInt;
-import static ui.EscapeSequences.SET_TEXT_COLOR_BLUE;
 
 public class InGameClient implements ChessClient{
   private final ServerFacade server;
@@ -41,7 +38,7 @@ public class InGameClient implements ChessClient{
   public void onStart() throws Exception {
     ws = new WebSocketFacade(this.serverUrl);
     ws.connectToGame(Repl.authData.authToken(),Repl.currentGame.gameID);
-    ws.getGame(Repl.authData.authToken(),Repl.currentGame.gameID);
+
   }
 
   @Override
@@ -89,24 +86,24 @@ public class InGameClient implements ChessClient{
         ChessPosition start = parsePosition(params[0]);
         ChessPosition end = parsePosition(params[1]);
         ChessMove move = new ChessMove(start,end,null);
-        ws.makeMove(Repl.authData.authToken(), Repl.currentGame.gameID, move);
+        ws.makeMove(Repl.authData.authToken(), Repl.currentGameData.gameID(), move);
     }
     return "";
   }
 private ChessPosition parsePosition(String pos){
-    int row= 0;
-    int col =0;
-
-    if(pos.length()==2 && pos.toCharArray()[0] == 'a' ) {
-      char[] posCharArray = pos.toCharArray();
-      if (lettersToNumbers.get(posCharArray[0]) != null
-              && (posCharArray[1] > 0 && posCharArray[1] <= 8)) {
-        col = posCharArray[0];
-        row = posCharArray[1];
-        return new ChessPosition(row - 1, col - 1);
+    int row= 1;
+    int col =1;
+    char[] posCharArray = pos.toCharArray();
+    if(pos.length()==2 && lettersToNumbers.get(posCharArray[0])!= null) {
+      int c = lettersToNumbers.get(posCharArray[0]);
+      int r = Character.getNumericValue(posCharArray[1]);
+      if ((r > 0 && r <= 8)) {
+        row = r;
+        col =c;
+        return new ChessPosition(row , col );
       }
     }
-    return null;
+    return new ChessPosition(row,col);
 }
 
 
@@ -118,16 +115,18 @@ private ChessPosition parsePosition(String pos){
     }
     throw new Exception("Expected: leave");
   }
-  private String resignGame(String[] params) {
+  private String resignGame(String[] params) throws Exception {
+    Scanner scanner= new Scanner(System.in);
+    if(Objects.equals(scanner.nextLine(), "yes")){
+      ws.resign(Repl.authData.authToken(), Repl.currentGame.gameID);
+    }
     return "";
   }
 
   private String drawBoard() throws Exception {
-    ws.getGame(Repl.authData.authToken(), Repl.currentGame.gameID);
-     DrawnBoard.run(ChessGame.TeamColor.WHITE,Repl.currentGameData.game().getBoard(), validMoves);
-     System.out.println();
-     DrawnBoard.run(ChessGame.TeamColor.BLACK,Repl.currentGameData.game().getBoard(), validMoves);
-     return "";
+
+    ws.drawBoard();
+    return "";
 
   }
   @Override

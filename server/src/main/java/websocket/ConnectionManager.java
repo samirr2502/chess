@@ -21,10 +21,16 @@ public class ConnectionManager {
 
     public void remove(Integer gameId, Session session) {
         ArrayList<Connection> connectionsList =  connections.get(gameId);
+        System.out.println(connectionsList);
+        var removeList = new ArrayList<Connection>();
+
         for (Connection conn: connectionsList){
             if (conn.session == session){
-                connections.get(gameId).remove(conn);
+                removeList.add(conn);
             }
+        }
+        for (var c : removeList) {
+            connections.get(gameId).remove(c);
         }
     }
 

@@ -1,6 +1,7 @@
 package passoff.chess.game;
 
 import chess.*;
+import com.google.gson.Gson;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -28,8 +29,11 @@ public class MakeMoveTests {
         game.setTeamTurn(ChessGame.TeamColor.WHITE);
 
         var kingStartPosition = new ChessPosition(1, 2);
+
         var kingEndPosition = new ChessPosition(1, 1);
+        System.out.println(new Gson().toJson(game.getBoard()));
         game.makeMove(new ChessMove(kingStartPosition, kingEndPosition, null));
+        System.out.println(new Gson().toJson(game.getBoard()));
 
         Assertions.assertEquals(loadBoard("""
                 | | | | | | | | |

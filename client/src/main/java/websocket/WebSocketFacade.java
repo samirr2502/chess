@@ -1,8 +1,10 @@
 package websocket;
 
+import chess.ChessGame;
 import chess.ChessMove;
 import com.google.gson.Gson;
 import model.GameData;
+import ui.DrawnBoard;
 import ui.Repl;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ServerMessage;
@@ -12,10 +14,14 @@ import javax.websocket.*;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Collection;
 
 //need to extend Endpoint for websocket to work properly
 public class WebSocketFacade extends Endpoint {
   Session session;
+  private Collection<ChessMove> validMoves = new ArrayList<>();
+
 
   public WebSocketFacade(String url) throws Exception {
     try {
@@ -32,6 +38,7 @@ public class WebSocketFacade extends Endpoint {
           ServerMessage serverMessage = new Gson().fromJson(message, ServerMessage.class);
           if(serverMessage.getServerMessageType() == ServerMessage.ServerMessageType.LOAD_GAME){
             Repl.currentGameData = new Gson().fromJson(serverMessage.getGame(), GameData.class);
+            drawBoard();
           }
           printNotification(serverMessage);
         }
@@ -49,13 +56,19 @@ public class WebSocketFacade extends Endpoint {
 
   public void printNotification(ServerMessage serverMessage){
     switch (serverMessage.getServerMessageType()){
-      case NOTIFICATION -> System.out.println("new notification\n");
-      case LOAD_GAME -> System.out.println("joined \n");
-      case ERROR -> System.out.println("oops Error\n");
-
+      case NOTIFICATION -> System.out.println(serverMessage.getMessage());
+      case LOAD_GAME -> {
+        ChessGame game = new Gson().fromJson(serverMessage.getGame(), ChessGame.class);
+        GameData newGameData = new GameData(Repl.currentGame.gameID, Repl.currentGameData.whiteUsername(), Repl.currentGameData.blackUsername(),
+                                        Repl.currentGameData.gameName(), game);
+        Repl.currentGameData =newGameData;
+        drawBoard();
+        System.out.println();
+      }
+      case ERROR -> System.out.println(serverMessage.getErrorMessage());
     }
-
   }
+
   public void connectToGame(String authToken, int gameId ) throws Exception {
     try {
       var command = new UserGameCommand(UserGameCommand.CommandType.CONNECT,authToken, gameId, null);
@@ -93,13 +106,21 @@ public class WebSocketFacade extends Endpoint {
     }
   }
   public void resign(String authToken, int gameId ) throws Exception {
-    //try {
-      //var command = new UserGameCommand(UserGameCommand.CommandType.RESIGN,authToken, gameId );
-      //this.session.getBasicRemote().sendText(new Gson().toJson(command));
-      //this.session.close();
-//    } catch (IOException ex) {
-//      throw new Exception(ex.getMessage());
-//    }
+    try {
+      var command = new UserGameCommand(UserGameCommand.CommandType.RESIGN,authToken, gameId , null);
+      this.session.getBasicRemote().sendText(new Gson().toJson(command));
+    } catch (IOException ex) {
+      throw new Exception(ex.getMessage());
+    }
   }
+  public void drawBoard(){
+    System.out.println();
+    if (Repl.lastJoinedGameColor == null || Repl.lastJoinedGameColor== ChessGame.TeamColor.WHITE) {
+      DrawnBoard.run(ChessGame.TeamColor.WHITE, Repl.currentGameData.game().getBoard(), validMoves);
+    } else{
+      DrawnBoard.run(ChessGame.TeamColor.BLACK, Repl.currentGameData.game().getBoard(), validMoves);
+    }
+  }
+
 }
 

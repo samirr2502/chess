@@ -86,7 +86,7 @@ public class LoggedInClient implements ChessClient{
         Repl.currentGame = Repl.games.get(parseInt(params[0]) - 1);
         Repl.state = State.IN_GAME;
         inGameClient.onStart();
-        inGameClient.eval("board");
+        //inGameClient.eval("board");
         return String.format("Observing game: %s\n\nUse -help to see options", Repl.currentGame.gameName);
       } else{
         return "Game not listed. \n\nuse -list to see games";
@@ -111,7 +111,7 @@ public class LoggedInClient implements ChessClient{
         }
         Repl.state = State.IN_GAME;
         inGameClient.onStart();
-        inGameClient.eval("board");
+        //inGameClient.eval("board");
       return String.format("Joined  game: %s\n\nUse -help to see options", Repl.currentGame.gameName);
       }else{
       return "Game not listed. \n\nuse -list to see games";

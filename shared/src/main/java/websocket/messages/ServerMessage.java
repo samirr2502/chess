@@ -13,7 +13,14 @@ public class ServerMessage {
     ServerMessageType serverMessageType;
 
     String game;
+
+
     String message;
+
+    public String getErrorMessage() {
+        return errorMessage;
+    }
+
     String errorMessage;
 
     public enum ServerMessageType {
@@ -29,6 +36,10 @@ public class ServerMessage {
             case ERROR ->  this.errorMessage = messageType;
         }
     }
+    public String getMessage() {
+        return message;
+    }
+
 
     public ServerMessageType getServerMessageType() {
         return this.serverMessageType;
