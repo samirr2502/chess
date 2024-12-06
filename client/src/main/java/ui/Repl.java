@@ -2,6 +2,7 @@ package ui;
 
 import chess.ChessBoard;
 import chess.ChessGame;
+import chess.ChessMove;
 import model.AuthData;
 import model.GameData;
 import results.GameResult;
@@ -11,6 +12,7 @@ import clients.LoggedInClient;
 import clients.LoggedOutClient;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Scanner;
 
 import static ui.EscapeSequences.*;
@@ -26,6 +28,7 @@ public class Repl {
   public static ArrayList<GameResult> games;
   public static GameResult currentGame;
   public static GameData currentGameData;
+  public static Collection<ChessMove> validMoves;
   public static ChessGame.TeamColor lastJoinedGameColor;
 //  public static ChessBoard chessBoard = new ChessBoard();
 
@@ -59,7 +62,7 @@ public class Repl {
     }
     System.out.println();
   }
-  private void printPrompt() {
+  public static void printPrompt() {
     System.out.print("\n["+ SET_TEXT_COLOR_GREEN+ state+ "] " + RESET_TEXT_COLOR + ">>> " + SET_TEXT_COLOR_GREEN);
   }
 }

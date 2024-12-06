@@ -176,10 +176,7 @@ public class ChessGame {
   public boolean isInCheckmate(TeamColor teamColor) {
 
     ChessBoard testBoard1 = (board == null) ? null : board.clone();
-//    setGameOver((board != null
-//            && isInCheck(teamColor)
-//            && kingCantMove(teamColor, testBoard1)
-//            && teamCantMovePiece(teamColor)));
+
     return (board != null
             && isInCheck(teamColor)
             && kingCantMove(teamColor, testBoard1)
@@ -304,12 +301,8 @@ public class ChessGame {
   public boolean isInStalemate(TeamColor teamColor) {
     if (board != null) {
       if (hasPiecesAvailable(teamColor, board)) {
-
-      //  setGameOver(kingCantMove(teamColor, board) && !teamCantMovePiece(teamColor));
-
         return kingCantMove(teamColor, board) && !teamCantMovePiece(teamColor);
       }
-   //   setGameOver(kingCantMove(teamColor, board));
       return kingCantMove(teamColor, board);
     }
     return false;

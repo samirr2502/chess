@@ -70,15 +70,16 @@ public class InGameClient implements ChessClient{
   private String getMoves(String[] params) throws Exception{
     if(params.length==1){
       ChessPosition position = parsePosition(params[0]);
-//      validMoves= Repl.currentGameData.game().validMoves(position);
-      highLightValidMoves(validMoves);
+      Repl.validMoves= Repl.currentGameData.game().validMoves(position);
+      highLightValidMoves(Repl.validMoves);
     }
     return "";
   }
 
   private void highLightValidMoves(Collection<ChessMove> validMoves) {
+    ws.drawBoard();
     //DrawnBoard.run(Repl.lastJoinedGameColor,Repl.currentGameData.game().getBoard(), validMoves);
-    validMoves.clear();
+    Repl.validMoves.clear();
   }
 
   private String makeMove(String[] params) throws Exception {
@@ -116,6 +117,8 @@ private ChessPosition parsePosition(String pos){
     throw new Exception("Expected: leave");
   }
   private String resignGame(String[] params) throws Exception {
+    System.out.println("Are you sure? (yes/no)\n");
+    Repl.printPrompt();
     Scanner scanner= new Scanner(System.in);
     if(Objects.equals(scanner.nextLine(), "yes")){
       ws.resign(Repl.authData.authToken(), Repl.currentGame.gameID);

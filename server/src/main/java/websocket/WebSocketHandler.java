@@ -23,7 +23,6 @@ import model.UserData;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
-import service.Service;
 import websocket.commands.UserGameCommand;
 import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
@@ -31,9 +30,7 @@ import websocket.messages.ServerMessage;
 
 
 import java.io.IOException;
-import java.sql.Blob;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
 
@@ -104,10 +101,12 @@ public class WebSocketHandler {
     private void connect(UserGameCommand  command, Session session, GameData gameData) throws IOException, SQLException, DataAccessException {
 
         connections.add(command.getGameID(), session);
-
+        AuthData authData = authDAO.getAuthDataByToken(command.getAuthToken());
+        String joinType = command.getTeamColor() ==null? "observer" : command.getTeamColor().toString();
         String jsonGameData = new Gson().toJson(gameData);
+
         LoadGameMessage loadGameMessage = new LoadGameMessage(jsonGameData);
-        NotificationMessage notificationMessage = new NotificationMessage("Observer joined the game");
+        NotificationMessage notificationMessage = new NotificationMessage(authData.username() + " joined the game as " + joinType);
 
         var messageToMe = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME, loadGameMessage.gameData);
         connections.sendToMe(command.getGameID(),session, messageToMe);
@@ -163,21 +162,8 @@ public class WebSocketHandler {
                     NotificationMessage notificationMessage = new NotificationMessage("player "+ command.getTeamColor() +" made a move: " + command.getMove().getStartPosition()+ " to " + command.getMove().getEndPosition());
                     var notificationServerMessage = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, notificationMessage.message);
                     connections.broadcast(command.getGameID(), session, notificationServerMessage);
-                    if (gameData.game().isInCheck(gameData.game().getTeamTurn())){
-                        NotificationMessage notificationMessage2 = new NotificationMessage(gameData.game().getTeamTurn() + " player is in check");
-                        var notificationServerMessage2 = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, notificationMessage2.message);
-                        connections.broadcast(command.getGameID(), session, notificationServerMessage2);
-                    }
-                    if (gameData.game().isInCheckmate(gameData.game().getTeamTurn())){
-                        NotificationMessage notificationMessage2 = new NotificationMessage(gameData.game().getTeamTurn() + " is in checkMate");
-                        var notificationServerMessage2 = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, notificationMessage2.message);
-                        connections.broadcast(command.getGameID(), session, notificationServerMessage2);
-                    }
-                    if (gameData.game().isInStalemate(gameData.game().getTeamTurn())){
-                        NotificationMessage notificationMessage2 = new NotificationMessage("player is in staleMte");
-                        var notificationServerMessage2 = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, notificationMessage2.message);
-                        connections.broadcast(command.getGameID(), session, notificationServerMessage2);
-                    }
+
+
                 } catch (InvalidMoveException ex) {
                     var errorMessage = new ServerMessage(ServerMessage.ServerMessageType.ERROR, "Error: invalid move");
                     connections.sendToMe(command.getGameID(), session, errorMessage);
@@ -188,21 +174,55 @@ public class WebSocketHandler {
 
     private void leave(UserGameCommand command, Session session) throws IOException, SQLException, DataAccessException {
         GameData gameData =gameDAO.getGameByID(command.getGameID());
-        if (command.getTeamColor() == ChessGame.TeamColor.WHITE) {
+        AuthData authData = authDAO.getAuthDataByToken(command.getAuthToken());
+        if(Objects.equals(gameData.whiteUsername(), authData.username())){
             GameData newGameData = new GameData(gameData.gameID(), null, gameData.blackUsername(), gameData.gameName(), gameData.game());
             gameDAO.updateGame(newGameData);
-        } else if(command.getTeamColor() == ChessGame.TeamColor.BLACK){
+        } else if (Objects.equals(gameData.blackUsername(), authData.username())){
             GameData newGameData = new GameData(gameData.gameID(), gameData.whiteUsername(), null, gameData.gameName(), gameData.game());
             gameDAO.updateGame(newGameData);
         }
+//        if (command.getTeamColor() == ChessGame.TeamColor.WHITE) {
+//            GameData newGameData = new GameData(gameData.gameID(), null, gameData.blackUsername(), gameData.gameName(), gameData.game());
+//            gameDAO.updateGame(newGameData);
+//        } else if(command.getTeamColor() == ChessGame.TeamColor.BLACK){
+//            GameData newGameData = new GameData(gameData.gameID(), gameData.whiteUsername(), null, gameData.gameName(), gameData.game());
+//            gameDAO.updateGame(newGameData);
+//        }
+        NotificationMessage notificationMessage2 = new NotificationMessage("player left the game");
+        var notificationServerMessage2 = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, notificationMessage2.message);
+        connections.broadcast(command.getGameID(), session, notificationServerMessage2);
         connections.remove(command.getGameID(),session);
-        var message = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, null);
-        connections.broadcast(command.getGameID(),session, message);
+
     }
     private void resign(UserGameCommand command, Session session) throws IOException, SQLException, DataAccessException {
-        GameData gameData =gameDAO.getGameByID(command.getGameID());
-        gameData.game().setGameOver(true);
-        var message = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, null);
-        connections.broadcast(command.getGameID(), session, message);
+        GameData gameData = gameDAO.getGameByID(command.getGameID());
+        AuthData authData =authDAO.getAuthDataByToken(command.getAuthToken());
+
+        if (Objects.equals(authData.username(), gameData.whiteUsername()) || Objects.equals(authData.username(), gameData.blackUsername())) {
+            if(gameData.game().getGameOver()){
+                NotificationMessage notificationMessage = new NotificationMessage("Game over Already");
+                var messageToAll = new ServerMessage(ServerMessage.ServerMessageType.ERROR, notificationMessage.message);
+                connections.sendToMe(command.getGameID(), session, messageToAll);
+                return;
+            }
+
+            gameData.game().setGameOver(true);
+            gameDAO.updateGame(gameData);
+
+            NotificationMessage notificationMessage = new NotificationMessage(command.getTeamColor() + " resigned");
+
+            var messageToAll = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, notificationMessage.message);
+            connections.broadcast(command.getGameID(), session, messageToAll);
+            connections.sendToMe(command.getGameID(), session, messageToAll);
+            } else{
+
+
+           // if(command.getTeamColor()== null ) {
+                var errorMessage = new ServerMessage(ServerMessage.ServerMessageType.ERROR, "Error: cannot resign as observer");
+                connections.sendToMe(command.getGameID(), session, errorMessage);
+                return;
+            }
+
     }
 }

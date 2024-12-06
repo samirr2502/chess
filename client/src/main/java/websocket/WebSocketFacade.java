@@ -14,13 +14,11 @@ import javax.websocket.*;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Collection;
 
 //need to extend Endpoint for websocket to work properly
 public class WebSocketFacade extends Endpoint {
   Session session;
-  private Collection<ChessMove> validMoves = new ArrayList<>();
+
 
 
   public WebSocketFacade(String url) throws Exception {
@@ -39,8 +37,12 @@ public class WebSocketFacade extends Endpoint {
           if(serverMessage.getServerMessageType() == ServerMessage.ServerMessageType.LOAD_GAME){
             Repl.currentGameData = new Gson().fromJson(serverMessage.getGame(), GameData.class);
             drawBoard();
+            System.out.println("it's "+ Repl.currentGameData.game().getTeamTurn() + " turn");
+
+
           }
           printNotification(serverMessage);
+          Repl.printPrompt();
         }
       });
     } catch (DeploymentException | IOException | URISyntaxException ex) {
@@ -70,7 +72,7 @@ public class WebSocketFacade extends Endpoint {
 
   public void connectToGame(String authToken, int gameId ) throws Exception {
     try {
-      var command = new UserGameCommand(UserGameCommand.CommandType.CONNECT,authToken, Repl.lastJoinedGameColor,gameId, null);
+      var command = new UserGameCommand(UserGameCommand.CommandType.CONNECT,authToken, gameId, null, Repl.lastJoinedGameColor);
       this.session.getBasicRemote().sendText(new Gson().toJson(command));
     } catch (Exception ex) {
       throw new Exception(ex.getMessage());
@@ -78,7 +80,7 @@ public class WebSocketFacade extends Endpoint {
   }
   public void makeMove(String authToken, int gameId,ChessMove move ) throws Exception {
     try {
-      var command = new UserGameCommand(UserGameCommand.CommandType.MAKE_MOVE, authToken,Repl.lastJoinedGameColor, gameId, move);
+      var command = new UserGameCommand(UserGameCommand.CommandType.MAKE_MOVE, authToken, gameId, move, Repl.lastJoinedGameColor);
       this.session.getBasicRemote().sendText(new Gson().toJson(command));
     } catch (IOException ex) {
       throw new Exception(ex.getMessage());
@@ -86,7 +88,7 @@ public class WebSocketFacade extends Endpoint {
   }
   public void getGame(String authToken, int gameId) throws Exception {
     try {
-      var command = new UserGameCommand(UserGameCommand.CommandType.GET_GAME, authToken,Repl.lastJoinedGameColor, gameId, null);
+      var command = new UserGameCommand(UserGameCommand.CommandType.GET_GAME, authToken, gameId, null, Repl.lastJoinedGameColor);
       this.session.getBasicRemote().sendText(new Gson().toJson(command));
     } catch (IOException ex) {
       throw new Exception(ex.getMessage());
@@ -96,7 +98,7 @@ public class WebSocketFacade extends Endpoint {
   public void leaveGame(String authToken, int gameId ) throws Exception {
     try {
       if (this.session.isOpen()) {
-        var command = new UserGameCommand(UserGameCommand.CommandType.LEAVE, authToken,Repl.lastJoinedGameColor, gameId,null);
+        var command = new UserGameCommand(UserGameCommand.CommandType.LEAVE, authToken, gameId, null, Repl.lastJoinedGameColor);
         this.session.getBasicRemote().sendText(new Gson().toJson(command));
         this.session.close();
       }
@@ -106,7 +108,7 @@ public class WebSocketFacade extends Endpoint {
   }
   public void resign(String authToken, int gameId ) throws Exception {
     try {
-      var command = new UserGameCommand(UserGameCommand.CommandType.RESIGN,authToken, Repl.lastJoinedGameColor,gameId , null);
+      var command = new UserGameCommand(UserGameCommand.CommandType.RESIGN,authToken, gameId, null, Repl.lastJoinedGameColor);
       this.session.getBasicRemote().sendText(new Gson().toJson(command));
     } catch (IOException ex) {
       throw new Exception(ex.getMessage());
@@ -115,9 +117,9 @@ public class WebSocketFacade extends Endpoint {
   public void drawBoard(){
     System.out.println();
     if (Repl.lastJoinedGameColor == null || Repl.lastJoinedGameColor== ChessGame.TeamColor.WHITE) {
-      DrawnBoard.run(ChessGame.TeamColor.WHITE, Repl.currentGameData.game().getBoard(), validMoves);
+      DrawnBoard.run(ChessGame.TeamColor.WHITE, Repl.currentGameData.game().getBoard(), Repl.validMoves);
     } else{
-      DrawnBoard.run(ChessGame.TeamColor.BLACK, Repl.currentGameData.game().getBoard(), validMoves);
+      DrawnBoard.run(ChessGame.TeamColor.BLACK, Repl.currentGameData.game().getBoard(), Repl.validMoves);
     }
   }
 

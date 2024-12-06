@@ -76,8 +76,12 @@ public class DrawnBoard {
     int r2;
     int c2;
     Collection<ChessPosition> positions = new ArrayList<>();
+    if (validMoves != null){
     for (ChessMove move: validMoves){
-      positions.add(move.getEndPosition());
+      ChessMove newMove = new ChessMove(new ChessPosition(0,0),
+              new ChessPosition(move.getEndPosition().getRow()-1, move.getEndPosition().getColumn()-1), null);
+      positions.add(newMove.getEndPosition());
+    }
     }
     for (int r = 8; r > rows; r--) {
       r2 = abs(8 - (r + offset));
@@ -90,12 +94,18 @@ public class DrawnBoard {
 
         out.print(SET_TEXT_COLOR_WHITE);
         ChessPosition pos = new ChessPosition(r2 + 1, c2 + 1);
-        if (positions.contains(position)){
-          out.print(SET_BG_COLOR_YELLOW);
-        } else if ((c + r) % 2 != 0) {
-          out.print(SET_BG_COLOR_DARK_GREY);
+        if ((c + r) % 2 != 0) {
+          if (positions.contains(position)){
+            out.print(SET_BG_COLOR_DARK_GREEN);
+          } else {
+            out.print(SET_BG_COLOR_DARK_GREY);
+          }
         } else {
-          out.print(SET_BG_COLOR_LIGHT_GREY);
+          if(positions.contains(position)){
+            out.print(SET_BG_COLOR_OPAQUE_GREEN);
+          } else {
+            out.print(SET_BG_COLOR_LIGHT_GREY);
+          }
         }
         if (board.getPiece(pos) == null) {
           out.print("   ");
