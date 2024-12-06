@@ -217,13 +217,9 @@ public class WebSocketHandler {
             connections.broadcast(command.getGameID(), session, messageToAll);
             connections.sendToMe(command.getGameID(), session, messageToAll);
             } else{
-
-
-           // if(command.getTeamColor()== null ) {
-                var errorMessage = new ServerMessage(ServerMessage.ServerMessageType.ERROR, "Error: cannot resign as observer");
+            var errorMessage = new ServerMessage(ServerMessage.ServerMessageType.ERROR, "Error: cannot resign as observer");
                 connections.sendToMe(command.getGameID(), session, errorMessage);
-                return;
-            }
+        }
 
     }
 }
