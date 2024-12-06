@@ -58,11 +58,10 @@ public class WebSocketFacade extends Endpoint {
     switch (serverMessage.getServerMessageType()){
       case NOTIFICATION -> System.out.println(serverMessage.getMessage());
       case LOAD_GAME -> {
-        ChessGame game = new Gson().fromJson(serverMessage.getGame(), ChessGame.class);
-        GameData newGameData = new GameData(Repl.currentGame.gameID, Repl.currentGameData.whiteUsername(), Repl.currentGameData.blackUsername(),
-                                        Repl.currentGameData.gameName(), game);
-        Repl.currentGameData =newGameData;
-        drawBoard();
+//        ChessGame game = new Gson().fromJson(serverMessage.getGame(), ChessGame.class);
+//        GameData newGameData = new GameData(Repl.currentGame.gameID, Repl.currentGameData.whiteUsername(), Repl.currentGameData.blackUsername(),
+//                                        Repl.currentGameData.gameName(), game);
+//        Repl.currentGameData =newGameData;
         System.out.println();
       }
       case ERROR -> System.out.println(serverMessage.getErrorMessage());
@@ -71,7 +70,7 @@ public class WebSocketFacade extends Endpoint {
 
   public void connectToGame(String authToken, int gameId ) throws Exception {
     try {
-      var command = new UserGameCommand(UserGameCommand.CommandType.CONNECT,authToken, gameId, null);
+      var command = new UserGameCommand(UserGameCommand.CommandType.CONNECT,authToken, Repl.lastJoinedGameColor,gameId, null);
       this.session.getBasicRemote().sendText(new Gson().toJson(command));
     } catch (Exception ex) {
       throw new Exception(ex.getMessage());
@@ -79,7 +78,7 @@ public class WebSocketFacade extends Endpoint {
   }
   public void makeMove(String authToken, int gameId,ChessMove move ) throws Exception {
     try {
-      var command = new UserGameCommand(UserGameCommand.CommandType.MAKE_MOVE, authToken, gameId, move);
+      var command = new UserGameCommand(UserGameCommand.CommandType.MAKE_MOVE, authToken,Repl.lastJoinedGameColor, gameId, move);
       this.session.getBasicRemote().sendText(new Gson().toJson(command));
     } catch (IOException ex) {
       throw new Exception(ex.getMessage());
@@ -87,7 +86,7 @@ public class WebSocketFacade extends Endpoint {
   }
   public void getGame(String authToken, int gameId) throws Exception {
     try {
-      var command = new UserGameCommand(UserGameCommand.CommandType.GET_GAME, authToken, gameId, null);
+      var command = new UserGameCommand(UserGameCommand.CommandType.GET_GAME, authToken,Repl.lastJoinedGameColor, gameId, null);
       this.session.getBasicRemote().sendText(new Gson().toJson(command));
     } catch (IOException ex) {
       throw new Exception(ex.getMessage());
@@ -97,7 +96,7 @@ public class WebSocketFacade extends Endpoint {
   public void leaveGame(String authToken, int gameId ) throws Exception {
     try {
       if (this.session.isOpen()) {
-        var command = new UserGameCommand(UserGameCommand.CommandType.LEAVE, authToken, gameId,null);
+        var command = new UserGameCommand(UserGameCommand.CommandType.LEAVE, authToken,Repl.lastJoinedGameColor, gameId,null);
         this.session.getBasicRemote().sendText(new Gson().toJson(command));
         this.session.close();
       }
@@ -107,7 +106,7 @@ public class WebSocketFacade extends Endpoint {
   }
   public void resign(String authToken, int gameId ) throws Exception {
     try {
-      var command = new UserGameCommand(UserGameCommand.CommandType.RESIGN,authToken, gameId , null);
+      var command = new UserGameCommand(UserGameCommand.CommandType.RESIGN,authToken, Repl.lastJoinedGameColor,gameId , null);
       this.session.getBasicRemote().sendText(new Gson().toJson(command));
     } catch (IOException ex) {
       throw new Exception(ex.getMessage());

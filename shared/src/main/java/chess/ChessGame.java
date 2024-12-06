@@ -14,8 +14,10 @@ public class ChessGame {
   ChessBoard board;
   Collection<ChessMove> chessMoves = new ArrayList<>();
 
+  public Boolean gameOver ;
   public ChessGame() {
     this.board = new ChessBoard();
+    this.gameOver = false;
     board.resetBoard();
   }
 
@@ -174,6 +176,10 @@ public class ChessGame {
   public boolean isInCheckmate(TeamColor teamColor) {
 
     ChessBoard testBoard1 = (board == null) ? null : board.clone();
+//    setGameOver((board != null
+//            && isInCheck(teamColor)
+//            && kingCantMove(teamColor, testBoard1)
+//            && teamCantMovePiece(teamColor)));
     return (board != null
             && isInCheck(teamColor)
             && kingCantMove(teamColor, testBoard1)
@@ -298,11 +304,23 @@ public class ChessGame {
   public boolean isInStalemate(TeamColor teamColor) {
     if (board != null) {
       if (hasPiecesAvailable(teamColor, board)) {
+
+      //  setGameOver(kingCantMove(teamColor, board) && !teamCantMovePiece(teamColor));
+
         return kingCantMove(teamColor, board) && !teamCantMovePiece(teamColor);
       }
+   //   setGameOver(kingCantMove(teamColor, board));
       return kingCantMove(teamColor, board);
     }
     return false;
+  }
+
+  public Boolean getGameOver() {
+    return gameOver;
+  }
+
+  public void setGameOver(Boolean gameOver) {
+    this.gameOver = gameOver;
   }
 
   /**

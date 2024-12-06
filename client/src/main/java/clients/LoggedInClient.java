@@ -111,7 +111,6 @@ public class LoggedInClient implements ChessClient{
         }
         Repl.state = State.IN_GAME;
         inGameClient.onStart();
-        //inGameClient.eval("board");
       return String.format("Joined  game: %s\n\nUse -help to see options", Repl.currentGame.gameName);
       }else{
       return "Game not listed. \n\nuse -list to see games";

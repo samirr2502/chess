@@ -59,6 +59,7 @@ public class WebSocketHandler {
     private final GameDAO gameDAO = sqlDataAccess.getGameDAO();
     private final UserDAO userDAO = sqlDataAccess.getUserDAO();
     private final AuthDAO authDAO = sqlDataAccess.getAuthDAO();
+
     private static final Gson JSON = new Gson();
 
     private final ConnectionManager connections = new ConnectionManager();
@@ -106,7 +107,7 @@ public class WebSocketHandler {
 
         String jsonGameData = new Gson().toJson(gameData);
         LoadGameMessage loadGameMessage = new LoadGameMessage(jsonGameData);
-        NotificationMessage notificationMessage = new NotificationMessage("new message");
+        NotificationMessage notificationMessage = new NotificationMessage("Observer joined the game");
 
         var messageToMe = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME, loadGameMessage.gameData);
         connections.sendToMe(command.getGameID(),session, messageToMe);
@@ -116,6 +117,11 @@ public class WebSocketHandler {
 
     }
     private void makeMove(UserGameCommand command, Session session,GameData gameData) throws IOException, SQLException, DataAccessException, InvalidMoveException {
+        if (gameData.game().gameOver){
+            var errorMessage = new ServerMessage(ServerMessage.ServerMessageType.ERROR, "Error: game over");
+            connections.sendToMe(command.getGameID(), session, errorMessage);
+            return;
+        }
 
         if (gameData.game().isInCheckmate(ChessGame.TeamColor.WHITE) ||gameData.game().isInCheckmate(ChessGame.TeamColor.BLACK)
 //        ||gameData.game().isInStalemate(ChessGame.TeamColor.WHITE) || gameData.game().isInStalemate(ChessGame.TeamColor.BLACK)
@@ -129,7 +135,7 @@ public class WebSocketHandler {
                 connections.sendToMe(command.getGameID(), session, errorMessage);
                 return;
             }
-        }else if (gameData.game().getTeamTurn() == ChessGame.TeamColor.BLACK){
+        } else if (gameData.game().getTeamTurn() == ChessGame.TeamColor.BLACK){
             if (!Objects.equals(authDAO.getAuthDataByToken(command.getAuthToken()).username(), gameData.blackUsername())) {
                 var errorMessage = new ServerMessage(ServerMessage.ServerMessageType.ERROR, "Error: Not your turn");
                 connections.sendToMe(command.getGameID(), session, errorMessage);
@@ -143,12 +149,9 @@ public class WebSocketHandler {
                 connections.sendToMe(command.getGameID(), session, errorMessage);
             } else {
                 try {
-                    System.out.println(new Gson().toJson(gameData.game().getBoard()));
                     gameData.game().makeMove(command.getMove());
-                    System.out.println(new Gson().toJson(gameData.game().getBoard()));
 
                     String jsonGameData = new Gson().toJson(gameData);
-                    System.out.println(jsonGameData);
                     LoadGameMessage loadGameMessage = new LoadGameMessage(jsonGameData);
 
                     var loadGameServerMessage = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME, loadGameMessage.gameData);
@@ -157,9 +160,24 @@ public class WebSocketHandler {
                     gameDAO.updateGame(gameData);
 
 
-                    NotificationMessage notificationMessage = new NotificationMessage("new message");
+                    NotificationMessage notificationMessage = new NotificationMessage("player "+ command.getTeamColor() +" made a move: " + command.getMove().getStartPosition()+ " to " + command.getMove().getEndPosition());
                     var notificationServerMessage = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, notificationMessage.message);
                     connections.broadcast(command.getGameID(), session, notificationServerMessage);
+                    if (gameData.game().isInCheck(gameData.game().getTeamTurn())){
+                        NotificationMessage notificationMessage2 = new NotificationMessage(gameData.game().getTeamTurn() + " player is in check");
+                        var notificationServerMessage2 = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, notificationMessage2.message);
+                        connections.broadcast(command.getGameID(), session, notificationServerMessage2);
+                    }
+                    if (gameData.game().isInCheckmate(gameData.game().getTeamTurn())){
+                        NotificationMessage notificationMessage2 = new NotificationMessage(gameData.game().getTeamTurn() + " is in checkMate");
+                        var notificationServerMessage2 = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, notificationMessage2.message);
+                        connections.broadcast(command.getGameID(), session, notificationServerMessage2);
+                    }
+                    if (gameData.game().isInStalemate(gameData.game().getTeamTurn())){
+                        NotificationMessage notificationMessage2 = new NotificationMessage("player is in staleMte");
+                        var notificationServerMessage2 = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, notificationMessage2.message);
+                        connections.broadcast(command.getGameID(), session, notificationServerMessage2);
+                    }
                 } catch (InvalidMoveException ex) {
                     var errorMessage = new ServerMessage(ServerMessage.ServerMessageType.ERROR, "Error: invalid move");
                     connections.sendToMe(command.getGameID(), session, errorMessage);
@@ -170,11 +188,10 @@ public class WebSocketHandler {
 
     private void leave(UserGameCommand command, Session session) throws IOException, SQLException, DataAccessException {
         GameData gameData =gameDAO.getGameByID(command.getGameID());
-        AuthData authData = authDAO.getAuthDataByToken(command.getAuthToken());
-        if (Objects.equals(authData.username(), gameData.whiteUsername())) {
+        if (command.getTeamColor() == ChessGame.TeamColor.WHITE) {
             GameData newGameData = new GameData(gameData.gameID(), null, gameData.blackUsername(), gameData.gameName(), gameData.game());
             gameDAO.updateGame(newGameData);
-        } else if(Objects.equals(authData.username(), gameData.blackUsername())){
+        } else if(command.getTeamColor() == ChessGame.TeamColor.BLACK){
             GameData newGameData = new GameData(gameData.gameID(), gameData.whiteUsername(), null, gameData.gameName(), gameData.game());
             gameDAO.updateGame(newGameData);
         }
@@ -184,6 +201,7 @@ public class WebSocketHandler {
     }
     private void resign(UserGameCommand command, Session session) throws IOException, SQLException, DataAccessException {
         GameData gameData =gameDAO.getGameByID(command.getGameID());
+        gameData.game().setGameOver(true);
         var message = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, null);
         connections.broadcast(command.getGameID(), session, message);
     }
