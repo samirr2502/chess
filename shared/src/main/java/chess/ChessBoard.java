@@ -109,10 +109,17 @@ public class ChessBoard  implements Cloneable{
   @Override
   public ChessBoard clone() {
     try {
-      //clone.board = this.board.clone();
-      return (ChessBoard) super.clone();
-    } catch (CloneNotSupportedException e) {
-      throw new AssertionError();
+        ChessBoard clonedBoard = new ChessBoard();
+        ChessPiece[][] newBoard = new ChessPiece[8][8];
+        for(int i=0;i<8;i++){
+            for (int j=0;j<8;j++){
+                newBoard[i][j] = this.board[i][j];
+            }
+        }
+        clonedBoard.board = newBoard;
+        return clonedBoard;
+    } catch (Exception e) {
+        throw new AssertionError();
     }
   }
 }

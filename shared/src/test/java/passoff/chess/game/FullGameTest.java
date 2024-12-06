@@ -58,6 +58,8 @@ public class FullGameTest {
 		|R|N|B|Q|K| |N|R|
          */
         game.makeMove(new ChessMove(new ChessPosition(1, 4), new ChessPosition(5, 8), null));
+
+        //game.makeMove(new ChessMove(new ChessPosition(1, 4), new ChessPosition(4, 7), null));
         /*
         |r|n|b|q|k|b| |r|
 		|p|p|p|p| |p|p|p|
@@ -69,6 +71,8 @@ public class FullGameTest {
 		|R|N|B| |K| |N|R|
          */
         game.makeMove(new ChessMove(new ChessPosition(8, 2), new ChessPosition(6, 3), null));
+        //game.makeMove(new ChessMove(new ChessPosition(6, 6), new ChessPosition(5, 8), null));
+
         /*
         |r| |b|q|k|b| |r|
 		|p|p|p|p| |p|p|p|
@@ -80,6 +84,8 @@ public class FullGameTest {
 		|R|N|B| |K| |N|R|
          */
         game.makeMove(new ChessMove(new ChessPosition(5, 8), new ChessPosition(7, 6), null));
+
+        //game.makeMove(new ChessMove(new ChessPosition(4, 3), new ChessPosition(7, 6), null));
         /*
         |r| |b|q|k|b| |r|
 		|p|p|p|p| |Q|p|p|

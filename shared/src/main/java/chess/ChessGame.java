@@ -79,7 +79,7 @@ public class ChessGame {
   /**
    * Makes a move in a chess game
    *
-   * @param move chess move to preform
+   * @param move chess move to perform
    * @throws InvalidMoveException if move is invalid
    */
   public void makeMove(ChessMove move) throws InvalidMoveException {
@@ -114,7 +114,8 @@ public class ChessGame {
    * @return True if the specified team is in check
    */
   public boolean isInCheck(TeamColor teamColor) {
-    return board != null && !inCheckPieces(teamColor, this.board).isEmpty();
+    ChessBoard testBoard= this.board.clone();
+    return !inCheckPieces(teamColor, testBoard).isEmpty();
   }
 
   public ArrayList<ChessPiece> inCheckPieces(TeamColor teamColor, ChessBoard testBoard) {
@@ -179,8 +180,8 @@ public class ChessGame {
 
     return (board != null
             && isInCheck(teamColor)
-            && kingCantMove(teamColor, testBoard1)
-            && teamCantMovePiece(teamColor));
+            && teamCantMovePiece(teamColor)
+            && kingCantMove(teamColor, testBoard1));
   }
 
   public boolean teamCantMovePiece(TeamColor teamColor) {
